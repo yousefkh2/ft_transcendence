@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Apartment Setup Sprint 1 POC</title>
+    <style>
+      :root {
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #1f2933;
+        background: #f5f7fa;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+      }
+
+      main {
+        box-sizing: border-box;
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 32px 20px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+      }
+
+      .subtitle {
+        margin: 0 0 24px;
+        color: #52606d;
+      }
+
+      .panel {
+        background: #ffffff;
+        border: 1px solid #d9e2ec;
+        border-radius: 8px;
+        padding: 18px;
+        margin-bottom: 18px;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+
+      label {
+        font-weight: 700;
+      }
+
+      input,
+      select,
+      button {
+        min-height: 40px;
+        border-radius: 6px;
+        border: 1px solid #bcccdc;
+        padding: 0 12px;
+        font: inherit;
+      }
+
+      button {
+        background: #116466;
+        color: #ffffff;
+        border-color: #116466;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      button:disabled {
+        background: #9fb3c8;
+        border-color: #9fb3c8;
+        cursor: not-allowed;
+      }
+
+      .hint {
+        margin: 10px 0 0;
+        color: #52606d;
+        font-size: 14px;
+      }
+
+      .status {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+      }
+
+      .stat {
+        border: 1px solid #d9e2ec;
+        border-radius: 8px;
+        padding: 12px;
+        background: #f8fafc;
+      }
+
+      .stat strong {
+        display: block;
+        margin-bottom: 4px;
+        color: #52606d;
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+
+      .object-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+      }
+
+      .move-button {
+        width: 100%;
+        min-height: 52px;
+        background: #243b53;
+        border-color: #243b53;
+      }
+
+      pre {
+        box-sizing: border-box;
+        min-height: 240px;
+        max-height: 360px;
+        overflow: auto;
+        margin: 0;
+        padding: 14px;
+        border-radius: 8px;
+        background: #102a43;
+        color: #d9e2ec;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Apartment Setup Sprint 1 POC</h1>
+      <p class="subtitle">Open this page in two tabs, join the same room, then send an object move from the On Site tab.</p>
+
+      <section class="panel">
+        <div class="controls">
+          <label for="roomCode">Room</label>
+          <input id="roomCode" value="ABCD" maxlength="8" />
+          <button id="connectButton">Join Room</button>
+          <button id="disconnectButton" disabled>Disconnect</button>
+        </div>
+      </section>
+
+      <section class="panel status">
+        <div class="stat">
+          <strong>Connection</strong>
+          <span id="connectionStatus">Disconnected</span>
+        </div>
+        <div class="stat">
+          <strong>Role</strong>
+          <span id="role">-</span>
+        </div>
+        <div class="stat">
+          <strong>Match</strong>
+          <span id="matchId">-</span>
+        </div>
+        <div class="stat">
+          <strong>Completed</strong>
+          <span id="completed">0 / 4</span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>On Site Actions</h2>
+        <p class="hint" id="actionHint">Join a room. These actions unlock only for the On Site role.</p>
+        <div class="object-grid">
+          <button class="move-button" data-object-id="plant" data-relation="right_of" data-target-id="sofa" disabled>
+            plant right_of sofa
+          </button>
+          <button class="move-button" data-object-id="red_book" data-relation="on" data-target-id="coffee_table" disabled>
+            red_book on coffee_table
+          </button>
+          <button class="move-button" data-object-id="blue_cup" data-relation="under" data-target-id="coffee_table" disabled>
+            blue_cup under coffee_table
+          </button>
+          <button class="move-button" data-object-id="picture" data-relation="above" data-target-id="sofa" disabled>
+            picture above sofa
+          </button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Event Log</h2>
+        <pre id="log"></pre>
+      </section>
+    </main>
+
+    <script>
+      const state = {
+        socket: null,
+        matchId: "",
+        role: "",
+      };
+
+      const connectionStatus = document.querySelector("#connectionStatus");
+      const role = document.querySelector("#role");
+      const matchId = document.querySelector("#matchId");
+      const completed = document.querySelector("#completed");
+      const actionHint = document.querySelector("#actionHint");
+      const log = document.querySelector("#log");
+      const connectButton = document.querySelector("#connectButton");
+      const disconnectButton = document.querySelector("#disconnectButton");
+      const roomCode = document.querySelector("#roomCode");
+      const moveButtons = document.querySelectorAll(".move-button");
+
+      function writeLog(label, data) {
+        const line = `[${new Date().toLocaleTimeString()}] ${label} ${JSON.stringify(data, null, 2)}\n`;
+        log.textContent = line + log.textContent;
+      }
+
+      function setConnected(connected) {
+        connectionStatus.textContent = connected ? "Connected" : "Disconnected";
+        connectButton.disabled = connected;
+        disconnectButton.disabled = !connected;
+        updateMoveButtons();
+      }
+
+      function updateMoveButtons() {
+        const canMove = state.socket?.readyState === WebSocket.OPEN && state.role === "on_site" && state.matchId;
+        for (const button of moveButtons) {
+          button.disabled = !canMove;
+        }
+
+        if (!state.socket || state.socket.readyState !== WebSocket.OPEN) {
+          actionHint.textContent = "Join a room. These actions unlock only for the On Site role.";
+          return;
+        }
+
+        if (state.role === "mission_control") {
+          actionHint.textContent = "This tab is Mission Control. Open/use the On Site tab to send object moves.";
+          return;
+        }
+
+        if (state.role === "on_site") {
+          actionHint.textContent = "This tab is On Site. Send object moves from here.";
+          return;
+        }
+
+        actionHint.textContent = "Waiting for role assignment.";
+      }
+
+      function send(type, payload) {
+        const message = { type, payload };
+        state.socket.send(JSON.stringify(message));
+        writeLog("sent", message);
+      }
+
+      connectButton.addEventListener("click", () => {
+        const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+        state.socket = new WebSocket(`${protocol}://${window.location.host}/ws`);
+
+        state.socket.addEventListener("open", () => {
+          setConnected(true);
+          send("room.join", { roomCode: roomCode.value || "ABCD" });
+        });
+
+        state.socket.addEventListener("message", (event) => {
+          const message = JSON.parse(event.data);
+          writeLog("received", message);
+
+          if (message.type === "room.role_assigned") {
+            state.role = message.payload.role;
+            role.textContent = state.role;
+            updateMoveButtons();
+          }
+
+          if (message.type === "game.round_started") {
+            state.matchId = message.payload.matchId;
+            matchId.textContent = state.matchId;
+            updateMoveButtons();
+          }
+
+          if (message.type === "game.state_patch") {
+            completed.textContent = `${message.payload.completedObjectives.length} / 4`;
+          }
+
+          if (message.type === "game.round_ended") {
+            completed.textContent = "4 / 4 success";
+          }
+        });
+
+        state.socket.addEventListener("close", () => {
+          state.socket = null;
+          state.role = "";
+          state.matchId = "";
+          role.textContent = "-";
+          matchId.textContent = "-";
+          setConnected(false);
+          writeLog("closed", {});
+        });
+      });
+
+      disconnectButton.addEventListener("click", () => {
+        state.socket?.close();
+      });
+
+      for (const button of moveButtons) {
+        button.addEventListener("click", () => {
+          if (!state.socket || state.socket.readyState !== WebSocket.OPEN) {
+            writeLog("blocked", { message: "Connect before sending moves." });
+            return;
+          }
+
+          if (state.role !== "on_site") {
+            writeLog("blocked", { message: "Only the On Site tab can send object moves.", role: state.role });
+            return;
+          }
+
+          send("game.object_moved", {
+            matchId: state.matchId,
+            objectId: button.dataset.objectId,
+            relation: button.dataset.relation,
+            targetId: button.dataset.targetId,
+          });
+        });
+      }
+    </script>
+  </body>
+</html>

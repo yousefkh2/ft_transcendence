@@ -1,0 +1,7 @@
+.gocache/
+.agents/
+.codex
+bin/
+dist/
+node_modules/
+.env
