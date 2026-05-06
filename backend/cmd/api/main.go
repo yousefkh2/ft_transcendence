@@ -55,6 +55,10 @@ type Room struct {
 	matchID             string
 	clients             map[*Client]bool
 	completedObjectives map[string]bool
+	durationSeconds     int
+	timeRemaining       int
+	roundStarted        bool
+	roundEnded          bool
 }
 
 type Hub struct {
@@ -160,14 +164,25 @@ func (h *Hub) joinRoom(c *Client, payload json.RawMessage) {
 			matchID:             "match_" + strings.ToLower(roomCode),
 			clients:             make(map[*Client]bool),
 			completedObjectives: make(map[string]bool),
+			durationSeconds:     180,
+			timeRemaining:       180,
 		}
 		h.rooms[roomCode] = room
+	}
+	if len(room.clients) >= 2 {
+		h.mu.Unlock()
+		c.send("error", map[string]string{"message": "room is full"})
+		return
 	}
 
 	c.room = room
 	c.role = nextRole(room)
 	room.clients[c] = true
 	playerCount := len(room.clients)
+	shouldStartRound := playerCount == 2 && !room.roundStarted
+	if shouldStartRound {
+		room.roundStarted = true
+	}
 	h.mu.Unlock()
 
 	log.Printf("client %s joined room %s as %s", c.id, room.code, c.role)
@@ -177,17 +192,17 @@ func (h *Hub) joinRoom(c *Client, payload json.RawMessage) {
 		"playerId": c.id,
 	})
 
-	c.send("game.round_started", map[string]any{
-		"matchId":         room.matchID,
-		"scenarioId":      "apartment_easy_001",
-		"durationSeconds": 180,
-		"role":            c.role,
-	})
-
 	h.broadcast(room, "room.player_count", map[string]any{
 		"roomCode":    room.code,
 		"playerCount": playerCount,
 	})
+
+	if shouldStartRound {
+		h.broadcastRoundStarted(room)
+		go h.runRoomTimer(room)
+	} else {
+		c.send("room.waiting", map[string]string{"message": "waiting for second player"})
+	}
 }
 
 func (h *Hub) handleObjectMoved(c *Client, payload json.RawMessage) {
@@ -200,6 +215,19 @@ func (h *Hub) handleObjectMoved(c *Client, payload json.RawMessage) {
 		c.send("error", map[string]string{"message": "only on_site can move objects"})
 		return
 	}
+
+	h.mu.Lock()
+	if !c.room.roundStarted {
+		h.mu.Unlock()
+		c.send("error", map[string]string{"message": "round has not started"})
+		return
+	}
+	if c.room.roundEnded {
+		h.mu.Unlock()
+		c.send("error", map[string]string{"message": "round already ended"})
+		return
+	}
+	h.mu.Unlock()
 
 	var move MovePayload
 	if err := json.Unmarshal(payload, &move); err != nil {
@@ -226,6 +254,10 @@ func (h *Hub) handleObjectMoved(c *Client, payload json.RawMessage) {
 	c.room.completedObjectives[objectiveID] = true
 	done := completed(c.room)
 	success := len(done) == 4
+	timeRemaining := c.room.timeRemaining
+	if success {
+		c.room.roundEnded = true
+	}
 	h.mu.Unlock()
 
 	log.Printf("accepted move from %s: completed %s", c.id, objectiveID)
@@ -233,7 +265,7 @@ func (h *Hub) handleObjectMoved(c *Client, payload json.RawMessage) {
 	h.broadcast(c.room, "game.state_patch", map[string]any{
 		"matchId":              c.room.matchID,
 		"completedObjectives":  done,
-		"timeRemainingSeconds": 180,
+		"timeRemainingSeconds": timeRemaining,
 		"accepted":             true,
 	})
 
@@ -244,6 +276,68 @@ func (h *Hub) handleObjectMoved(c *Client, payload json.RawMessage) {
 			"completedObjectives": done,
 			"score":               1.0,
 		})
+	}
+}
+
+func (h *Hub) broadcastRoundStarted(room *Room) {
+	h.mu.Lock()
+	clients := make([]*Client, 0, len(room.clients))
+	for client := range room.clients {
+		clients = append(clients, client)
+	}
+	durationSeconds := room.durationSeconds
+	timeRemaining := room.timeRemaining
+	h.mu.Unlock()
+
+	for _, client := range clients {
+		client.send("game.round_started", map[string]any{
+			"matchId":              room.matchID,
+			"scenarioId":           "apartment_easy_001",
+			"durationSeconds":      durationSeconds,
+			"timeRemainingSeconds": timeRemaining,
+			"role":                 client.role,
+		})
+	}
+}
+
+func (h *Hub) runRoomTimer(room *Room) {
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		h.mu.Lock()
+		currentRoom := h.rooms[room.code]
+		if currentRoom != room || room.roundEnded || len(room.clients) == 0 {
+			h.mu.Unlock()
+			return
+		}
+
+		if room.timeRemaining > 0 {
+			room.timeRemaining--
+		}
+		timeRemaining := room.timeRemaining
+		done := completed(room)
+
+		if timeRemaining == 0 {
+			room.roundEnded = true
+		}
+		roundEnded := room.roundEnded
+		h.mu.Unlock()
+
+		h.broadcast(room, "game.timer_tick", map[string]any{
+			"matchId":              room.matchID,
+			"timeRemainingSeconds": timeRemaining,
+		})
+
+		if roundEnded {
+			h.broadcast(room, "game.round_ended", map[string]any{
+				"matchId":             room.matchID,
+				"result":              "failure",
+				"completedObjectives": done,
+				"score":               float64(len(done)) / 4.0,
+			})
+			return
+		}
 	}
 }
 

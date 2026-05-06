@@ -84,7 +84,7 @@
 
       .status {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         gap: 12px;
       }
 
@@ -107,6 +107,63 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         gap: 10px;
+      }
+
+      .game-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+        gap: 18px;
+        align-items: start;
+      }
+
+      .role-panel {
+        border-left: 4px solid #116466;
+      }
+
+      .checklist {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .checklist li {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #d9e2ec;
+      }
+
+      .checklist li:last-child {
+        border-bottom: 0;
+      }
+
+      .objective-status {
+        display: inline-grid;
+        width: 24px;
+        height: 24px;
+        place-items: center;
+        border-radius: 999px;
+        background: #d9e2ec;
+        color: #334e68;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .complete .objective-status {
+        background: #116466;
+        color: #ffffff;
+      }
+
+      .complete .objective-text {
+        text-decoration: line-through;
+        color: #52606d;
+      }
+
+      @media (max-width: 760px) {
+        .game-layout {
+          grid-template-columns: 1fr;
+        }
       }
 
       .move-button {
@@ -161,22 +218,38 @@
           <strong>Completed</strong>
           <span id="completed">0 / 4</span>
         </div>
+        <div class="stat">
+          <strong>Timer</strong>
+          <span id="timer">waiting</span>
+        </div>
       </section>
+
+      <div class="game-layout">
+        <section class="panel role-panel">
+          <h2 id="roleTitle">Waiting For Role</h2>
+          <p id="roleDescription">Join a room to receive either Mission Control or On Site.</p>
+        </section>
+
+        <section class="panel">
+          <h2>Objective Checklist</h2>
+          <ul class="checklist" id="objectiveList"></ul>
+        </section>
+      </div>
 
       <section class="panel">
         <h2>On Site Actions</h2>
-        <p class="hint" id="actionHint">Join a room. These actions unlock only for the On Site role.</p>
+        <p class="hint" id="actionHint">Join a room. These actions unlock only for the On Site role after the second player joins.</p>
         <div class="object-grid">
-          <button class="move-button" data-object-id="plant" data-relation="right_of" data-target-id="sofa" disabled>
+          <button class="move-button" data-object-id="plant" data-relation="right_of" data-target-id="sofa" data-objective-id="objective_1" disabled>
             plant right_of sofa
           </button>
-          <button class="move-button" data-object-id="red_book" data-relation="on" data-target-id="coffee_table" disabled>
+          <button class="move-button" data-object-id="red_book" data-relation="on" data-target-id="coffee_table" data-objective-id="objective_2" disabled>
             red_book on coffee_table
           </button>
-          <button class="move-button" data-object-id="blue_cup" data-relation="under" data-target-id="coffee_table" disabled>
+          <button class="move-button" data-object-id="blue_cup" data-relation="under" data-target-id="coffee_table" data-objective-id="objective_3" disabled>
             blue_cup under coffee_table
           </button>
-          <button class="move-button" data-object-id="picture" data-relation="above" data-target-id="sofa" disabled>
+          <button class="move-button" data-object-id="picture" data-relation="above" data-target-id="sofa" data-objective-id="objective_4" disabled>
             picture above sofa
           </button>
         </div>
@@ -193,12 +266,26 @@
         socket: null,
         matchId: "",
         role: "",
+        completedObjectives: [],
+        timeRemainingSeconds: null,
+        roundEnded: false,
       };
+
+      const objectives = [
+        { id: "objective_1", text: "The plant is right of the sofa." },
+        { id: "objective_2", text: "The red book is on the coffee table." },
+        { id: "objective_3", text: "The blue cup is under the coffee table." },
+        { id: "objective_4", text: "The picture is above the sofa." },
+      ];
 
       const connectionStatus = document.querySelector("#connectionStatus");
       const role = document.querySelector("#role");
       const matchId = document.querySelector("#matchId");
       const completed = document.querySelector("#completed");
+      const timer = document.querySelector("#timer");
+      const roleTitle = document.querySelector("#roleTitle");
+      const roleDescription = document.querySelector("#roleDescription");
+      const objectiveList = document.querySelector("#objectiveList");
       const actionHint = document.querySelector("#actionHint");
       const log = document.querySelector("#log");
       const connectButton = document.querySelector("#connectButton");
@@ -219,13 +306,24 @@
       }
 
       function updateMoveButtons() {
-        const canMove = state.socket?.readyState === WebSocket.OPEN && state.role === "on_site" && state.matchId;
+        const canMove =
+          state.socket?.readyState === WebSocket.OPEN &&
+          state.role === "on_site" &&
+          state.matchId &&
+          !state.roundEnded;
+
         for (const button of moveButtons) {
-          button.disabled = !canMove;
+          const alreadyComplete = state.completedObjectives.includes(button.dataset.objectiveId);
+          button.disabled = !canMove || alreadyComplete;
         }
 
         if (!state.socket || state.socket.readyState !== WebSocket.OPEN) {
-          actionHint.textContent = "Join a room. These actions unlock only for the On Site role.";
+          actionHint.textContent = "Join a room. These actions unlock only for the On Site role after the second player joins.";
+          return;
+        }
+
+        if (!state.matchId) {
+          actionHint.textContent = "Waiting for the second player. The round has not started yet.";
           return;
         }
 
@@ -240,6 +338,64 @@
         }
 
         actionHint.textContent = "Waiting for role assignment.";
+      }
+
+      function updateRolePanel() {
+        if (state.role === "mission_control") {
+          roleTitle.textContent = "Mission Control";
+          roleDescription.textContent = "You see the target checklist. In the real game, you would guide the other player in German without moving objects yourself.";
+          return;
+        }
+
+        if (state.role === "on_site") {
+          roleTitle.textContent = "On Site";
+          roleDescription.textContent = "You can perform object moves. In the real game, these buttons become drag/drop actions in the room.";
+          return;
+        }
+
+        roleTitle.textContent = "Waiting For Role";
+        roleDescription.textContent = "Join a room to receive either Mission Control or On Site.";
+      }
+
+      function updateTimer() {
+        if (state.timeRemainingSeconds === null) {
+          timer.textContent = "waiting";
+          return;
+        }
+
+        const minutes = Math.floor(state.timeRemainingSeconds / 60);
+        const seconds = String(state.timeRemainingSeconds % 60).padStart(2, "0");
+        timer.textContent = `${minutes}:${seconds}`;
+      }
+
+      function updateProgress(completedObjectives) {
+        state.completedObjectives = completedObjectives;
+        completed.textContent = `${state.completedObjectives.length} / ${objectives.length}`;
+        renderObjectives();
+        updateMoveButtons();
+      }
+
+      function renderObjectives() {
+        objectiveList.innerHTML = "";
+
+        for (const objective of objectives) {
+          const item = document.createElement("li");
+          const isComplete = state.completedObjectives.includes(objective.id);
+          if (isComplete) {
+            item.classList.add("complete");
+          }
+
+          const status = document.createElement("span");
+          status.className = "objective-status";
+          status.textContent = isComplete ? "✓" : "·";
+
+          const text = document.createElement("span");
+          text.className = "objective-text";
+          text.textContent = objective.text;
+
+          item.append(status, text);
+          objectiveList.append(item);
+        }
       }
 
       function send(type, payload) {
@@ -264,21 +420,32 @@
           if (message.type === "room.role_assigned") {
             state.role = message.payload.role;
             role.textContent = state.role;
+            updateRolePanel();
             updateMoveButtons();
           }
 
           if (message.type === "game.round_started") {
             state.matchId = message.payload.matchId;
+            state.timeRemainingSeconds = message.payload.timeRemainingSeconds;
             matchId.textContent = state.matchId;
+            updateTimer();
             updateMoveButtons();
           }
 
+          if (message.type === "game.timer_tick") {
+            state.timeRemainingSeconds = message.payload.timeRemainingSeconds;
+            updateTimer();
+          }
+
           if (message.type === "game.state_patch") {
-            completed.textContent = `${message.payload.completedObjectives.length} / 4`;
+            updateProgress(message.payload.completedObjectives);
           }
 
           if (message.type === "game.round_ended") {
-            completed.textContent = "4 / 4 success";
+            state.roundEnded = true;
+            updateProgress(message.payload.completedObjectives);
+            actionHint.textContent = `Round ended: ${message.payload.result}`;
+            updateMoveButtons();
           }
         });
 
@@ -286,8 +453,14 @@
           state.socket = null;
           state.role = "";
           state.matchId = "";
+          state.completedObjectives = [];
+          state.timeRemainingSeconds = null;
+          state.roundEnded = false;
           role.textContent = "-";
           matchId.textContent = "-";
+          updateRolePanel();
+          updateTimer();
+          renderObjectives();
           setConnected(false);
           writeLog("closed", {});
         });
@@ -317,6 +490,10 @@
           });
         });
       }
+
+      renderObjectives();
+      updateRolePanel();
+      updateTimer();
     </script>
   </body>
 </html>
