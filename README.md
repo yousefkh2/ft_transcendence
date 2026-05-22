@@ -23,7 +23,7 @@ Then open:
 
 ```text
 Frontend: http://localhost:5173
-Backend POC: http://localhost:8080
+Backend root: http://localhost:8080
 Backend health: http://localhost:8080/health
 Database reachability: http://localhost:8080/health/db
 ```
@@ -49,7 +49,8 @@ The infrastructure target is one-command startup for the team:
 - Backend `/health` returns `ok`.
 - Backend `/health/db` confirms the database is reachable.
 
-The gameplay POC is still intentionally small and lives at the backend root URL.
+The backend is intentionally minimal so the backend owner can build the real API
+from a clean, explainable starting point.
 
 ## Database Schema
 

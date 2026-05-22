@@ -16,7 +16,7 @@ const App = {
 
         <div class="actions">
           <a class="button primary" :href="apiUrl + '/health'">Backend Health</a>
-          <a class="button" :href="apiUrl">Sprint POC</a>
+          <a class="button" :href="apiUrl + '/health/db'">Database Health</a>
         </div>
       </section>
 
@@ -27,7 +27,7 @@ const App = {
         </article>
         <article>
           <strong>Backend</strong>
-          <span>Go API and WebSocket POC</span>
+          <span>Go API foundation</span>
         </article>
         <article>
           <strong>Database</strong>
