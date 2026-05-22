@@ -14,3 +14,10 @@ frontend/.vite/
 
 # Local Docker/Postgres data
 postgres_data/
+
+# Local planning/handoff notes
+AGENT_HANDOFF.md
+Apartment Setup v1 Spec.md
+Architecture and Module Plan.md
+Sprint 1 POC Notes.md
+transcendence.md
