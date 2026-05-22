@@ -1,0 +1,12 @@
+.git
+.gocache
+.agents
+.codex
+node_modules
+dist
+.env
+*.log
+transcencence
+frontend/node_modules
+frontend/dist
+frontend/.vite

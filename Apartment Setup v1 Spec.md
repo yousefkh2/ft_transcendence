@@ -412,13 +412,13 @@ Do not build these in v1:
 
 These should be answered in the next meeting:
 
-1. Which Go WebSocket library will Mateo use?
+1. Which Go WebSocket library will the realtime/backend owner use?
 2. Which Go backend framework will Gabriel use?
 3. Does the backend own the countdown timer from Sprint 1, or only after the WebSocket proof works?
 4. Should `roomCode` be human-readable, like `ABCD`, or UUID-based for the first version?
 5. Should role assignment be random in v1, or should players choose roles?
-6. What is the minimum Docker Compose skeleton Daniel wants for Sprint 1?
-7. What does Mateo need from this spec to create the first room UI and drag/drop prototype?
+6. Is the current Docker Compose skeleton enough for every teammate to start from the same environment?
+7. Who owns the first room UI and drag/drop prototype now that Mateo is out?
 
 ## Meeting Decision Needed
 
@@ -529,9 +529,11 @@ Owns:
 
 Gabriel's job is to keep the backend coherent and prevent technical drift.
 
-### Mateo: Realtime + Frontend Lead / Developer
+### Realtime + Frontend Ownership
 
-Owns:
+Mateo is out, so this ownership needs to be reassigned.
+
+Open ownership:
 
 - WebSockets
 - lobby rooms
@@ -544,7 +546,7 @@ Owns:
 - responsive layout
 - review/results screens
 
-Mateo's area is broad, so the first frontend and realtime targets should stay intentionally simple.
+This area is broad, so the first frontend and realtime targets should stay intentionally simple.
 
 ## Final Call on Process
 

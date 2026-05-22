@@ -9,7 +9,7 @@ Do not start with Three.js for the MVP. Three.js is impressive, but it makes the
 The safest product direction is:
 
 - one modular web game platform
-- one main game mode: `Apartment Setup` or `Kitchen Rush`
+- one main game mode: `Apartment Setup`
 - real-time two-player sessions
 - voice recording during the round
 - post-round transcript review and flashcards
@@ -23,12 +23,9 @@ Prefer **Apartment Setup** as the first playable game.
 
 Reasons:
 
-- It is simpler than Kitchen mechanically.
 - It naturally trains German prepositions, objects, colors, imperatives, and clarification.
 - It can be implemented with drag-and-drop and semantic placement checks.
 - It does not need cooking timers, ingredient transformations, recipes, inventory, or station logic.
-
-Kitchen Rush is a strong second scenario once the engine works.
 
 ## System Architecture
 
@@ -58,7 +55,6 @@ flowchart TB
 
     subgraph Games["Pluggable Game Modes"]
         Apartment["Apartment Setup"]
-        Kitchen["Kitchen Rush"]
         Snake["Snake Fallback"]
     end
 
@@ -90,7 +86,6 @@ flowchart TB
     Matchmaker --> SessionMgr
     SessionMgr --> GameEngine
     GameEngine --> Apartment
-    GameEngine --> Kitchen
     GameEngine --> Snake
 
     Auth --> DB
@@ -149,7 +144,6 @@ backend/
       events.go
       modes/
         apartment/
-        kitchen/
         snake/
     review/
     stats/
@@ -177,7 +171,7 @@ type GameMode interface {
 
 This is what makes the fallback realistic.
 
-`Apartment Setup`, `Kitchen Rush`, and `Snake` can all become modes under the same platform:
+`Apartment Setup` and `Snake` can both become modes under the same platform:
 
 - same auth
 - same lobby
@@ -335,7 +329,6 @@ frontend/
       review/
     games/
       apartment/
-      kitchen/
       snake/
     pages/
       Login.vue

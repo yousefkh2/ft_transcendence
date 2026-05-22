@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"net"
 	"net/http"
 	"os"
 	"strings"
@@ -79,6 +80,7 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("ok\n"))
 	})
+	mux.HandleFunc("/health/db", handleDatabaseHealth)
 	mux.HandleFunc("/ws", hub.handleWebSocket)
 	mux.Handle("/", http.FileServer(http.Dir("frontend/sprint1-poc")))
 
@@ -86,6 +88,22 @@ func main() {
 	addr := ":" + port
 	log.Printf("Sprint POC server listening on http://127.0.0.1%s", addr)
 	log.Fatal(http.ListenAndServe(addr, mux))
+}
+
+func handleDatabaseHealth(w http.ResponseWriter, _ *http.Request) {
+	host := getenv("DB_HOST", "localhost")
+	port := getenv("DB_PORT", "5432")
+	address := net.JoinHostPort(host, port)
+
+	conn, err := net.DialTimeout("tcp", address, 2*time.Second)
+	if err != nil {
+		http.Error(w, "database unreachable\n", http.StatusServiceUnavailable)
+		return
+	}
+	_ = conn.Close()
+
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("database reachable\n"))
 }
 
 func getenv(key string, fallback string) string {
