@@ -1,43 +1,39 @@
-import { createApp } from "vue";
+import { createApp, h } from "vue";
 import "./style.css";
 
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 const App = {
-  template: `
-    <main class="app-shell">
-      <section class="hero">
-        <p class="eyebrow">ft_transcendence</p>
-        <h1>Apartment Setup</h1>
-        <p class="summary">
-          Dockerized Vue, Go, and PostgreSQL foundation for the two-player
-          language game.
-        </p>
+  setup() {
+    const status = [
+      ["Frontend", "Vue + Vite dev server"],
+      ["Backend", "Go API foundation"],
+      ["Database", "PostgreSQL service in Compose"],
+    ];
 
-        <div class="actions">
-          <a class="button primary" :href="apiUrl + '/health'">Backend Health</a>
-          <a class="button" :href="apiUrl + '/health/db'">Database Health</a>
-        </div>
-      </section>
-
-      <section class="status-grid" aria-label="Project status">
-        <article>
-          <strong>Frontend</strong>
-          <span>Vue + Vite dev server</span>
-        </article>
-        <article>
-          <strong>Backend</strong>
-          <span>Go API foundation</span>
-        </article>
-        <article>
-          <strong>Database</strong>
-          <span>PostgreSQL service in Compose</span>
-        </article>
-      </section>
-    </main>
-  `,
-  data() {
-    return { apiUrl };
+    return () =>
+      h("main", { class: "app-shell" }, [
+        h("section", { class: "hero" }, [
+          h("p", { class: "eyebrow" }, "ft_transcendence"),
+          h("h1", "Apartment Setup"),
+          h(
+            "p",
+            { class: "summary" },
+            "Dockerized Vue, Go, and PostgreSQL foundation for the two-player language game.",
+          ),
+          h("div", { class: "actions" }, [
+            h("a", { class: "button primary", href: `${apiUrl}/health` }, "Backend Health"),
+            h("a", { class: "button", href: `${apiUrl}/health/db` }, "Database Health"),
+          ]),
+        ]),
+        h(
+          "section",
+          { class: "status-grid", "aria-label": "Project status" },
+          status.map(([title, text]) =>
+            h("article", [h("strong", title), h("span", text)]),
+          ),
+        ),
+      ]);
   },
 };
 
