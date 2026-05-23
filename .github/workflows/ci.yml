@@ -1,0 +1,70 @@
+name: CI
+
+  on:
+    push:
+      branches:
+        - main
+    pull_request:
+
+  permissions:
+    contents: read
+
+  jobs:
+    backend:
+      name: Backend Checks
+      runs-on: ubuntu-latest
+
+      steps:
+        # 1. THE ABSOLUTE FIRST STEP: Bring the code into the VM
+        - name: Check out repository
+          uses: actions/checkout@v6
+
+        # 2. THE INITIAL ENVIRONMENT "TEST": Set up the runtime
+        - name: Set up Go
+          uses: actions/setup-go@v6
+          with:
+            go-version-file: go.mod
+
+        # 3. THE FIRST ACTUAL TEST: Run the suite
+        - name: Run Go tests
+          run: go test ./...
+
+    frontend:
+      name: Frontend Checks
+      runs-on: ubuntu-latest
+
+      defaults:
+        run:
+          working-directory: frontend
+
+      steps:
+        - name: Check out repository
+          uses: actions/checkout@v6
+
+        - name: Set up Node.js
+          uses: actions/setup-node@v6
+          with:
+            node-version: 22
+            cache: npm
+            cache-dependency-path: frontend/package-lock.json
+
+        - name: Install frontend dependencies
+          run: npm ci
+          
+        # The actual "test": Compiles and builds the production assets
+        - name: Build frontend
+          run: npm run build
+
+    compose:
+      name: Docker Compose Validation
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Check out repository
+          uses: actions/checkout@v6
+
+        - name: Create local environment file
+          run: cp .env.example .env
+
+        - name: Validate Compose configuration
+          run: docker compose config
