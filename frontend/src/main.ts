@@ -14,7 +14,7 @@ const App = {
     const connectionStatus = ref("Disconnected");
     const roomCode = ref("ABCD");
     const roomStatus = ref("No room request sent");
-    const role = ref("No role assigned")
+    const role = ref("No role assigned");
 
     let socket: WebSocket | null = null;
 
@@ -52,7 +52,7 @@ const App = {
     function joinRoom() {
       if (!socket || socket.readyState !== WebSocket.OPEN) {
         roomStatus.value = "Connect the WebSocket first";
-        return
+        return;
       }
 
       socket.send(

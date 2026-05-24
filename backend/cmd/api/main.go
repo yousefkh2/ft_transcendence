@@ -21,7 +21,7 @@ type ClientMessage struct {
 
 type ServerMessage struct {
 	Type     string `json:"type"`
-	RoomCode string `json:"roomCode,omitempty"`
+	RoomCode string `json:"roomCode, omitempty"`
 	Role     string `json:"role, omitempty"`
 	Message  string `json:"message"`
 }
@@ -84,6 +84,9 @@ func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	log.Print("websocket client connected")
 
 	ctx := context.Background()
+
+	joinedRoom := ""
+
 	for {
 		var message ClientMessage
 
@@ -91,6 +94,7 @@ func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			log.Print("websocket client disconnected")
 			return
 		}
+
 		if message.Type != "room.join" || strings.TrimSpace(message.RoomCode) == "" {
 			_ = wsjson.Write(ctx, conn, ServerMessage{
 				Type:    "error",
@@ -98,6 +102,15 @@ func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			})
 			continue
 		}
+
+		if joinedRoom != "" {
+			_ = wsjson.Write(ctx, conn, ServerMessage{
+				Type:    "error",
+				Message: "this connection already joined room " + joinedRoom,
+			})
+			continue
+		}
+
 		roomCode := strings.ToUpper(strings.TrimSpace(message.RoomCode))
 
 		h.mu.Lock()
@@ -105,31 +118,43 @@ func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		room, exists := h.rooms[roomCode]
 		if !exists {
 			room = &Room{
-				code:        roomCode,
-				playerCount: 1,
+				code: roomCode,
 			}
 			h.rooms[roomCode] = room
 		}
-		h.mu.Unlock()
 
-		if exists {
+		if room.playerCount >= 2 {
+			h.mu.Unlock()
+
 			_ = wsjson.Write(ctx, conn, ServerMessage{
 				Type:    "error",
-				Message: "second player handling is not implemented yet",
+				Message: "room is full",
 			})
 			continue
 		}
 
-		log.Printf("room created: %s, first player assigned mission_control", room.code)
+		room.playerCount++
+
+		role := "mission_control"
+		if room.playerCount == 2 {
+			role = "on_site"
+		}
+
+		joinedRoom = room.code
+		playerCount := room.playerCount
+
+		h.mu.Unlock()
+
+		log.Printf("player joined room %s as %s (%d/2)", room.code, role,
+			playerCount)
 
 		if err := wsjson.Write(ctx, conn, ServerMessage{
 			Type:     "room.joined",
 			RoomCode: room.code,
-			Role:     "mission_control",
-			Message:  "room created",
+			Role:     role,
+			Message:  "room joined",
 		}); err != nil {
-			log.Printf("websocket response failed: %v", err)
-			return
+
 		}
 	}
 }
