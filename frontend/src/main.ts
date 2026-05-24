@@ -15,6 +15,7 @@ const App = {
     const roomCode = ref("ABCD");
     const roomStatus = ref("No room request sent");
     const role = ref("No role assigned");
+    const playerID = ref("No player ID assigned");
 
     let socket: WebSocket | null = null;
 
@@ -32,6 +33,7 @@ const App = {
 
         if (message.type === "room.joined") {
           roomStatus.value = `Joined room ${message.roomCode}`;
+          playerID.value = message.playerId;
           role.value = message.role;
         }
         if (message.type === "error") {
@@ -102,7 +104,11 @@ const App = {
             h("article", [
               h("strong", "Role"),
               h("span", role.value),
-            ])
+            ]),
+            h("article", [
+              h("strong", "Player ID"),
+              h("span", playerID.value),
+            ]),
           ],
         ),
       ]);

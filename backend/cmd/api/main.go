@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"log"
 	"net"
 	"net/http"
@@ -21,8 +23,9 @@ type ClientMessage struct {
 
 type ServerMessage struct {
 	Type     string `json:"type"`
-	RoomCode string `json:"roomCode, omitempty"`
-	Role     string `json:"role, omitempty"`
+	RoomCode string `json:"roomCode,omitempty"`
+	PlayerID string `json:"playerId,omitempty"`
+	Role     string `json:"role,omitempty"`
 	Message  string `json:"message"`
 }
 
@@ -81,7 +84,13 @@ func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.CloseNow()
 
-	log.Print("websocket client connected")
+	playerID, err := newPlayerID()
+	if err != nil {
+		log.Printf("player ID generation failed: %v", err)
+		return
+	}
+
+	log.Printf("websocket client connected: %s", playerID)
 
 	ctx := context.Background()
 
@@ -145,16 +154,18 @@ func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 		h.mu.Unlock()
 
-		log.Printf("player joined room %s as %s (%d/2)", room.code, role,
+		log.Printf("player %s joined room %s as %s (%d/2)", playerID, room.code, role,
 			playerCount)
 
 		if err := wsjson.Write(ctx, conn, ServerMessage{
 			Type:     "room.joined",
 			RoomCode: room.code,
+			PlayerID: playerID,
 			Role:     role,
 			Message:  "room joined",
 		}); err != nil {
-
+			log.Printf("websocket response failed: %v", err)
+			return
 		}
 	}
 }
@@ -173,6 +184,16 @@ func handleDatabaseHealth(w http.ResponseWriter, _ *http.Request) {
 
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	_, _ = w.Write([]byte("database reachable\n"))
+}
+
+func newPlayerID() (string, error) {
+	bytes := make([]byte, 4) // 4 bytes 8 eight hexadecimal characters (player_e4a91c8f)
+
+	if _, err := rand.Read(bytes); err != nil {
+		return "", err
+	}
+
+	return "player_" + hex.EncodeToString(bytes), nil
 }
 
 func getenv(key string, fallback string) string {
