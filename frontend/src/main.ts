@@ -14,6 +14,7 @@ const App = {
     const connectionStatus = ref("Disconnected");
     const roomCode = ref("ABCD");
     const roomStatus = ref("No room request sent");
+    const role = ref("No role assigned")
 
     let socket: WebSocket | null = null;
 
@@ -30,7 +31,8 @@ const App = {
         const message = JSON.parse(event.data);
 
         if (message.type === "room.joined") {
-          roomStatus.value = `Server received join request for ${message.roomCode}`;
+          roomStatus.value = `Joined room ${message.roomCode}`;
+          role.value = message.role;
         }
         if (message.type === "error") {
           roomStatus.value = message.message;
@@ -97,6 +99,10 @@ const App = {
               h("strong", "Room Event"),
               h("span", roomStatus.value),
             ]),
+            h("article", [
+              h("strong", "Role"),
+              h("span", role.value),
+            ])
           ],
         ),
       ]);

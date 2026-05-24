@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/coder/websocket"
@@ -21,15 +22,35 @@ type ClientMessage struct {
 type ServerMessage struct {
 	Type     string `json:"type"`
 	RoomCode string `json:"roomCode,omitempty"`
+	Role     string `json:"role, omitempty"`
 	Message  string `json:"message"`
 }
 
+type Room struct {
+	code        string
+	playerCount int
+}
+
+// Hub  = owner of all live rooms.
+type Hub struct {
+	mu    sync.Mutex
+	rooms map[string]*Room
+}
+
+func NewHub() *Hub {
+	return &Hub{
+		rooms: make(map[string]*Room),
+	}
+}
+
 func main() {
+	hub := NewHub()
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handleRoot)
 	mux.HandleFunc("/health", handleHealth)
 	mux.HandleFunc("/health/db", handleDatabaseHealth)
-	mux.HandleFunc("/ws", handleWebSocket)
+	mux.HandleFunc("/ws", hub.handleWebSocket)
 
 	port := getenv("PORT", "8080")
 	addr := ":" + port
@@ -48,7 +69,7 @@ func handleHealth(w http.ResponseWriter, _ *http.Request) {
 	_, _ = w.Write([]byte("ok\n"))
 }
 
-func handleWebSocket(w http.ResponseWriter, r *http.Request) {
+func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	opts := &websocket.AcceptOptions{
 		OriginPatterns: []string{"http://localhost:5173"},
 	}
@@ -78,12 +99,34 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		roomCode := strings.ToUpper(strings.TrimSpace(message.RoomCode))
-		log.Printf("room join requested: %s", roomCode)
+
+		h.mu.Lock()
+
+		room, exists := h.rooms[roomCode]
+		if !exists {
+			room = &Room{
+				code:        roomCode,
+				playerCount: 1,
+			}
+			h.rooms[roomCode] = room
+		}
+		h.mu.Unlock()
+
+		if exists {
+			_ = wsjson.Write(ctx, conn, ServerMessage{
+				Type:    "error",
+				Message: "second player handling is not implemented yet",
+			})
+			continue
+		}
+
+		log.Printf("room created: %s, first player assigned mission_control", room.code)
 
 		if err := wsjson.Write(ctx, conn, ServerMessage{
 			Type:     "room.joined",
-			RoomCode: roomCode,
-			Message:  "join request received",
+			RoomCode: room.code,
+			Role:     "mission_control",
+			Message:  "room created",
 		}); err != nil {
 			log.Printf("websocket response failed: %v", err)
 			return
