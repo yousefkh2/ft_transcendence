@@ -12,6 +12,9 @@ const App = {
     ];
 
     const connectionStatus = ref("Disconnected");
+    const roomCode = ref("ABCD");
+    const roomStatus = ref("No room request sent");
+
     let socket: WebSocket | null = null;
 
     function connect() {
@@ -23,6 +26,18 @@ const App = {
         connectionStatus.value = "Connected";
       };
 
+      socket.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+
+        if (message.type === "room.joined") {
+          roomStatus.value = `Server received join request for ${message.roomCode}`;
+        }
+        if (message.type === "error") {
+          roomStatus.value = message.message;
+        }
+
+      };
+
       socket.onclose = () => {
         connectionStatus.value = "Disconnected";
       };
@@ -30,6 +45,20 @@ const App = {
       socket.onerror = () => {
         connectionStatus.value = "Connection failed";
       };
+    }
+
+    function joinRoom() {
+      if (!socket || socket.readyState !== WebSocket.OPEN) {
+        roomStatus.value = "Connect the WebSocket first";
+        return
+      }
+
+      socket.send(
+        JSON.stringify({
+          type: "room.join",
+          roomCode: roomCode.value,
+        }),
+      );
     }
 
     return () =>
@@ -46,15 +75,29 @@ const App = {
             h("a", { class: "button primary", href: `${apiUrl}/health` }, "Backend Health"),
             h("a", { class: "button", href: `${apiUrl}/health/db` }, "Database Health"),
             h("button", { class: "button", onClick: connect }, "Connect WebSocket"),
+            h("input", {
+              value: roomCode.value,
+              maxlength: 8,
+              onInput: (event: Event) => {
+                roomCode.value = (event.target as HTMLInputElement).value;
+              },
+            }),
+            h("button", { class: "button", onClick: joinRoom }, "Send Join Request"),
             h("article", [h("strong", "Realtime"), h("span", connectionStatus.value)]),
           ]),
         ]),
         h(
           "section",
           { class: "status-grid", "aria-label": "Project status" },
-          status.map(([title, text]) =>
-            h("article", [h("strong", title), h("span", text)]),
-          ),
+          [
+            ...status.map(([title, text]) =>
+              h("article", [h("strong", title), h("span", text)]),
+            ),
+            h("article", [
+              h("strong", "Room Event"),
+              h("span", roomStatus.value),
+            ]),
+          ],
         ),
       ]);
   },
