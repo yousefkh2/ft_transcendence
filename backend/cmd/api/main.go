@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/coder/websocket"
 	"log"
 	"net"
 	"net/http"
@@ -14,6 +15,7 @@ func main() {
 	mux.HandleFunc("/", handleRoot)
 	mux.HandleFunc("/health", handleHealth)
 	mux.HandleFunc("/health/db", handleDatabaseHealth)
+	mux.HandleFunc("/ws", handleWebSocket)
 
 	port := getenv("PORT", "8080")
 	addr := ":" + port
@@ -30,6 +32,29 @@ func handleRoot(w http.ResponseWriter, _ *http.Request) {
 func handleHealth(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	_, _ = w.Write([]byte("ok\n"))
+}
+
+func handleWebSocket(w http.ResponseWriter, r *http.Request) {
+
+	opts := &websocket.AcceptOptions{
+        InsecureSkipVerify: true, 
+    }
+
+	conn, err := websocket.Accept(w, r, opts)
+	if err != nil {
+		log.Printf("websocket upgrade failed: %v", err)
+		return
+	}
+	defer conn.CloseNow()
+
+	log.Print("websocket client connected")
+	for {
+		_, _, err := conn.Read(r.Context())
+		if err != nil {
+			log.Print("websocket client disconnected")
+			return
+		}
+	}
 }
 
 func handleDatabaseHealth(w http.ResponseWriter, _ *http.Request) {
