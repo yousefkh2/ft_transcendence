@@ -30,8 +30,8 @@ type ServerMessage struct {
 }
 
 type Room struct {
-	code        string
-	playerCount int
+	code    string
+	players map[string]string
 }
 
 // Hub  = owner of all live rooms.
@@ -95,12 +95,17 @@ func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
 	joinedRoom := ""
+	joinedRole := ""
+
+	defer func() {
+		h.leaveRoom(joinedRoom, joinedRole, playerID)
+	}()
 
 	for {
 		var message ClientMessage
 
 		if err := wsjson.Read(ctx, conn, &message); err != nil {
-			log.Print("websocket client disconnected")
+			log.Printf("websocket client disconnected: %s", playerID)
 			return
 		}
 
@@ -127,12 +132,19 @@ func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		room, exists := h.rooms[roomCode]
 		if !exists {
 			room = &Room{
-				code: roomCode,
+				code:    roomCode,
+				players: make(map[string]string),
 			}
 			h.rooms[roomCode] = room
 		}
 
-		if room.playerCount >= 2 {
+		role := ""
+
+		if room.players["mission_control"] == "" {
+			role = "mission_control"
+		} else if room.players["on_site"] == "" {
+			role = "on_site"
+		} else {
 			h.mu.Unlock()
 
 			_ = wsjson.Write(ctx, conn, ServerMessage{
@@ -142,15 +154,11 @@ func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		room.playerCount++
-
-		role := "mission_control"
-		if room.playerCount == 2 {
-			role = "on_site"
-		}
+		room.players[role] = playerID
 
 		joinedRoom = room.code
-		playerCount := room.playerCount
+		joinedRole = role
+		playerCount := len(room.players)
 
 		h.mu.Unlock()
 
@@ -168,6 +176,34 @@ func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+}
+
+func (h *Hub) leaveRoom(roomCode string, role string, playerID string) {
+	if roomCode == "" || role == "" {
+		return
+	}
+
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	room, exists := h.rooms[roomCode]
+	if !exists {
+		return
+	}
+
+	if room.players[role] != playerID {
+		return
+	}
+
+	delete(room.players, role)
+
+	if len(room.players) == 0 {
+		delete(h.rooms, roomCode)
+		log.Printf("room deleted after final player left: %s", roomCode)
+		return
+	}
+
+	log.Printf("player %s left room %s as %s", playerID, roomCode, role)
 }
 
 func handleDatabaseHealth(w http.ResponseWriter, _ *http.Request) {
