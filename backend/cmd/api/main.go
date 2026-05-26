@@ -29,9 +29,14 @@ type ServerMessage struct {
 	Message  string `json:"message"`
 }
 
+type Player struct {
+	id   string
+	conn *websocket.Conn
+}
+
 type Room struct {
 	code    string
-	players map[string]string
+	players map[string]*Player
 }
 
 // Hub  = owner of all live rooms.
@@ -90,6 +95,11 @@ func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	player := &Player{
+		id:   playerID,
+		conn: conn,
+	}
+
 	log.Printf("websocket client connected: %s", playerID)
 
 	ctx := context.Background()
@@ -133,16 +143,16 @@ func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		if !exists {
 			room = &Room{
 				code:    roomCode,
-				players: make(map[string]string),
+				players: make(map[string]*Player),
 			}
 			h.rooms[roomCode] = room
 		}
 
 		role := ""
 
-		if room.players["mission_control"] == "" {
+		if room.players["mission_control"] == nil {
 			role = "mission_control"
-		} else if room.players["on_site"] == "" {
+		} else if room.players["on_site"] == nil {
 			role = "on_site"
 		} else {
 			h.mu.Unlock()
@@ -154,7 +164,7 @@ func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		room.players[role] = playerID
+		room.players[role] = player
 
 		joinedRoom = room.code
 		joinedRole = role
@@ -191,7 +201,8 @@ func (h *Hub) leaveRoom(roomCode string, role string, playerID string) {
 		return
 	}
 
-	if room.players[role] != playerID {
+	player, exists := room.players[role]
+	if !exists || player.id != playerID {
 		return
 	}
 
@@ -223,7 +234,7 @@ func handleDatabaseHealth(w http.ResponseWriter, _ *http.Request) {
 }
 
 func newPlayerID() (string, error) {
-	bytes := make([]byte, 4) // 4 bytes 8 eight hexadecimal characters (player_e4a91c8f)
+	bytes := make([]byte, 4) // Four bytes produce eight hexadecimal characters (player_e4a91c8f)
 
 	if _, err := rand.Read(bytes); err != nil {
 		return "", err
