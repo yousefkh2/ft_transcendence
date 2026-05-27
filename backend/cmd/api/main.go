@@ -34,8 +34,9 @@ type ServerMessage struct {
 }
 
 type Player struct {
-	id   string
-	conn *websocket.Conn
+	id      string
+	conn    *websocket.Conn
+	writeMu sync.Mutex
 }
 
 type Room struct {
@@ -48,6 +49,13 @@ type Room struct {
 type Hub struct {
 	mu    sync.Mutex
 	rooms map[string]*Room
+}
+
+func (p *Player) send(ctx context.Context, message ServerMessage) error {
+	p.writeMu.Lock()
+	defer p.writeMu.Unlock()
+
+	return wsjson.Write(ctx, p.conn, message)
 }
 
 func NewHub() *Hub {
@@ -128,7 +136,7 @@ func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		case "room.join":
 			h.handleRoomJoin(ctx, conn, player, message, &joinedRoom, &joinedRole)
 		case "game.object_moved":
-			h.handleObjectMoved(ctx, conn, message, joinedRoom, joinedRole)
+			h.handleObjectMoved(ctx, player, message, joinedRoom, joinedRole)
 		default:
 			_ = wsjson.Write(ctx, conn, ServerMessage{
 				Type:    "error",
@@ -216,13 +224,13 @@ func (h *Hub) handleRoomJoin(
 
 func (h *Hub) handleObjectMoved(
 	ctx context.Context,
-	conn *websocket.Conn,
+	player *Player,
 	message ClientMessage,
 	joinedRoom string,
 	joinedRole string,
 ) {
 	if joinedRoom == "" {
-		_ = wsjson.Write(ctx, conn, ServerMessage{
+		_ = player.send(ctx, ServerMessage{
 			Type:    "error",
 			Message: "join a room before sending game events",
 		})
@@ -230,7 +238,7 @@ func (h *Hub) handleObjectMoved(
 	}
 
 	if joinedRole != "on_site" {
-		_ = wsjson.Write(ctx, conn, ServerMessage{
+		_ = player.send(ctx, ServerMessage{
 			Type:    "error",
 			Message: "only on_site can move objects",
 		})
@@ -240,7 +248,7 @@ func (h *Hub) handleObjectMoved(
 	if message.ObjectID != "plant" ||
 		message.Relation != "right_of" ||
 		message.TargetID != "sofa" {
-		_ = wsjson.Write(ctx, conn, ServerMessage{
+		_ = player.send(ctx, ServerMessage{
 			Type:    "error",
 			Message: "move does not complete an objective",
 		})
@@ -253,7 +261,7 @@ func (h *Hub) handleObjectMoved(
 	if room == nil {
 		h.mu.Unlock()
 
-		_ = wsjson.Write(ctx, conn, ServerMessage{
+		_ = player.send(ctx, ServerMessage{
 			Type:    "error",
 			Message: "room no longer exists",
 		})
@@ -263,17 +271,26 @@ func (h *Hub) handleObjectMoved(
 	room.completedObjectives["plant_right_of_sofa"] = true
 	completedObjectives := []string{"plant_right_of_sofa"}
 
+	players := make([]*Player, 0, len(room.players))
+	for _, roomPlayer := range room.players {
+		players = append(players, roomPlayer)
+	}
+
 	h.mu.Unlock()
 
 	log.Printf("objective completed in room %s: plant_right_of_sofa", joinedRoom)
 
-	if err := wsjson.Write(ctx, conn, ServerMessage{
+	stateUpdate := ServerMessage{
 		Type:                "game.state_updated",
 		RoomCode:            joinedRoom,
 		CompletedObjectives: completedObjectives,
 		Message:             "objective completed",
-	}); err != nil {
-		log.Printf("websocket response failed: %v", err)
+	}
+
+	for _, roomPlayer := range players {
+		if err := roomPlayer.send(ctx, stateUpdate); err != nil {
+			log.Printf("state update failed for player %s: %v", roomPlayer.id, err)
+		}
 	}
 }
 

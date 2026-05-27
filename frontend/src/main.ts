@@ -82,8 +82,8 @@ const App = {
           objectId: "plant",
           relation: "right_of",
           targetId: "sofa",
-        })
-      )
+        }),
+      );
     }
 
     return () =>
