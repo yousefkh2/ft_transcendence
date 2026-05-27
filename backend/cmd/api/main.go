@@ -18,15 +18,19 @@ import (
 
 type ClientMessage struct {
 	Type     string `json:"type"`
-	RoomCode string `json:"roomCode"`
+	RoomCode string `json:"roomCode,omitempty"`
+	ObjectID string `json:"objectId,omitempty"`
+	Relation string `json:"relation,omitempty"`
+	TargetID string `json:"targetId,omitempty"`
 }
 
 type ServerMessage struct {
-	Type     string `json:"type"`
-	RoomCode string `json:"roomCode,omitempty"`
-	PlayerID string `json:"playerId,omitempty"`
-	Role     string `json:"role,omitempty"`
-	Message  string `json:"message"`
+	Type                string   `json:"type"`
+	RoomCode            string   `json:"roomCode,omitempty"`
+	PlayerID            string   `json:"playerId,omitempty"`
+	Role                string   `json:"role,omitempty"`
+	CompletedObjectives []string `json:"completedObjectives,omitempty"`
+	Message             string   `json:"message"`
 }
 
 type Player struct {
@@ -35,8 +39,9 @@ type Player struct {
 }
 
 type Room struct {
-	code    string
-	players map[string]*Player
+	code                string
+	players             map[string]*Player
+	completedObjectives map[string]bool
 }
 
 // Hub  = owner of all live rooms.
@@ -119,72 +124,156 @@ func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if message.Type != "room.join" || strings.TrimSpace(message.RoomCode) == "" {
+		switch message.Type {
+		case "room.join":
+			h.handleRoomJoin(ctx, conn, player, message, &joinedRoom, &joinedRole)
+		case "game.object_moved":
+			h.handleObjectMoved(ctx, conn, message, joinedRoom, joinedRole)
+		default:
 			_ = wsjson.Write(ctx, conn, ServerMessage{
 				Type:    "error",
-				Message: "room.join requires roomCode",
+				Message: "unknown message type",
 			})
-			continue
 		}
 
-		if joinedRoom != "" {
-			_ = wsjson.Write(ctx, conn, ServerMessage{
-				Type:    "error",
-				Message: "this connection already joined room " + joinedRoom,
-			})
-			continue
+	}
+}
+
+func (h *Hub) handleRoomJoin(
+	ctx context.Context,
+	conn *websocket.Conn,
+	player *Player,
+	message ClientMessage,
+	joinedRoom *string,
+	joinedRole *string,
+) {
+	if strings.TrimSpace(message.RoomCode) == "" {
+		_ = wsjson.Write(ctx, conn, ServerMessage{
+			Type:    "error",
+			Message: "room.join requires roomCode",
+		})
+		return
+	}
+
+	if *joinedRoom != "" {
+		_ = wsjson.Write(ctx, conn, ServerMessage{
+			Type:    "error",
+			Message: "this connection already joined room " + *joinedRoom,
+		})
+		return
+	}
+
+	roomCode := strings.ToUpper(strings.TrimSpace(message.RoomCode))
+
+	h.mu.Lock()
+
+	room, exists := h.rooms[roomCode]
+	if !exists {
+		room = &Room{
+			code:                roomCode,
+			players:             make(map[string]*Player),
+			completedObjectives: make(map[string]bool),
 		}
+		h.rooms[roomCode] = room
+	}
 
-		roomCode := strings.ToUpper(strings.TrimSpace(message.RoomCode))
+	role := ""
 
-		h.mu.Lock()
-
-		room, exists := h.rooms[roomCode]
-		if !exists {
-			room = &Room{
-				code:    roomCode,
-				players: make(map[string]*Player),
-			}
-			h.rooms[roomCode] = room
-		}
-
-		role := ""
-
-		if room.players["mission_control"] == nil {
-			role = "mission_control"
-		} else if room.players["on_site"] == nil {
-			role = "on_site"
-		} else {
-			h.mu.Unlock()
-
-			_ = wsjson.Write(ctx, conn, ServerMessage{
-				Type:    "error",
-				Message: "room is full",
-			})
-			continue
-		}
-
-		room.players[role] = player
-
-		joinedRoom = room.code
-		joinedRole = role
-		playerCount := len(room.players)
-
+	if room.players["mission_control"] == nil {
+		role = "mission_control"
+	} else if room.players["on_site"] == nil {
+		role = "on_site"
+	} else {
 		h.mu.Unlock()
 
-		log.Printf("player %s joined room %s as %s (%d/2)", playerID, room.code, role,
-			playerCount)
+		_ = wsjson.Write(ctx, conn, ServerMessage{
+			Type:    "error",
+			Message: "room is full",
+		})
+		return
+	}
 
-		if err := wsjson.Write(ctx, conn, ServerMessage{
-			Type:     "room.joined",
-			RoomCode: room.code,
-			PlayerID: playerID,
-			Role:     role,
-			Message:  "room joined",
-		}); err != nil {
-			log.Printf("websocket response failed: %v", err)
-			return
-		}
+	room.players[role] = player
+
+	*joinedRoom = room.code
+	*joinedRole = role
+	playerCount := len(room.players)
+
+	h.mu.Unlock()
+
+	log.Printf("player %s joined room %s as %s (%d/2)", player.id, room.code, role, playerCount)
+
+	if err := wsjson.Write(ctx, conn, ServerMessage{
+		Type:     "room.joined",
+		RoomCode: room.code,
+		PlayerID: player.id,
+		Role:     role,
+		Message:  "room joined",
+	}); err != nil {
+		log.Printf("websocket response failed: %v", err)
+	}
+}
+
+func (h *Hub) handleObjectMoved(
+	ctx context.Context,
+	conn *websocket.Conn,
+	message ClientMessage,
+	joinedRoom string,
+	joinedRole string,
+) {
+	if joinedRoom == "" {
+		_ = wsjson.Write(ctx, conn, ServerMessage{
+			Type:    "error",
+			Message: "join a room before sending game events",
+		})
+		return
+	}
+
+	if joinedRole != "on_site" {
+		_ = wsjson.Write(ctx, conn, ServerMessage{
+			Type:    "error",
+			Message: "only on_site can move objects",
+		})
+		return
+	}
+
+	if message.ObjectID != "plant" ||
+		message.Relation != "right_of" ||
+		message.TargetID != "sofa" {
+		_ = wsjson.Write(ctx, conn, ServerMessage{
+			Type:    "error",
+			Message: "move does not complete an objective",
+		})
+		return
+	}
+
+	h.mu.Lock()
+
+	room := h.rooms[joinedRoom]
+	if room == nil {
+		h.mu.Unlock()
+
+		_ = wsjson.Write(ctx, conn, ServerMessage{
+			Type:    "error",
+			Message: "room no longer exists",
+		})
+		return
+	}
+
+	room.completedObjectives["plant_right_of_sofa"] = true
+	completedObjectives := []string{"plant_right_of_sofa"}
+
+	h.mu.Unlock()
+
+	log.Printf("objective completed in room %s: plant_right_of_sofa", joinedRoom)
+
+	if err := wsjson.Write(ctx, conn, ServerMessage{
+		Type:                "game.state_updated",
+		RoomCode:            joinedRoom,
+		CompletedObjectives: completedObjectives,
+		Message:             "objective completed",
+	}); err != nil {
+		log.Printf("websocket response failed: %v", err)
 	}
 }
 

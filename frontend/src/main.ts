@@ -16,6 +16,7 @@ const App = {
     const roomStatus = ref("No room request sent");
     const role = ref("No role assigned");
     const playerID = ref("No player ID assigned");
+    const completedObjectives = ref<string[]>([]);
 
     let socket: WebSocket | null = null;
 
@@ -35,6 +36,10 @@ const App = {
           roomStatus.value = `Joined room ${message.roomCode}`;
           playerID.value = message.playerId;
           role.value = message.role;
+        }
+        if (message.type === "game.state_updated") {
+          completedObjectives.value = message.completedObjectives;
+          roomStatus.value = message.message;
         }
         if (message.type === "error") {
           roomStatus.value = message.message;
@@ -65,6 +70,22 @@ const App = {
       );
     }
 
+    function movePlantRightOfSofa() {
+      if (!socket || socket.readyState !== WebSocket.OPEN) {
+        roomStatus.value = "Connect the WebSocket first";
+        return;
+      }
+
+      socket.send(
+        JSON.stringify({
+          type: "game.object_moved",
+          objectId: "plant",
+          relation: "right_of",
+          targetId: "sofa",
+        })
+      )
+    }
+
     return () =>
       h("main", { class: "app-shell" }, [
         h("section", { class: "hero" }, [
@@ -87,6 +108,7 @@ const App = {
               },
             }),
             h("button", { class: "button", onClick: joinRoom }, "Send Join Request"),
+            h("button", { class: "button", onClick: movePlantRightOfSofa }, "Move Plant Right of Sofa"),
             h("article", [h("strong", "Realtime"), h("span", connectionStatus.value)]),
           ]),
         ]),
@@ -108,6 +130,10 @@ const App = {
             h("article", [
               h("strong", "Player ID"),
               h("span", playerID.value),
+            ]),
+            h("article", [
+              h("strong", "Completed Objective"),
+              h("span", completedObjectives.value.join(", ") || "None"),
             ]),
           ],
         ),
