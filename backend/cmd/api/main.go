@@ -33,6 +33,13 @@ type ServerMessage struct {
 	Message             string   `json:"message"`
 }
 
+type Objective struct {
+	ID       string
+	ObjectID string
+	Relation string
+	TargetID string
+}
+
 type Player struct {
 	id      string
 	conn    *websocket.Conn
@@ -49,6 +56,15 @@ type Room struct {
 type Hub struct {
 	mu    sync.Mutex
 	rooms map[string]*Room
+}
+
+var apartmentObjectives = []Objective{
+	{
+		ID:       "plant_right_of_sofa",
+		ObjectID: "plant",
+		Relation: "right_of",
+		TargetID: "sofa",
+	},
 }
 
 func (p *Player) send(ctx context.Context, message ServerMessage) error {
@@ -245,15 +261,7 @@ func (h *Hub) handleObjectMoved(
 		return
 	}
 
-	if message.ObjectID != "plant" ||
-		message.Relation != "right_of" ||
-		message.TargetID != "sofa" {
-		_ = player.send(ctx, ServerMessage{
-			Type:    "error",
-			Message: "move does not complete an objective",
-		})
-		return
-	}
+	objective, objectiveCompleted := matchingObjective(message)
 
 	h.mu.Lock()
 
@@ -268,8 +276,11 @@ func (h *Hub) handleObjectMoved(
 		return
 	}
 
-	room.completedObjectives["plant_right_of_sofa"] = true
-	completedObjectives := []string{"plant_right_of_sofa"}
+	if objectiveCompleted {
+		room.completedObjectives[objective.ID] = true
+	}
+
+	completedObjectives := completedObjectiveIDs(room.completedObjectives)
 
 	players := make([]*Player, 0, len(room.players))
 	for _, roomPlayer := range room.players {
@@ -278,13 +289,22 @@ func (h *Hub) handleObjectMoved(
 
 	h.mu.Unlock()
 
-	log.Printf("objective completed in room %s: plant_right_of_sofa", joinedRoom)
+	stateMessage := "object moved"
+
+	if objectiveCompleted {
+		log.Printf("objective completed in room %s: %s", joinedRoom,
+			objective.ID)
+		stateMessage = "objective completed"
+	} else {
+		log.Printf("object moved in room %s without completing objective",
+			joinedRoom)
+	}
 
 	stateUpdate := ServerMessage{
 		Type:                "game.state_updated",
 		RoomCode:            joinedRoom,
 		CompletedObjectives: completedObjectives,
-		Message:             "objective completed",
+		Message:             stateMessage,
 	}
 
 	for _, roomPlayer := range players {
@@ -292,6 +312,29 @@ func (h *Hub) handleObjectMoved(
 			log.Printf("state update failed for player %s: %v", roomPlayer.id, err)
 		}
 	}
+}
+
+func matchingObjective(message ClientMessage) (Objective, bool) {
+	for _, objective := range apartmentObjectives {
+		if message.ObjectID == objective.ObjectID &&
+			message.Relation == objective.Relation &&
+			message.TargetID == objective.TargetID {
+			return objective, true
+		}
+	}
+
+	return Objective{}, false
+}
+
+func completedObjectiveIDs(completed map[string]bool) []string {
+	ids := make([]string, 0, len(completed))
+	for _, objective := range apartmentObjectives {
+		if completed[objective.ID] {
+			ids = append(ids, objective.ID)
+		}
+	}
+
+	return ids
 }
 
 func (h *Hub) leaveRoom(roomCode string, role string, playerID string) {
