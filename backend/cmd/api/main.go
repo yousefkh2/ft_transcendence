@@ -27,12 +27,13 @@ type ClientMessage struct {
 }
 
 type ServerMessage struct {
-	Type                string   `json:"type"`
-	RoomCode            string   `json:"roomCode,omitempty"`
-	PlayerID            string   `json:"playerId,omitempty"`
-	Role                string   `json:"role,omitempty"`
-	CompletedObjectives []string `json:"completedObjectives,omitempty"`
-	Message             string   `json:"message"`
+	Type                string              `json:"type"`
+	RoomCode            string              `json:"roomCode,omitempty"`
+	PlayerID            string              `json:"playerId,omitempty"`
+	Role                string              `json:"role,omitempty"`
+	CompletedObjectives []string            `json:"completedObjectives,omitempty"`
+	Message             string              `json:"message"`
+	ObjectPositions     map[string]Position `json:"objectPositions,omitempty"`
 }
 
 type Objective struct {
@@ -314,6 +315,8 @@ func (h *Hub) handleObjectMoved(
 
 	completedObjectives := completedObjectiveIDs(room.completedObjectives)
 
+	objectPositions := copyObjectPositions(room.objectPositions)
+
 	players := make([]*Player, 0, len(room.players))
 	for _, roomPlayer := range room.players {
 		players = append(players, roomPlayer)
@@ -331,6 +334,7 @@ func (h *Hub) handleObjectMoved(
 		RoomCode:            joinedRoom,
 		CompletedObjectives: completedObjectives,
 		Message:             stateMessage,
+		ObjectPositions:     objectPositions,
 	}
 
 	for _, roomPlayer := range players {
@@ -338,6 +342,15 @@ func (h *Hub) handleObjectMoved(
 			log.Printf("state update failed for player %s: %v", roomPlayer.id, err)
 		}
 	}
+}
+
+func copyObjectPositions(positions map[string]Position) map[string]Position {
+	copied := make(map[string]Position, len(positions))
+	for objectID, position := range positions {
+		copied[objectID] = position
+	}
+
+	return copied
 }
 
 func matchingObjective(message ClientMessage) (Objective, bool) {
