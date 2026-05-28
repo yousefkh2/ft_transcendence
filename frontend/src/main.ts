@@ -2,6 +2,12 @@ import { createApp, h, ref } from "vue";
 import "./style.css";
 
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
+type Position = {
+  x: number;
+  y: number;
+};
+
+type ObjectPositions = Record<string, Position>;
 
 const App = {
   setup() {
@@ -17,6 +23,8 @@ const App = {
     const role = ref("No role assigned");
     const playerID = ref("No player ID assigned");
     const completedObjectives = ref<string[]>([]);
+    const objectPositions = ref<ObjectPositions>({});
+
 
     let socket: WebSocket | null = null;
 
@@ -38,7 +46,8 @@ const App = {
           role.value = message.role;
         }
         if (message.type === "game.state_updated") {
-          completedObjectives.value = message.completedObjectives;
+          completedObjectives.value = message.completedObjectives || [];
+          objectPositions.value = message.objectPositions || {};
           roomStatus.value = message.message;
         }
         if (message.type === "error") {
@@ -84,6 +93,12 @@ const App = {
           targetId: "sofa",
         }),
       );
+    }
+
+    function objectAt(x: number, y: number) {
+      return Object.entries(objectPositions.value).find(
+        ([, position]) => position.x === x && position.y === y,
+      )?.[0];
     }
 
     return () =>
@@ -137,6 +152,20 @@ const App = {
             ]),
           ],
         ),
+        h("section", { class: "apartment-board" }, [
+        h("h2", "Apartment Grid"),
+        h(
+          "div",
+          { class: "grid-board" },
+          Array.from({ length: 25 }, (_, index) => {
+            const x = index % 5;
+            const y = Math.floor(index / 5);
+            const objectID = objectAt(x, y);
+
+            return h("div", { class: "grid-cell" }, objectID || "");
+          }),
+        ),
+      ]),
       ]);
   },
 };
