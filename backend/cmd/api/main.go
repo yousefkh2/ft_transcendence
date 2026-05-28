@@ -65,6 +65,18 @@ var apartmentObjectives = []Objective{
 		Relation: "right_of",
 		TargetID: "sofa",
 	},
+	{
+		ID:       "lamp_left_of_sofa",
+		ObjectID: "lamp",
+		Relation: "left_of",
+		TargetID: "sofa",
+	},
+	{
+		ID:       "table_in_front_of_sofa",
+		ObjectID: "table",
+		Relation: "in_front_of",
+		TargetID: "sofa",
+	},
 }
 
 func (p *Player) send(ctx context.Context, message ServerMessage) error {
