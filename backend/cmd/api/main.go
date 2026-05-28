@@ -22,6 +22,8 @@ type ClientMessage struct {
 	ObjectID string `json:"objectId,omitempty"`
 	Relation string `json:"relation,omitempty"`
 	TargetID string `json:"targetId,omitempty"`
+	X        int    `json:"x,omitempty"`
+	Y        int    `json:"y,omitempty"`
 }
 
 type ServerMessage struct {
@@ -50,12 +52,18 @@ type Room struct {
 	code                string
 	players             map[string]*Player
 	completedObjectives map[string]bool
+	objectPositions     map[string]Position
 }
 
 // Hub  = owner of all live rooms.
 type Hub struct {
 	mu    sync.Mutex
 	rooms map[string]*Room
+}
+
+type Position struct {
+	X int `json:"x"`
+	Y int `json:"y"`
 }
 
 var apartmentObjectives = []Objective{
@@ -175,6 +183,15 @@ func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func initialObjectPositions() map[string]Position {
+	return map[string]Position{
+		"sofa":  {X: 0, Y: 1},
+		"plant": {X: 3, Y: 1},
+		"lamp":  {X: 2, Y: 3},
+		"table": {X: 4, Y: 4},
+	}
+}
+
 func (h *Hub) handleRoomJoin(
 	ctx context.Context,
 	conn *websocket.Conn,
@@ -209,6 +226,7 @@ func (h *Hub) handleRoomJoin(
 			code:                roomCode,
 			players:             make(map[string]*Player),
 			completedObjectives: make(map[string]bool),
+			objectPositions:     initialObjectPositions(),
 		}
 		h.rooms[roomCode] = room
 	}
@@ -273,8 +291,6 @@ func (h *Hub) handleObjectMoved(
 		return
 	}
 
-	objective, objectiveCompleted := matchingObjective(message)
-
 	h.mu.Lock()
 
 	room := h.rooms[joinedRoom]
@@ -288,9 +304,13 @@ func (h *Hub) handleObjectMoved(
 		return
 	}
 
-	if objectiveCompleted {
-		room.completedObjectives[objective.ID] = true
+	room.objectPositions[message.ObjectID] = Position{
+		X: message.X,
+		Y: message.Y,
 	}
+
+	room.completedObjectives =
+		completedObjectivesFromPositions(room.objectPositions)
 
 	completedObjectives := completedObjectiveIDs(room.completedObjectives)
 
@@ -303,14 +323,8 @@ func (h *Hub) handleObjectMoved(
 
 	stateMessage := "object moved"
 
-	if objectiveCompleted {
-		log.Printf("objective completed in room %s: %s", joinedRoom,
-			objective.ID)
-		stateMessage = "objective completed"
-	} else {
-		log.Printf("object moved in room %s without completing objective",
-			joinedRoom)
-	}
+	log.Printf("object moved in room %s: %s to (%d,%d)", joinedRoom,
+		message.ObjectID, message.X, message.Y)
 
 	stateUpdate := ServerMessage{
 		Type:                "game.state_updated",
@@ -336,6 +350,36 @@ func matchingObjective(message ClientMessage) (Objective, bool) {
 	}
 
 	return Objective{}, false
+}
+
+func relationMatches(object Position, relation string, target Position) bool {
+	switch relation {
+	case "right_of":
+		return object.Y == target.Y && object.X == target.X+1
+	case "left_of":
+		return object.Y == target.Y && object.X == target.X-1
+	case "in_front_of":
+		return object.X == target.X && object.Y == target.Y+1
+	default:
+		return false
+	}
+}
+
+func completedObjectivesFromPositions(positions map[string]Position) map[string]bool {
+	completed := make(map[string]bool)
+
+	for _, objective := range apartmentObjectives {
+		objectPosition, objectExists := positions[objective.ObjectID]
+		targetPosition, targetExists := positions[objective.TargetID]
+		if !objectExists || !targetExists {
+			continue
+		}
+		if relationMatches(objectPosition, objective.Relation, targetPosition) {
+			completed[objective.ID] = true
+		}
+	}
+
+	return completed
 }
 
 func completedObjectiveIDs(completed map[string]bool) []string {
