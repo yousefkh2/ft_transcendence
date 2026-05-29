@@ -9,6 +9,12 @@ type Position = {
 
 type ObjectPositions = Record<string, Position>;
 
+const objectiveLabels: Record<string, string> = {
+    plant_right_of_sofa: "Plant right of sofa",
+    lamp_left_of_sofa: "Lamp left of sofa",
+    table_in_front_of_sofa: "Table in front of sofa",
+  };
+
 const App = {
   setup() {
     const status = [
@@ -82,22 +88,6 @@ const App = {
       );
     }
 
-    // function movePlantRightOfSofa() {
-    //   if (!socket || socket.readyState !== WebSocket.OPEN) {
-    //     roomStatus.value = "Connect the WebSocket first";
-    //     return;
-    //   }
-
-    //   socket.send(
-    //     JSON.stringify({
-    //       type: "game.object_moved",
-    //       objectId: "plant",
-    //       relation: "right_of",
-    //       targetId: "sofa",
-    //     }),
-    //   );
-    // }
-
     function moveSelectedObject(deltaX: number, deltaY: number) {
       if (!socket || socket.readyState !== WebSocket.OPEN) {
         roomStatus.value = "Connect the WebSocket first";
@@ -135,6 +125,18 @@ const App = {
       return Object.entries(objectPositions.value).find(
         ([, position]) => position.x === x && position.y === y,
       )?.[0];
+    }
+
+    function isOnSite() {
+      return role.value === "on_site";
+    }
+
+    function isMissionControl() {
+      return role.value === "mission_control";
+    }
+
+    function completedCount() {
+    return completedObjectives.value.length;
     }
 
     return () =>
@@ -182,12 +184,33 @@ const App = {
               h("span", playerID.value),
             ]),
             h("article", [
-              h("strong", "Completed Objective"),
-              h("span", completedObjectives.value.join(", ") || "None"),
-            ]),
+            h("strong", "Progress"),
+            h("span", `${completedCount()} / ${Object.keys(objectiveLabels).length} completed`),
+          ]),
           ],
         ),
-        h("section", { class: "apartment-board" }, [
+        isMissionControl()
+        ? h("section", { class: "mission-panel" }, [
+            h("h2", "Mission Control"),
+            h(
+              "ul",
+              { class: "objective-list" },
+              Object.entries(objectiveLabels).map(([objectiveID, label]) =>
+                h(
+                  "li",
+                  {
+                    class: completedObjectives.value.includes(objectiveID)
+                      ? "completed"
+                      : "",
+                  },
+                  label,
+                ),
+              ),
+            ),
+          ])
+        : null,
+        isOnSite()
+    ? h("section", { class: "apartment-board" }, [
         h("h2", "Apartment Grid"),
         h("div", { class: "object-controls" }, [
           h("label", [
@@ -198,7 +221,7 @@ const App = {
                 value: selectedObjectID.value,
                 onChange: (event: Event) => {
                   selectedObjectID.value = (event.target as
-        HTMLSelectElement).value;
+  HTMLSelectElement).value;
                 },
               },
               ["plant", "lamp", "table", "sofa"].map((objectID) =>
@@ -207,14 +230,14 @@ const App = {
             ),
           ]),
           h("div", { class: "move-controls" }, [
-            h("button", { class: "button", onClick: () => moveSelectedObject(0,
-        -1) }, "Up"),
-            h("button", { class: "button", onClick: () => moveSelectedObject(-1,
-        0) }, "Left"),
-            h("button", { class: "button", onClick: () => moveSelectedObject(1,
-        0) }, "Right"),
-            h("button", { class: "button", onClick: () => moveSelectedObject(0,
-        1) }, "Down"),
+            h("button", { class: "button", onClick: () =>
+  moveSelectedObject(0, -1) }, "Up"),
+            h("button", { class: "button", onClick: () =>
+  moveSelectedObject(-1, 0) }, "Left"),
+            h("button", { class: "button", onClick: () =>
+  moveSelectedObject(1, 0) }, "Right"),
+            h("button", { class: "button", onClick: () =>
+  moveSelectedObject(0, 1) }, "Down"),
           ]),
         ]),
         h(
@@ -228,7 +251,8 @@ const App = {
             return h("div", { class: "grid-cell" }, objectID || "");
           }),
         ),
-      ]),
+      ])
+    : null,
       ]);
   },
 };
