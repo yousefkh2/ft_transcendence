@@ -254,16 +254,21 @@ func (h *Hub) handleRoomJoin(
 	*joinedRole = role
 	playerCount := len(room.players)
 
+	completedObjectives := completedObjectiveIDs(room.completedObjectives)
+	objectPositions := copyObjectPositions(room.objectPositions)
+
 	h.mu.Unlock()
 
 	log.Printf("player %s joined room %s as %s (%d/2)", player.id, room.code, role, playerCount)
 
 	if err := wsjson.Write(ctx, conn, ServerMessage{
-		Type:     "room.joined",
-		RoomCode: room.code,
-		PlayerID: player.id,
-		Role:     role,
-		Message:  "room joined",
+		Type:                "room.joined",
+		RoomCode:            room.code,
+		PlayerID:            player.id,
+		Role:                role,
+		CompletedObjectives: completedObjectives,
+		ObjectPositions:     objectPositions,
+		Message:             "room joined",
 	}); err != nil {
 		log.Printf("websocket response failed: %v", err)
 	}

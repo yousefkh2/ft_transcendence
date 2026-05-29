@@ -24,6 +24,7 @@ const App = {
     const playerID = ref("No player ID assigned");
     const completedObjectives = ref<string[]>([]);
     const objectPositions = ref<ObjectPositions>({});
+    const selectedObjectID = ref("plant"); // UI starts with plant selected
 
 
     let socket: WebSocket | null = null;
@@ -44,6 +45,8 @@ const App = {
           roomStatus.value = `Joined room ${message.roomCode}`;
           playerID.value = message.playerId;
           role.value = message.role;
+          completedObjectives.value = message.completedObjectives || [];
+          objectPositions.value = message.objectPositions || {};
         }
         if (message.type === "game.state_updated") {
           completedObjectives.value = message.completedObjectives || [];
@@ -79,21 +82,54 @@ const App = {
       );
     }
 
-    function movePlantRightOfSofa() {
+    // function movePlantRightOfSofa() {
+    //   if (!socket || socket.readyState !== WebSocket.OPEN) {
+    //     roomStatus.value = "Connect the WebSocket first";
+    //     return;
+    //   }
+
+    //   socket.send(
+    //     JSON.stringify({
+    //       type: "game.object_moved",
+    //       objectId: "plant",
+    //       relation: "right_of",
+    //       targetId: "sofa",
+    //     }),
+    //   );
+    // }
+
+    function moveSelectedObject(deltaX: number, deltaY: number) {
       if (!socket || socket.readyState !== WebSocket.OPEN) {
         roomStatus.value = "Connect the WebSocket first";
         return;
       }
+      
+      const currentPosition = objectPositions.value[selectedObjectID.value];
+
+      if (!currentPosition) {
+        roomStatus.value = "Join a room before moving objects";
+        return;
+      }
+
+      const nextX = currentPosition.x + deltaX;
+      const nextY = currentPosition.y + deltaY;
+
+      if (nextX < 0 || nextX > 4 || nextY < 0 || nextY > 4) {
+      roomStatus.value = "Object cannot move outside the grid";
+      return;
+    }
 
       socket.send(
         JSON.stringify({
           type: "game.object_moved",
-          objectId: "plant",
-          relation: "right_of",
-          targetId: "sofa",
+          objectId: selectedObjectID.value,
+          x: nextX,
+          y: nextY,
         }),
       );
+
     }
+
 
     function objectAt(x: number, y: number) {
       return Object.entries(objectPositions.value).find(
@@ -123,7 +159,6 @@ const App = {
               },
             }),
             h("button", { class: "button", onClick: joinRoom }, "Send Join Request"),
-            h("button", { class: "button", onClick: movePlantRightOfSofa }, "Move Plant Right of Sofa"),
             h("article", [h("strong", "Realtime"), h("span", connectionStatus.value)]),
           ]),
         ]),
@@ -154,6 +189,34 @@ const App = {
         ),
         h("section", { class: "apartment-board" }, [
         h("h2", "Apartment Grid"),
+        h("div", { class: "object-controls" }, [
+          h("label", [
+            "Selected object",
+            h(
+              "select",
+              {
+                value: selectedObjectID.value,
+                onChange: (event: Event) => {
+                  selectedObjectID.value = (event.target as
+        HTMLSelectElement).value;
+                },
+              },
+              ["plant", "lamp", "table", "sofa"].map((objectID) =>
+                h("option", { value: objectID }, objectID),
+              ),
+            ),
+          ]),
+          h("div", { class: "move-controls" }, [
+            h("button", { class: "button", onClick: () => moveSelectedObject(0,
+        -1) }, "Up"),
+            h("button", { class: "button", onClick: () => moveSelectedObject(-1,
+        0) }, "Left"),
+            h("button", { class: "button", onClick: () => moveSelectedObject(1,
+        0) }, "Right"),
+            h("button", { class: "button", onClick: () => moveSelectedObject(0,
+        1) }, "Down"),
+          ]),
+        ]),
         h(
           "div",
           { class: "grid-board" },
