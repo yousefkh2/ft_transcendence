@@ -319,8 +319,15 @@ func (h *Hub) handleObjectMoved(
 		completedObjectivesFromPositions(room.objectPositions)
 
 	completedObjectives := completedObjectiveIDs(room.completedObjectives)
-
 	objectPositions := copyObjectPositions(room.objectPositions)
+
+	messageType := "game.state_updated"
+	stateMessage := "round completed"
+
+	if allObjectivesCompleted(room.completedObjectives) {
+		messageType = "game.round_completed"
+		stateMessage = "round completed"
+	}
 
 	players := make([]*Player, 0, len(room.players))
 	for _, roomPlayer := range room.players {
@@ -329,13 +336,11 @@ func (h *Hub) handleObjectMoved(
 
 	h.mu.Unlock()
 
-	stateMessage := "object moved"
-
 	log.Printf("object moved in room %s: %s to (%d,%d)", joinedRoom,
 		message.ObjectID, message.X, message.Y)
 
 	stateUpdate := ServerMessage{
-		Type:                "game.state_updated",
+		Type:                messageType,
 		RoomCode:            joinedRoom,
 		CompletedObjectives: completedObjectives,
 		Message:             stateMessage,
@@ -409,6 +414,16 @@ func completedObjectiveIDs(completed map[string]bool) []string {
 	}
 
 	return ids
+}
+
+func allObjectivesCompleted(completed map[string]bool) bool {
+	for _, objective := range apartmentObjectives {
+		if !completed[objective.ID] {
+			return false
+		}
+	}
+
+	return true
 }
 
 func (h *Hub) leaveRoom(roomCode string, role string, playerID string) {

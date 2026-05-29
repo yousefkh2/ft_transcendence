@@ -54,7 +54,7 @@ const App = {
           completedObjectives.value = message.completedObjectives || [];
           objectPositions.value = message.objectPositions || {};
         }
-        if (message.type === "game.state_updated") {
+        if (message.type === "game.state_updated" || message.type === "game.round_completed") {
           completedObjectives.value = message.completedObjectives || [];
           objectPositions.value = message.objectPositions || {};
           roomStatus.value = message.message;
