@@ -22,15 +22,25 @@ type ClientMessage struct {
 	ObjectID string `json:"objectId,omitempty"`
 	Relation string `json:"relation,omitempty"`
 	TargetID string `json:"targetId,omitempty"`
+	X        int    `json:"x,omitempty"`
+	Y        int    `json:"y,omitempty"`
 }
 
 type ServerMessage struct {
-	Type                string   `json:"type"`
-	RoomCode            string   `json:"roomCode,omitempty"`
-	PlayerID            string   `json:"playerId,omitempty"`
-	Role                string   `json:"role,omitempty"`
-	CompletedObjectives []string `json:"completedObjectives,omitempty"`
-	Message             string   `json:"message"`
+	Type                string              `json:"type"`
+	RoomCode            string              `json:"roomCode,omitempty"`
+	PlayerID            string              `json:"playerId,omitempty"`
+	Role                string              `json:"role,omitempty"`
+	CompletedObjectives []string            `json:"completedObjectives,omitempty"`
+	Message             string              `json:"message"`
+	ObjectPositions     map[string]Position `json:"objectPositions,omitempty"`
+}
+
+type Objective struct {
+	ID       string
+	ObjectID string
+	Relation string
+	TargetID string
 }
 
 type Player struct {
@@ -43,12 +53,39 @@ type Room struct {
 	code                string
 	players             map[string]*Player
 	completedObjectives map[string]bool
+	objectPositions     map[string]Position
 }
 
 // Hub  = owner of all live rooms.
 type Hub struct {
 	mu    sync.Mutex
 	rooms map[string]*Room
+}
+
+type Position struct {
+	X int `json:"x"`
+	Y int `json:"y"`
+}
+
+var apartmentObjectives = []Objective{
+	{
+		ID:       "plant_right_of_sofa",
+		ObjectID: "plant",
+		Relation: "right_of",
+		TargetID: "sofa",
+	},
+	{
+		ID:       "lamp_left_of_sofa",
+		ObjectID: "lamp",
+		Relation: "left_of",
+		TargetID: "sofa",
+	},
+	{
+		ID:       "table_in_front_of_sofa",
+		ObjectID: "table",
+		Relation: "in_front_of",
+		TargetID: "sofa",
+	},
 }
 
 func (p *Player) send(ctx context.Context, message ServerMessage) error {
@@ -147,6 +184,15 @@ func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func initialObjectPositions() map[string]Position {
+	return map[string]Position{
+		"sofa":  {X: 0, Y: 1},
+		"plant": {X: 3, Y: 1},
+		"lamp":  {X: 2, Y: 3},
+		"table": {X: 4, Y: 4},
+	}
+}
+
 func (h *Hub) handleRoomJoin(
 	ctx context.Context,
 	conn *websocket.Conn,
@@ -181,6 +227,7 @@ func (h *Hub) handleRoomJoin(
 			code:                roomCode,
 			players:             make(map[string]*Player),
 			completedObjectives: make(map[string]bool),
+			objectPositions:     initialObjectPositions(),
 		}
 		h.rooms[roomCode] = room
 	}
@@ -207,16 +254,21 @@ func (h *Hub) handleRoomJoin(
 	*joinedRole = role
 	playerCount := len(room.players)
 
+	completedObjectives := completedObjectiveIDs(room.completedObjectives)
+	objectPositions := copyObjectPositions(room.objectPositions)
+
 	h.mu.Unlock()
 
 	log.Printf("player %s joined room %s as %s (%d/2)", player.id, room.code, role, playerCount)
 
 	if err := wsjson.Write(ctx, conn, ServerMessage{
-		Type:     "room.joined",
-		RoomCode: room.code,
-		PlayerID: player.id,
-		Role:     role,
-		Message:  "room joined",
+		Type:                "room.joined",
+		RoomCode:            room.code,
+		PlayerID:            player.id,
+		Role:                role,
+		CompletedObjectives: completedObjectives,
+		ObjectPositions:     objectPositions,
+		Message:             "room joined",
 	}); err != nil {
 		log.Printf("websocket response failed: %v", err)
 	}
@@ -245,16 +297,6 @@ func (h *Hub) handleObjectMoved(
 		return
 	}
 
-	if message.ObjectID != "plant" ||
-		message.Relation != "right_of" ||
-		message.TargetID != "sofa" {
-		_ = player.send(ctx, ServerMessage{
-			Type:    "error",
-			Message: "move does not complete an objective",
-		})
-		return
-	}
-
 	h.mu.Lock()
 
 	room := h.rooms[joinedRoom]
@@ -268,8 +310,24 @@ func (h *Hub) handleObjectMoved(
 		return
 	}
 
-	room.completedObjectives["plant_right_of_sofa"] = true
-	completedObjectives := []string{"plant_right_of_sofa"}
+	room.objectPositions[message.ObjectID] = Position{
+		X: message.X,
+		Y: message.Y,
+	}
+
+	room.completedObjectives =
+		completedObjectivesFromPositions(room.objectPositions)
+
+	completedObjectives := completedObjectiveIDs(room.completedObjectives)
+	objectPositions := copyObjectPositions(room.objectPositions)
+
+	messageType := "game.state_updated"
+	stateMessage := "object moved"
+
+	if allObjectivesCompleted(room.completedObjectives) {
+		messageType = "game.round_completed"
+		stateMessage = "round completed"
+	}
 
 	players := make([]*Player, 0, len(room.players))
 	for _, roomPlayer := range room.players {
@@ -278,13 +336,15 @@ func (h *Hub) handleObjectMoved(
 
 	h.mu.Unlock()
 
-	log.Printf("objective completed in room %s: plant_right_of_sofa", joinedRoom)
+	log.Printf("object moved in room %s: %s to (%d,%d)", joinedRoom,
+		message.ObjectID, message.X, message.Y)
 
 	stateUpdate := ServerMessage{
-		Type:                "game.state_updated",
+		Type:                messageType,
 		RoomCode:            joinedRoom,
 		CompletedObjectives: completedObjectives,
-		Message:             "objective completed",
+		Message:             stateMessage,
+		ObjectPositions:     objectPositions,
 	}
 
 	for _, roomPlayer := range players {
@@ -292,6 +352,78 @@ func (h *Hub) handleObjectMoved(
 			log.Printf("state update failed for player %s: %v", roomPlayer.id, err)
 		}
 	}
+}
+
+func copyObjectPositions(positions map[string]Position) map[string]Position {
+	copied := make(map[string]Position, len(positions))
+	for objectID, position := range positions {
+		copied[objectID] = position
+	}
+
+	return copied
+}
+
+func matchingObjective(message ClientMessage) (Objective, bool) {
+	for _, objective := range apartmentObjectives {
+		if message.ObjectID == objective.ObjectID &&
+			message.Relation == objective.Relation &&
+			message.TargetID == objective.TargetID {
+			return objective, true
+		}
+	}
+
+	return Objective{}, false
+}
+
+func relationMatches(object Position, relation string, target Position) bool {
+	switch relation {
+	case "right_of":
+		return object.Y == target.Y && object.X == target.X+1
+	case "left_of":
+		return object.Y == target.Y && object.X == target.X-1
+	case "in_front_of":
+		return object.X == target.X && object.Y == target.Y+1
+	default:
+		return false
+	}
+}
+
+func completedObjectivesFromPositions(positions map[string]Position) map[string]bool {
+	completed := make(map[string]bool)
+
+	for _, objective := range apartmentObjectives {
+		objectPosition, objectExists := positions[objective.ObjectID]
+		targetPosition, targetExists := positions[objective.TargetID]
+		if !objectExists || !targetExists {
+			continue
+		}
+		if relationMatches(objectPosition, objective.Relation, targetPosition) {
+			completed[objective.ID] = true
+		}
+	}
+
+	return completed
+}
+
+func completedObjectiveIDs(completed map[string]bool) []string {
+	ids := make([]string, 0, len(completed))
+	for _, objective := range apartmentObjectives {
+		if completed[objective.ID] {
+			ids = append(ids, objective.ID)
+		}
+	}
+
+	return ids
+}
+
+func allObjectivesCompleted(completed map[string]bool) bool {
+	for _, objective := range apartmentObjectives {
+		if !completed[objective.ID] {
+			return false
+		}
+	}
+
+	return true
 }
 
 func (h *Hub) leaveRoom(roomCode string, role string, playerID string) {

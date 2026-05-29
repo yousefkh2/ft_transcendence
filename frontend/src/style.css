@@ -113,6 +113,125 @@ h1 {
   line-height: 1.45;
 }
 
+
+.apartment-board {
+    margin-top: 24px;
+  }
+
+.apartment-board h2 {
+  margin: 0 0 14px;
+  font-size: 24px;
+}
+
+.grid-board {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(48px, 1fr));
+  gap: 8px;
+  max-width: 520px;
+}
+
+.grid-cell {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 1px solid #d6d0c4;
+  border-radius: 8px;
+  background: #fffaf1;
+  color: #18212f;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+
+.object-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .object-controls label {
+    display: grid;
+    gap: 6px;
+    color: #596574;
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .object-controls select {
+    min-height: 42px;
+    border: 1px solid #aeb7b0;
+    border-radius: 8px;
+    padding: 0 12px;
+    background: #fffaf1;
+    color: #18212f;
+    font: inherit;
+    font-weight: 800;
+  }
+
+  .move-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .mission-panel {
+    margin-top: 24px;
+  }
+
+  .mission-panel h2 {
+    margin: 0 0 14px;
+    font-size: 24px;
+  }
+
+  .objective-list {
+    display: grid;
+    gap: 10px;
+    max-width: 520px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .objective-list li {
+    border: 1px solid #d6d0c4;
+    border-radius: 8px;
+    padding: 14px 16px;
+    background: #fffaf1;
+    color: #18212f;
+    font-weight: 800;
+  }
+
+  .objective-list li.completed {
+    border-color: #1d6b61;
+    background: #e6f4ef;
+    color: #15584f;
+  }
+
+
+    .round-complete {
+    display: grid;
+    gap: 6px;
+    margin-top: 24px;
+    border: 1px solid #1d6b61;
+    border-radius: 8px;
+    padding: 18px;
+    background: #e6f4ef;
+    color: #15584f;
+  }
+
+  .round-complete strong {
+    font-size: 18px;
+  }
+
+  .round-complete span {
+    color: #15584f;
+  }
+
+
 @media (max-width: 720px) {
   .app-shell {
     padding: 32px 0;
@@ -122,3 +241,4 @@ h1 {
     grid-template-columns: 1fr;
   }
 }
+

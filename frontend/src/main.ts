@@ -2,6 +2,18 @@ import { createApp, h, ref } from "vue";
 import "./style.css";
 
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
+type Position = {
+  x: number;
+  y: number;
+};
+
+type ObjectPositions = Record<string, Position>;
+
+const objectiveLabels: Record<string, string> = {
+    plant_right_of_sofa: "Plant right of sofa",
+    lamp_left_of_sofa: "Lamp left of sofa",
+    table_in_front_of_sofa: "Table in front of sofa",
+  };
 
 const App = {
   setup() {
@@ -17,6 +29,9 @@ const App = {
     const role = ref("No role assigned");
     const playerID = ref("No player ID assigned");
     const completedObjectives = ref<string[]>([]);
+    const objectPositions = ref<ObjectPositions>({});
+    const selectedObjectID = ref("plant"); // UI starts with plant selected
+
 
     let socket: WebSocket | null = null;
 
@@ -36,9 +51,12 @@ const App = {
           roomStatus.value = `Joined room ${message.roomCode}`;
           playerID.value = message.playerId;
           role.value = message.role;
+          completedObjectives.value = message.completedObjectives || [];
+          objectPositions.value = message.objectPositions || {};
         }
-        if (message.type === "game.state_updated") {
-          completedObjectives.value = message.completedObjectives;
+        if (message.type === "game.state_updated" || message.type === "game.round_completed") {
+          completedObjectives.value = message.completedObjectives || [];
+          objectPositions.value = message.objectPositions || {};
           roomStatus.value = message.message;
         }
         if (message.type === "error") {
@@ -70,20 +88,55 @@ const App = {
       );
     }
 
-    function movePlantRightOfSofa() {
+    function moveSelectedObject(deltaX: number, deltaY: number) {
       if (!socket || socket.readyState !== WebSocket.OPEN) {
         roomStatus.value = "Connect the WebSocket first";
         return;
       }
+      
+      const currentPosition = objectPositions.value[selectedObjectID.value];
+
+      if (!currentPosition) {
+        roomStatus.value = "Join a room before moving objects";
+        return;
+      }
+
+      const nextX = currentPosition.x + deltaX;
+      const nextY = currentPosition.y + deltaY;
+
+      if (nextX < 0 || nextX > 4 || nextY < 0 || nextY > 4) {
+      roomStatus.value = "Object cannot move outside the grid";
+      return;
+    }
 
       socket.send(
         JSON.stringify({
           type: "game.object_moved",
-          objectId: "plant",
-          relation: "right_of",
-          targetId: "sofa",
+          objectId: selectedObjectID.value,
+          x: nextX,
+          y: nextY,
         }),
       );
+
+    }
+
+
+    function objectAt(x: number, y: number) {
+      return Object.entries(objectPositions.value).find(
+        ([, position]) => position.x === x && position.y === y,
+      )?.[0];
+    }
+
+    function isOnSite() {
+      return role.value === "on_site";
+    }
+
+    function isMissionControl() {
+      return role.value === "mission_control";
+    }
+
+    function completedCount() {
+    return completedObjectives.value.length;
     }
 
     return () =>
@@ -108,7 +161,6 @@ const App = {
               },
             }),
             h("button", { class: "button", onClick: joinRoom }, "Send Join Request"),
-            h("button", { class: "button", onClick: movePlantRightOfSofa }, "Move Plant Right of Sofa"),
             h("article", [h("strong", "Realtime"), h("span", connectionStatus.value)]),
           ]),
         ]),
@@ -132,11 +184,81 @@ const App = {
               h("span", playerID.value),
             ]),
             h("article", [
-              h("strong", "Completed Objective"),
-              h("span", completedObjectives.value.join(", ") || "None"),
-            ]),
+            h("strong", "Progress"),
+            h("span", `${completedCount()} / ${Object.keys(objectiveLabels).length} completed`),
+          ]),
           ],
         ),
+        isMissionControl()
+        ? h("section", { class: "mission-panel" }, [
+            h("h2", "Mission Control"),
+            h(
+              "ul",
+              { class: "objective-list" },
+              Object.entries(objectiveLabels).map(([objectiveID, label]) =>
+                h(
+                  "li",
+                  {
+                    class: completedObjectives.value.includes(objectiveID)
+                      ? "completed"
+                      : "",
+                  },
+                  label,
+                ),
+              ),
+            ),
+          ])
+        : null,
+        isOnSite()
+        ? h("section", { class: "apartment-board" }, [
+            h("h2", "Apartment Grid"),
+            h("div", { class: "object-controls" }, [
+              h("label", [
+                "Selected object",
+                h(
+                  "select",
+                  {
+                    value: selectedObjectID.value,
+                    onChange: (event: Event) => {
+                      selectedObjectID.value = (event.target as
+      HTMLSelectElement).value;
+                    },
+                  },
+                  ["plant", "lamp", "table", "sofa"].map((objectID) =>
+                    h("option", { value: objectID }, objectID),
+                  ),
+                ),
+              ]),
+        h("div", { class: "move-controls" }, [
+          h("button", { class: "button", onClick: () =>
+            moveSelectedObject(0, -1) }, "Up"),
+          h("button", { class: "button", onClick: () =>
+            moveSelectedObject(-1, 0) }, "Left"),
+          h("button", { class: "button", onClick: () =>
+            moveSelectedObject(1, 0) }, "Right"),
+          h("button", { class: "button", onClick: () =>
+            moveSelectedObject(0, 1) }, "Down"),
+          ]),
+          ]),
+        h(
+          "div",
+          { class: "grid-board" },
+          Array.from({ length: 25 }, (_, index) => {
+            const x = index % 5;
+            const y = Math.floor(index / 5);
+            const objectID = objectAt(x, y);
+
+            return h("div", { class: "grid-cell" }, objectID || "");
+          }),
+        ),
+      ])
+    : null,
+    roomStatus.value === "round completed"
+    ? h("section", { class: "round-complete" }, [
+        h("strong", "Round Complete"),
+        h("span", "All apartment objectives are satisfied."),
+      ])
+    : null,
       ]);
   },
 };
