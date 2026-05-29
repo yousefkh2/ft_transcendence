@@ -144,6 +144,41 @@ h1 {
 }
 
 
+.object-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .object-controls label {
+    display: grid;
+    gap: 6px;
+    color: #596574;
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .object-controls select {
+    min-height: 42px;
+    border: 1px solid #aeb7b0;
+    border-radius: 8px;
+    padding: 0 12px;
+    background: #fffaf1;
+    color: #18212f;
+    font: inherit;
+    font-weight: 800;
+  }
+
+  .move-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+
 
 @media (max-width: 720px) {
   .app-shell {
