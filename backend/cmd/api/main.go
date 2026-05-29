@@ -322,7 +322,7 @@ func (h *Hub) handleObjectMoved(
 	objectPositions := copyObjectPositions(room.objectPositions)
 
 	messageType := "game.state_updated"
-	stateMessage := "round completed"
+	stateMessage := "object moved"
 
 	if allObjectivesCompleted(room.completedObjectives) {
 		messageType = "game.round_completed"

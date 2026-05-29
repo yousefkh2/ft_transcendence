@@ -210,36 +210,36 @@ const App = {
           ])
         : null,
         isOnSite()
-    ? h("section", { class: "apartment-board" }, [
-        h("h2", "Apartment Grid"),
-        h("div", { class: "object-controls" }, [
-          h("label", [
-            "Selected object",
-            h(
-              "select",
-              {
-                value: selectedObjectID.value,
-                onChange: (event: Event) => {
-                  selectedObjectID.value = (event.target as
-  HTMLSelectElement).value;
-                },
-              },
-              ["plant", "lamp", "table", "sofa"].map((objectID) =>
-                h("option", { value: objectID }, objectID),
-              ),
-            ),
+        ? h("section", { class: "apartment-board" }, [
+            h("h2", "Apartment Grid"),
+            h("div", { class: "object-controls" }, [
+              h("label", [
+                "Selected object",
+                h(
+                  "select",
+                  {
+                    value: selectedObjectID.value,
+                    onChange: (event: Event) => {
+                      selectedObjectID.value = (event.target as
+      HTMLSelectElement).value;
+                    },
+                  },
+                  ["plant", "lamp", "table", "sofa"].map((objectID) =>
+                    h("option", { value: objectID }, objectID),
+                  ),
+                ),
+              ]),
+        h("div", { class: "move-controls" }, [
+          h("button", { class: "button", onClick: () =>
+            moveSelectedObject(0, -1) }, "Up"),
+          h("button", { class: "button", onClick: () =>
+            moveSelectedObject(-1, 0) }, "Left"),
+          h("button", { class: "button", onClick: () =>
+            moveSelectedObject(1, 0) }, "Right"),
+          h("button", { class: "button", onClick: () =>
+            moveSelectedObject(0, 1) }, "Down"),
           ]),
-          h("div", { class: "move-controls" }, [
-            h("button", { class: "button", onClick: () =>
-  moveSelectedObject(0, -1) }, "Up"),
-            h("button", { class: "button", onClick: () =>
-  moveSelectedObject(-1, 0) }, "Left"),
-            h("button", { class: "button", onClick: () =>
-  moveSelectedObject(1, 0) }, "Right"),
-            h("button", { class: "button", onClick: () =>
-  moveSelectedObject(0, 1) }, "Down"),
           ]),
-        ]),
         h(
           "div",
           { class: "grid-board" },
@@ -251,6 +251,12 @@ const App = {
             return h("div", { class: "grid-cell" }, objectID || "");
           }),
         ),
+      ])
+    : null,
+    roomStatus.value === "round completed"
+    ? h("section", { class: "round-complete" }, [
+        h("strong", "Round Complete"),
+        h("span", "All apartment objectives are satisfied."),
       ])
     : null,
       ]);

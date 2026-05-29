@@ -212,6 +212,25 @@ h1 {
   }
 
 
+    .round-complete {
+    display: grid;
+    gap: 6px;
+    margin-top: 24px;
+    border: 1px solid #1d6b61;
+    border-radius: 8px;
+    padding: 18px;
+    background: #e6f4ef;
+    color: #15584f;
+  }
+
+  .round-complete strong {
+    font-size: 18px;
+  }
+
+  .round-complete span {
+    color: #15584f;
+  }
+
 
 @media (max-width: 720px) {
   .app-shell {
