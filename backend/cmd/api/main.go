@@ -112,6 +112,7 @@ func main() {
 	mux.HandleFunc("/", handleRoot)
 	mux.HandleFunc("/health", handleHealth)
 	mux.HandleFunc("/health/db", handleDatabaseHealth)
+	mux.HandleFunc("/health/openai", handleOpenAIHealth)
 	mux.HandleFunc("/ws", hub.handleWebSocket)
 
 	port := getenv("PORT", "8080")
@@ -533,6 +534,16 @@ func handleDatabaseHealth(w http.ResponseWriter, _ *http.Request) {
 
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	_, _ = w.Write([]byte("database reachable\n"))
+}
+
+func handleOpenAIHealth(w http.ResponseWriter, _ *http.Request) {
+	if strings.TrimSpace(os.Getenv("OPENAI_API_KEY")) == "" {
+		http.Error(w, "openai api key missing\n", http.StatusServiceUnavailable)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	_, _ = w.Write([]byte("openai api key configured\n"))
 }
 
 func newPlayerID() (string, error) {
