@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
 	"log"
 	"net"
 	"net/http"
@@ -69,6 +70,10 @@ type Position struct {
 	Y int `json:"y"`
 }
 
+type TranscriptionResponse struct {
+	Text string `json:"text"`
+}
+
 var apartmentObjectives = []Objective{
 	{
 		ID:       "plant_right_of_sofa",
@@ -114,6 +119,7 @@ func main() {
 	mux.HandleFunc("/health/db", handleDatabaseHealth)
 	mux.HandleFunc("/health/openai", handleOpenAIHealth)
 	mux.HandleFunc("/ws", hub.handleWebSocket)
+	mux.HandleFunc("/transcriptions", handleTranscription)
 
 	port := getenv("PORT", "8080")
 	addr := ":" + port
@@ -544,6 +550,36 @@ func handleOpenAIHealth(w http.ResponseWriter, _ *http.Request) {
 
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	_, _ = w.Write([]byte("openai api key configured\n"))
+}
+
+func handleTranscription(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed\n", http.StatusMethodNotAllowed)
+		return
+	}
+
+	if strings.TrimSpace(os.Getenv("OPENAI_API_KEY")) == "" {
+		http.Error(w, "openai api key missing\n", http.StatusInternalServerError)
+		return
+	}
+
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		http.Error(w, "invalid multipart form\n", http.StatusBadRequest)
+		return
+	}
+
+	file, header, err := r.FormFile("audio")
+	if err != nil {
+		http.Error(w, "audio file is required\n", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	log.Printf("received transcription upload: %s (%d bytes)", header.Filename, header.Size)
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(TranscriptionResponse{
+		Text: "transcription not implemented yet",
+	})
 }
 
 func newPlayerID() (string, error) {
