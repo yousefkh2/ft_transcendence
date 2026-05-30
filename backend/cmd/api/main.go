@@ -34,6 +34,7 @@ type ServerMessage struct {
 	CompletedObjectives []string            `json:"completedObjectives,omitempty"`
 	Message             string              `json:"message"`
 	ObjectPositions     map[string]Position `json:"objectPositions,omitempty"`
+	RemainingSeconds    int                 `json:"remainingSeconds,omitempty"`
 }
 
 type Objective struct {
@@ -54,6 +55,7 @@ type Room struct {
 	players             map[string]*Player
 	completedObjectives map[string]bool
 	objectPositions     map[string]Position
+	roundDeadline       time.Time
 }
 
 // Hub  = owner of all live rooms.
@@ -87,6 +89,8 @@ var apartmentObjectives = []Objective{
 		TargetID: "sofa",
 	},
 }
+
+const roundDuration = 60 * time.Second
 
 func (p *Player) send(ctx context.Context, message ServerMessage) error {
 	p.writeMu.Lock()
@@ -250,12 +254,17 @@ func (h *Hub) handleRoomJoin(
 
 	room.players[role] = player
 
+	if len(room.players) == 2 && room.roundDeadline.IsZero() {
+		room.roundDeadline = time.Now().Add(roundDuration)
+	}
+
 	*joinedRoom = room.code
 	*joinedRole = role
 	playerCount := len(room.players)
 
 	completedObjectives := completedObjectiveIDs(room.completedObjectives)
 	objectPositions := copyObjectPositions(room.objectPositions)
+	remaining := remainingSeconds(room.roundDeadline)
 
 	h.mu.Unlock()
 
@@ -269,6 +278,7 @@ func (h *Hub) handleRoomJoin(
 		CompletedObjectives: completedObjectives,
 		ObjectPositions:     objectPositions,
 		Message:             "room joined",
+		RemainingSeconds:    remaining,
 	}); err != nil {
 		log.Printf("websocket response failed: %v", err)
 	}
@@ -310,6 +320,37 @@ func (h *Hub) handleObjectMoved(
 		return
 	}
 
+	if roundExpired(room.roundDeadline) {
+		completedObjectives := completedObjectiveIDs(room.completedObjectives)
+		objectPositions := copyObjectPositions(room.objectPositions)
+		remaining := remainingSeconds(room.roundDeadline)
+
+		players := make([]*Player, 0, len(room.players))
+		for _, roomPlayer := range room.players {
+			players = append(players, roomPlayer)
+		}
+
+		h.mu.Unlock()
+
+		expiredMessage := ServerMessage{
+			Type:                "game.round_expired",
+			RoomCode:            joinedRoom,
+			CompletedObjectives: completedObjectives,
+			ObjectPositions:     objectPositions,
+			RemainingSeconds:    remaining,
+			Message:             "round expired",
+		}
+
+		for _, roomPlayer := range players {
+			if err := roomPlayer.send(ctx, expiredMessage); err != nil {
+				log.Printf("round expiry update failed for player %s: %v", roomPlayer.id,
+					err)
+			}
+		}
+
+		return
+	}
+
 	room.objectPositions[message.ObjectID] = Position{
 		X: message.X,
 		Y: message.Y,
@@ -320,6 +361,7 @@ func (h *Hub) handleObjectMoved(
 
 	completedObjectives := completedObjectiveIDs(room.completedObjectives)
 	objectPositions := copyObjectPositions(room.objectPositions)
+	remaining := remainingSeconds(room.roundDeadline)
 
 	messageType := "game.state_updated"
 	stateMessage := "object moved"
@@ -345,6 +387,7 @@ func (h *Hub) handleObjectMoved(
 		CompletedObjectives: completedObjectives,
 		Message:             stateMessage,
 		ObjectPositions:     objectPositions,
+		RemainingSeconds:    remaining,
 	}
 
 	for _, roomPlayer := range players {
@@ -352,6 +395,27 @@ func (h *Hub) handleObjectMoved(
 			log.Printf("state update failed for player %s: %v", roomPlayer.id, err)
 		}
 	}
+}
+
+func remainingSeconds(deadline time.Time) int {
+	if deadline.IsZero() {
+		return 0
+	}
+
+	remaining := time.Until(deadline)
+	if remaining <= 0 {
+		return 0
+	}
+
+	return int(remaining.Seconds())
+}
+
+func roundExpired(deadline time.Time) bool {
+	if deadline.IsZero() {
+		return false
+	}
+
+	return time.Now().After(deadline)
 }
 
 func copyObjectPositions(positions map[string]Position) map[string]Position {
