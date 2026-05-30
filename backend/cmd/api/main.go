@@ -54,6 +54,7 @@ type Room struct {
 	players             map[string]*Player
 	completedObjectives map[string]bool
 	objectPositions     map[string]Position
+	roundDeadline       time.Time
 }
 
 // Hub  = owner of all live rooms.
@@ -87,6 +88,8 @@ var apartmentObjectives = []Objective{
 		TargetID: "sofa",
 	},
 }
+
+const roundDuration = 60 * time.Second
 
 func (p *Player) send(ctx context.Context, message ServerMessage) error {
 	p.writeMu.Lock()
@@ -250,6 +253,10 @@ func (h *Hub) handleRoomJoin(
 
 	room.players[role] = player
 
+	if len(room.players) == 2 && room.roundDeadline.IsZero() {
+		room.roundDeadline = time.Now().Add(roundDuration)
+	}
+
 	*joinedRoom = room.code
 	*joinedRole = role
 	playerCount := len(room.players)
@@ -352,6 +359,19 @@ func (h *Hub) handleObjectMoved(
 			log.Printf("state update failed for player %s: %v", roomPlayer.id, err)
 		}
 	}
+}
+
+func remainingSeconds(deadline time.Time) int {
+	if deadline.IsZero() {
+		return 0
+	}
+
+	remaining := time.Until(deadline)
+	if remaining <= 0 {
+		return 0
+	}
+
+	return int(remaining.Seconds())
 }
 
 func copyObjectPositions(positions map[string]Position) map[string]Position {
