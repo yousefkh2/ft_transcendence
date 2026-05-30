@@ -29,6 +29,7 @@ const App = {
     const role = ref("No role assigned");
     const playerID = ref("No player ID assigned");
     const completedObjectives = ref<string[]>([]);
+    const remainingSeconds = ref(0);
     const objectPositions = ref<ObjectPositions>({});
     const selectedObjectID = ref("plant"); // UI starts with plant selected
 
@@ -53,11 +54,13 @@ const App = {
           role.value = message.role;
           completedObjectives.value = message.completedObjectives || [];
           objectPositions.value = message.objectPositions || {};
+          remainingSeconds.value = message.remainingSeconds || 0;
         }
         if (message.type === "game.state_updated" || message.type === "game.round_completed") {
           completedObjectives.value = message.completedObjectives || [];
           objectPositions.value = message.objectPositions || {};
           roomStatus.value = message.message;
+          remainingSeconds.value = message.remainingSeconds || 0;
         }
         if (message.type === "error") {
           roomStatus.value = message.message;
@@ -139,6 +142,14 @@ const App = {
     return completedObjectives.value.length;
     }
 
+    function timerLabel() {
+      if (remainingSeconds.value <= 0) {
+        return "Waiting";
+      }
+
+      return `${remainingSeconds.value}s`;
+    }
+
     return () =>
       h("main", { class: "app-shell" }, [
         h("section", { class: "hero" }, [
@@ -174,6 +185,10 @@ const App = {
             h("article", [
               h("strong", "Room Event"),
               h("span", roomStatus.value),
+            ]),
+            h("article", [
+              h("strong", "Timer"),
+              h("span", timerLabel()),
             ]),
             h("article", [
               h("strong", "Role"),
