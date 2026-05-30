@@ -34,6 +34,7 @@ type ServerMessage struct {
 	CompletedObjectives []string            `json:"completedObjectives,omitempty"`
 	Message             string              `json:"message"`
 	ObjectPositions     map[string]Position `json:"objectPositions,omitempty"`
+	RemainingSeconds    int                 `json:"remainingSeconds,omitempty"`
 }
 
 type Objective struct {
@@ -263,6 +264,7 @@ func (h *Hub) handleRoomJoin(
 
 	completedObjectives := completedObjectiveIDs(room.completedObjectives)
 	objectPositions := copyObjectPositions(room.objectPositions)
+	remaining := remainingSeconds(room.roundDeadline)
 
 	h.mu.Unlock()
 
@@ -276,6 +278,7 @@ func (h *Hub) handleRoomJoin(
 		CompletedObjectives: completedObjectives,
 		ObjectPositions:     objectPositions,
 		Message:             "room joined",
+		RemainingSeconds:    remaining,
 	}); err != nil {
 		log.Printf("websocket response failed: %v", err)
 	}
@@ -327,6 +330,7 @@ func (h *Hub) handleObjectMoved(
 
 	completedObjectives := completedObjectiveIDs(room.completedObjectives)
 	objectPositions := copyObjectPositions(room.objectPositions)
+	remaining := remainingSeconds(room.roundDeadline)
 
 	messageType := "game.state_updated"
 	stateMessage := "object moved"
@@ -352,6 +356,7 @@ func (h *Hub) handleObjectMoved(
 		CompletedObjectives: completedObjectives,
 		Message:             stateMessage,
 		ObjectPositions:     objectPositions,
+		RemainingSeconds:    remaining,
 	}
 
 	for _, roomPlayer := range players {
