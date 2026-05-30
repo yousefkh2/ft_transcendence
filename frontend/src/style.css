@@ -231,6 +231,26 @@ h1 {
     color: #15584f;
   }
 
+  .round-expired {
+    display: grid;
+    gap: 6px;
+    margin-top: 24px;
+    border: 1px solid #9b2c2c;
+    border-radius: 8px;
+    padding: 18px;
+    background: #fff1f1;
+    color: #842020;
+  }
+
+  .round-expired strong {
+    font-size: 18px;
+  }
+
+  .round-expired span {
+    color: #842020;
+  }
+
+
 
 @media (max-width: 720px) {
   .app-shell {

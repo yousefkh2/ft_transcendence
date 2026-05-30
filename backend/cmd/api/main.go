@@ -320,6 +320,37 @@ func (h *Hub) handleObjectMoved(
 		return
 	}
 
+	if roundExpired(room.roundDeadline) {
+		completedObjectives := completedObjectiveIDs(room.completedObjectives)
+		objectPositions := copyObjectPositions(room.objectPositions)
+		remaining := remainingSeconds(room.roundDeadline)
+
+		players := make([]*Player, 0, len(room.players))
+		for _, roomPlayer := range room.players {
+			players = append(players, roomPlayer)
+		}
+
+		h.mu.Unlock()
+
+		expiredMessage := ServerMessage{
+			Type:                "game.round_expired",
+			RoomCode:            joinedRoom,
+			CompletedObjectives: completedObjectives,
+			ObjectPositions:     objectPositions,
+			RemainingSeconds:    remaining,
+			Message:             "round expired",
+		}
+
+		for _, roomPlayer := range players {
+			if err := roomPlayer.send(ctx, expiredMessage); err != nil {
+				log.Printf("round expiry update failed for player %s: %v", roomPlayer.id,
+					err)
+			}
+		}
+
+		return
+	}
+
 	room.objectPositions[message.ObjectID] = Position{
 		X: message.X,
 		Y: message.Y,
@@ -377,6 +408,14 @@ func remainingSeconds(deadline time.Time) int {
 	}
 
 	return int(remaining.Seconds())
+}
+
+func roundExpired(deadline time.Time) bool {
+	if deadline.IsZero() {
+		return false
+	}
+
+	return time.Now().After(deadline)
 }
 
 func copyObjectPositions(positions map[string]Position) map[string]Position {

@@ -56,7 +56,12 @@ const App = {
           objectPositions.value = message.objectPositions || {};
           remainingSeconds.value = message.remainingSeconds || 0;
         }
-        if (message.type === "game.state_updated" || message.type === "game.round_completed") {
+        if (
+          message.type === "game.state_updated" ||
+          message.type === "game.round_completed" ||
+          message.type === "game.round_expired"
+        ) {
+
           completedObjectives.value = message.completedObjectives || [];
           objectPositions.value = message.objectPositions || {};
           roomStatus.value = message.message;
@@ -274,6 +279,13 @@ const App = {
         h("span", "All apartment objectives are satisfied."),
       ])
     : null,
+    roomStatus.value === "round expired"
+    ? h("section", { class: "round-expired" }, [
+        h("strong", "Round Expired"),
+        h("span", "Time ran out before all apartment objectives were satisfied."),
+      ])
+    : null,
+
       ]);
   },
 };
