@@ -33,6 +33,7 @@ const App = {
     const objectPositions = ref<ObjectPositions>({});
     const selectedObjectID = ref("plant"); // UI starts with plant selected
     const transcriptionStatus = ref("No transcription session");
+    const transcriptLines = ref<string[]>([]);
 
 
     let socket: WebSocket | null = null;
@@ -70,6 +71,18 @@ const App = {
           objectPositions.value = message.objectPositions || {};
           roomStatus.value = message.message;
           remainingSeconds.value = message.remainingSeconds || 0;
+        }
+
+        if (message.type === "voice.transcript") {
+          const speaker = message.role || "unknown";
+          const text = message.text || "";
+
+          if (text) {
+            transcriptLines.value = [
+              ...transcriptLines.value,
+              `${speaker}: ${text}`,
+            ].slice(-6);
+          }
         }
         if (message.type === "error") {
           roomStatus.value = message.message;
@@ -187,6 +200,29 @@ const App = {
       }
     }
 
+    function sendTranscriptToRoom(text: string, isFinal: boolean) {
+      const cleanedText = text.trim();
+
+      if (!cleanedText) {
+        return;
+      }
+
+      transcriptLines.value = [...transcriptLines.value, cleanedText].slice(-6);
+
+      if (!socket || socket.readyState !== WebSocket.OPEN) {
+        transcriptionStatus.value = "Transcript received before room socket connected";
+        return;
+      }
+
+      socket.send(
+        JSON.stringify({
+          type: "voice.transcript",
+          text: cleanedText,
+          isFinal,
+        }),
+      );
+    }
+
     async function connectRealtimeTranscription() {
       transcriptionStatus.value = "Connecting to OpenAI Realtime...";
 
@@ -204,8 +240,17 @@ const App = {
       };
 
       realtimeDataChannel.onmessage = (event) => {
-        console.log("OpenAI realtime event", event.data);
+        const realtimeEvent = JSON.parse(event.data);
+        console.log("OpenAI realtime event", realtimeEvent);
+
+        if (
+          realtimeEvent.type ===
+          "conversation.item.input_audio_transcription.completed"
+        ) {
+          sendTranscriptToRoom(realtimeEvent.transcript || "", true);
+        }
       };
+
 
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -309,6 +354,16 @@ const App = {
           ]),
           ],
         ),
+        h("section", { class: "transcript-panel" }, [
+          h("h2", "Transcript"),
+          h(
+            "div",
+            { class: "transcript-feed" },
+            transcriptLines.value.length > 0
+              ? transcriptLines.value.map((line) => h("p", line))
+              : [h("p", "No transcript yet.")],
+          ),
+        ]),
         isMissionControl()
         ? h("section", { class: "mission-panel" }, [
             h("h2", "Mission Control"),
