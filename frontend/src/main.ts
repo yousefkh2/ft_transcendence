@@ -37,6 +37,9 @@ const App = {
 
     let socket: WebSocket | null = null;
 
+    let realtimeConnection: RTCPeerConnection | null = null;
+    let realtimeDataChannel: RTCDataChannel | null = null;
+
     function connect() {
       connectionStatus.value = "Connecting...";
 
@@ -156,7 +159,7 @@ const App = {
       return `${remainingSeconds.value}s`;
     }
 
-    async function createTranscriptionSession() {
+    async function createTranscriptionSession(): Promise<string | null> {
       transcriptionStatus.value = "Creating transcription session...";
 
       try {
@@ -166,20 +169,81 @@ const App = {
 
         if (!response.ok) {
           transcriptionStatus.value = `Session failed: ${response.status}`;
-          return;
+          return null;
         }
 
         const session = await response.json();
         if (session.value) {
           transcriptionStatus.value = "Realtime transcription session ready";
-          return;
+          return session.value;
         }
         
         transcriptionStatus.value = "Session created without client secret";
+        return null;
       } catch (error) {
         console.error(error);
         transcriptionStatus.value = "Session request failed; backend unreachable";
+        return null;
       }
+    }
+
+    async function connectRealtimeTranscription() {
+      transcriptionStatus.value = "Connecting to OpenAI Realtime...";
+
+      const clientSecret = await createTranscriptionSession();
+      if (!clientSecret) {
+        return;
+      }
+
+      realtimeConnection = new RTCPeerConnection();
+
+      realtimeDataChannel = realtimeConnection.createDataChannel("oai-events");
+
+      realtimeDataChannel.onopen = () => {
+        transcriptionStatus.value = "Realtime transcription connected";
+      };
+
+      realtimeDataChannel.onmessage = (event) => {
+        console.log("OpenAI realtime event", event.data);
+      };
+
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+
+      for (const track of mediaStream.getAudioTracks()) {
+        realtimeConnection.addTrack(track, mediaStream);
+      }
+
+
+      const offer = await realtimeConnection.createOffer();
+      await realtimeConnection.setLocalDescription(offer);
+
+      const response = await fetch("https://api.openai.com/v1/realtime/calls", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${clientSecret}`,
+          "Content-Type": "application/sdp",
+        },
+        body: offer.sdp,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("OpenAI realtime connection failed", response.status,
+        errorText);
+        transcriptionStatus.value = `Realtime connection failed:
+        ${response.status}`;
+        return;
+      }
+
+
+      const answer = {
+        type: "answer" as RTCSdpType,
+        sdp: await response.text(),
+      };
+
+      await realtimeConnection.setRemoteDescription(answer);
     }
 
     return () =>
@@ -206,8 +270,8 @@ const App = {
             h("button", { class: "button", onClick: joinRoom }, "Send Join Request"),
             h(
             "button",
-            { class: "button", onClick: createTranscriptionSession },
-            "Create STT Session",
+            { class: "button", onClick: connectRealtimeTranscription },
+            "Connect STT",
             ),
             h("article", [h("strong", "Realtime"), h("span", connectionStatus.value)]),
           ]),
