@@ -25,6 +25,8 @@ type ClientMessage struct {
 	TargetID string `json:"targetId,omitempty"`
 	X        int    `json:"x,omitempty"`
 	Y        int    `json:"y,omitempty"`
+	Text     string `json:"text,omitempty"`
+	IsFinal  bool   `json:"isFinal,omitempty"`
 }
 
 type ServerMessage struct {
@@ -36,6 +38,8 @@ type ServerMessage struct {
 	Message             string              `json:"message"`
 	ObjectPositions     map[string]Position `json:"objectPositions,omitempty"`
 	RemainingSeconds    int                 `json:"remainingSeconds,omitempty"`
+	Text                string              `json:"text,omitempty"`
+	IsFinal             bool                `json:"isFinal,omitempty"`
 }
 
 type Objective struct {
@@ -185,6 +189,8 @@ func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			h.handleRoomJoin(ctx, conn, player, message, &joinedRoom, &joinedRole)
 		case "game.object_moved":
 			h.handleObjectMoved(ctx, player, message, joinedRoom, joinedRole)
+		case "voice.transcript":
+			h.handleVoiceTranscript(ctx, player, message, joinedRoom, joinedRole)
 		default:
 			_ = wsjson.Write(ctx, conn, ServerMessage{
 				Type:    "error",
@@ -400,6 +406,62 @@ func (h *Hub) handleObjectMoved(
 	for _, roomPlayer := range players {
 		if err := roomPlayer.send(ctx, stateUpdate); err != nil {
 			log.Printf("state update failed for player %s: %v", roomPlayer.id, err)
+		}
+	}
+}
+
+func (h *Hub) handleVoiceTranscript(
+	ctx context.Context,
+	player *Player,
+	message ClientMessage,
+	joinedRoom string,
+	joinedRole string,
+) {
+	if joinedRoom == "" {
+		_ = player.send(ctx, ServerMessage{
+			Type:    "error",
+			Message: "join a room before sending transcript events",
+		})
+		return
+	}
+	text := strings.TrimSpace(message.Text)
+	if text == "" {
+		return
+	}
+
+	h.mu.Lock()
+
+	room := h.rooms[joinedRoom]
+	if room == nil {
+		h.mu.Unlock()
+
+		_ = player.send(ctx, ServerMessage{
+			Type:    "error",
+			Message: "room no longer exists",
+		})
+		return
+	}
+
+	players := make([]*Player, 0, len(room.players))
+	for _, roomPlayer := range room.players {
+		players = append(players, roomPlayer)
+	}
+
+	h.mu.Unlock()
+
+	transcriptMessage := ServerMessage{
+		Type:     "voice.transcript",
+		RoomCode: joinedRoom,
+		PlayerID: player.id,
+		Role:     joinedRole,
+		Text:     text,
+		IsFinal:  message.IsFinal,
+		Message:  "transcript received",
+	}
+
+	for _, roomPlayer := range players {
+		if err := roomPlayer.send(ctx, transcriptMessage); err != nil {
+			log.Printf("transcript broadcast failed for player %s: %v", roomPlayer.id, err)
 		}
 	}
 }
