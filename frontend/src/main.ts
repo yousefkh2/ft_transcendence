@@ -32,6 +32,7 @@ const App = {
     const remainingSeconds = ref(0);
     const objectPositions = ref<ObjectPositions>({});
     const selectedObjectID = ref("plant"); // UI starts with plant selected
+    const transcriptionStatus = ref("No transcription session");
 
 
     let socket: WebSocket | null = null;
@@ -155,6 +156,32 @@ const App = {
       return `${remainingSeconds.value}s`;
     }
 
+    async function createTranscriptionSession() {
+      transcriptionStatus.value = "Creating transcription session...";
+
+      try {
+        const response = await fetch(`${apiUrl}/realtime/transcription-session`, {
+          method: "POST",
+        });
+
+        if (!response.ok) {
+          transcriptionStatus.value = `Session failed: ${response.status}`;
+          return;
+        }
+
+        const session = await response.json();
+        if (session.value) {
+          transcriptionStatus.value = "Realtime transcription session ready";
+          return;
+        }
+        
+        transcriptionStatus.value = "Session created without client secret";
+      } catch (error) {
+        console.error(error);
+        transcriptionStatus.value = "Session request failed; backend unreachable";
+      }
+    }
+
     return () =>
       h("main", { class: "app-shell" }, [
         h("section", { class: "hero" }, [
@@ -177,6 +204,11 @@ const App = {
               },
             }),
             h("button", { class: "button", onClick: joinRoom }, "Send Join Request"),
+            h(
+            "button",
+            { class: "button", onClick: createTranscriptionSession },
+            "Create STT Session",
+            ),
             h("article", [h("strong", "Realtime"), h("span", connectionStatus.value)]),
           ]),
         ]),
@@ -190,6 +222,10 @@ const App = {
             h("article", [
               h("strong", "Room Event"),
               h("span", roomStatus.value),
+            ]),
+            h("article", [
+              h("strong", "Realtime STT"),
+              h("span", transcriptionStatus.value),
             ]),
             h("article", [
               h("strong", "Timer"),
