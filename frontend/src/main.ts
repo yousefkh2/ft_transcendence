@@ -206,9 +206,7 @@ const App = {
       if (!cleanedText) {
         return;
       }
-
-      transcriptLines.value = [...transcriptLines.value, cleanedText].slice(-6);
-
+      
       if (!socket || socket.readyState !== WebSocket.OPEN) {
         transcriptionStatus.value = "Transcript received before room socket connected";
         return;
