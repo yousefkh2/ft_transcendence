@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -24,6 +27,8 @@ type ClientMessage struct {
 	TargetID string `json:"targetId,omitempty"`
 	X        int    `json:"x,omitempty"`
 	Y        int    `json:"y,omitempty"`
+	Text     string `json:"text,omitempty"`
+	IsFinal  bool   `json:"isFinal,omitempty"`
 }
 
 type ServerMessage struct {
@@ -35,6 +40,8 @@ type ServerMessage struct {
 	Message             string              `json:"message"`
 	ObjectPositions     map[string]Position `json:"objectPositions,omitempty"`
 	RemainingSeconds    int                 `json:"remainingSeconds,omitempty"`
+	Text                string              `json:"text,omitempty"`
+	IsFinal             bool                `json:"isFinal,omitempty"`
 }
 
 type Objective struct {
@@ -67,6 +74,10 @@ type Hub struct {
 type Position struct {
 	X int `json:"x"`
 	Y int `json:"y"`
+}
+
+type TranscriptionResponse struct {
+	Text string `json:"text"`
 }
 
 var apartmentObjectives = []Objective{
@@ -112,13 +123,35 @@ func main() {
 	mux.HandleFunc("/", handleRoot)
 	mux.HandleFunc("/health", handleHealth)
 	mux.HandleFunc("/health/db", handleDatabaseHealth)
+	mux.HandleFunc("/health/openai", handleOpenAIHealth)
 	mux.HandleFunc("/ws", hub.handleWebSocket)
+	mux.HandleFunc("/transcriptions", handleTranscription)
+	mux.HandleFunc("/realtime/transcription-session", handleRealtimeTranscriptionSession)
 
 	port := getenv("PORT", "8080")
 	addr := ":" + port
 
 	log.Printf("API server listening on http://localhost%s", addr)
-	log.Fatal(http.ListenAndServe(addr, mux))
+	log.Fatal(http.ListenAndServe(addr, withCORS(mux)))
+}
+
+func withCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		origin := r.Header.Get("Origin")
+		if origin == "http://localhost:5173" {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Vary", "Origin")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		}
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 func handleRoot(w http.ResponseWriter, _ *http.Request) {
@@ -178,6 +211,8 @@ func (h *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			h.handleRoomJoin(ctx, conn, player, message, &joinedRoom, &joinedRole)
 		case "game.object_moved":
 			h.handleObjectMoved(ctx, player, message, joinedRoom, joinedRole)
+		case "voice.transcript":
+			h.handleVoiceTranscript(ctx, player, message, joinedRoom, joinedRole)
 		default:
 			_ = wsjson.Write(ctx, conn, ServerMessage{
 				Type:    "error",
@@ -397,6 +432,62 @@ func (h *Hub) handleObjectMoved(
 	}
 }
 
+func (h *Hub) handleVoiceTranscript(
+	ctx context.Context,
+	player *Player,
+	message ClientMessage,
+	joinedRoom string,
+	joinedRole string,
+) {
+	if joinedRoom == "" {
+		_ = player.send(ctx, ServerMessage{
+			Type:    "error",
+			Message: "join a room before sending transcript events",
+		})
+		return
+	}
+	text := strings.TrimSpace(message.Text)
+	if text == "" {
+		return
+	}
+
+	h.mu.Lock()
+
+	room := h.rooms[joinedRoom]
+	if room == nil {
+		h.mu.Unlock()
+
+		_ = player.send(ctx, ServerMessage{
+			Type:    "error",
+			Message: "room no longer exists",
+		})
+		return
+	}
+
+	players := make([]*Player, 0, len(room.players))
+	for _, roomPlayer := range room.players {
+		players = append(players, roomPlayer)
+	}
+
+	h.mu.Unlock()
+
+	transcriptMessage := ServerMessage{
+		Type:     "voice.transcript",
+		RoomCode: joinedRoom,
+		PlayerID: player.id,
+		Role:     joinedRole,
+		Text:     text,
+		IsFinal:  message.IsFinal,
+		Message:  "transcript received",
+	}
+
+	for _, roomPlayer := range players {
+		if err := roomPlayer.send(ctx, transcriptMessage); err != nil {
+			log.Printf("transcript broadcast failed for player %s: %v", roomPlayer.id, err)
+		}
+	}
+}
+
 func remainingSeconds(deadline time.Time) int {
 	if deadline.IsZero() {
 		return 0
@@ -533,6 +624,133 @@ func handleDatabaseHealth(w http.ResponseWriter, _ *http.Request) {
 
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	_, _ = w.Write([]byte("database reachable\n"))
+}
+
+func handleOpenAIHealth(w http.ResponseWriter, _ *http.Request) {
+	if strings.TrimSpace(os.Getenv("OPENAI_API_KEY")) == "" {
+		http.Error(w, "openai api key missing\n", http.StatusServiceUnavailable)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	_, _ = w.Write([]byte("openai api key configured\n"))
+}
+
+func handleTranscription(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed\n", http.StatusMethodNotAllowed)
+		return
+	}
+
+	if strings.TrimSpace(os.Getenv("OPENAI_API_KEY")) == "" {
+		http.Error(w, "openai api key missing\n", http.StatusInternalServerError)
+		return
+	}
+
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		http.Error(w, "invalid multipart form\n", http.StatusBadRequest)
+		return
+	}
+
+	file, header, err := r.FormFile("audio")
+	if err != nil {
+		http.Error(w, "audio file is required\n", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	log.Printf("received transcription upload: %s (%d bytes)", header.Filename, header.Size)
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(TranscriptionResponse{
+		Text: "transcription not implemented yet",
+	})
+}
+
+func handleRealtimeTranscriptionSession(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed\n", http.StatusMethodNotAllowed)
+		return
+	}
+
+	apiKey := strings.TrimSpace(os.Getenv("OPENAI_API_KEY"))
+	if apiKey == "" {
+		http.Error(w, "openai api key missing\n", http.StatusServiceUnavailable)
+		return
+	}
+
+	sessionBody := map[string]any{
+		"expires_after": map[string]any{
+			"anchor":  "created_at",
+			"seconds": 600,
+		},
+		"session": map[string]any{
+			"type": "transcription",
+			"audio": map[string]any{
+				"input": map[string]any{
+					"transcription": map[string]any{
+						"model":    "gpt-4o-transcribe",
+						"language": "en",
+					},
+					"turn_detection": map[string]any{
+						"type":                "server_vad",
+						"threshold":           0.5,
+						"prefix_padding_ms":   300,
+						"silence_duration_ms": 500,
+					},
+					"noise_reduction": map[string]any{
+						"type": "near_field",
+					},
+				},
+			},
+		},
+	}
+	requestBody, err := json.Marshal(sessionBody)
+	if err != nil {
+		http.Error(w, "failed to create session request\n",
+			http.StatusInternalServerError)
+		return
+	}
+
+	request, err := http.NewRequestWithContext(
+		r.Context(),
+		http.MethodPost,
+		"https://api.openai.com/v1/realtime/client_secrets",
+		bytes.NewReader(requestBody),
+	)
+	if err != nil {
+		http.Error(w, "failed to create openai request\n",
+			http.StatusInternalServerError)
+		return
+	}
+
+	request.Header.Set("Authorization", "Bearer "+apiKey)
+	request.Header.Set("Content-Type", "application/json")
+
+	response, err := http.DefaultClient.Do(request)
+	if err != nil {
+		log.Printf("openai realtime session request failed: %v", err)
+		http.Error(w, "openai realtime session request failed\n",
+			http.StatusBadGateway)
+		return
+	}
+	defer response.Body.Close()
+
+	responseBody, err := io.ReadAll(response.Body)
+	if err != nil {
+		http.Error(w, "failed to read openai response\n", http.StatusBadGateway)
+		return
+	}
+
+	if response.StatusCode >= http.StatusBadRequest {
+		log.Printf("openai realtime session failed with status %d: %s",
+			response.StatusCode, strings.TrimSpace(string(responseBody)))
+		http.Error(w, "openai realtime session failed\n", http.StatusBadGateway)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, _ = w.Write(responseBody)
 }
 
 func newPlayerID() (string, error) {

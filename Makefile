@@ -3,7 +3,7 @@ COMPOSE=docker compose
 .PHONY: up down restart build logs ps test health clean
 
 up:
-	$(COMPOSE) up --build
+	$(COMPOSE) up -d --build
 
 down:
 	$(COMPOSE) down

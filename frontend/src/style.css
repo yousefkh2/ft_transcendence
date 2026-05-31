@@ -187,69 +187,93 @@ h1 {
     font-size: 24px;
   }
 
-  .objective-list {
-    display: grid;
-    gap: 10px;
-    max-width: 520px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
+.objective-list {
+  display: grid;
+  gap: 10px;
+  max-width: 520px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
 
-  .objective-list li {
-    border: 1px solid #d6d0c4;
-    border-radius: 8px;
-    padding: 14px 16px;
-    background: #fffaf1;
-    color: #18212f;
-    font-weight: 800;
-  }
+.objective-list li {
+  border: 1px solid #d6d0c4;
+  border-radius: 8px;
+  padding: 14px 16px;
+  background: #fffaf1;
+  color: #18212f;
+  font-weight: 800;
+}
 
-  .objective-list li.completed {
-    border-color: #1d6b61;
-    background: #e6f4ef;
-    color: #15584f;
-  }
+.objective-list li.completed {
+  border-color: #1d6b61;
+  background: #e6f4ef;
+  color: #15584f;
+}
 
 
-    .round-complete {
-    display: grid;
-    gap: 6px;
+  .round-complete {
+  display: grid;
+  gap: 6px;
+  margin-top: 24px;
+  border: 1px solid #1d6b61;
+  border-radius: 8px;
+  padding: 18px;
+  background: #e6f4ef;
+  color: #15584f;
+}
+
+.round-complete strong {
+  font-size: 18px;
+}
+
+.round-complete span {
+  color: #15584f;
+}
+
+.round-expired {
+  display: grid;
+  gap: 6px;
+  margin-top: 24px;
+  border: 1px solid #9b2c2c;
+  border-radius: 8px;
+  padding: 18px;
+  background: #fff1f1;
+  color: #842020;
+}
+
+.round-expired strong {
+  font-size: 18px;
+}
+
+.round-expired span {
+  color: #842020;
+}
+
+.transcript-panel {
     margin-top: 24px;
-    border: 1px solid #1d6b61;
-    border-radius: 8px;
-    padding: 18px;
-    background: #e6f4ef;
-    color: #15584f;
   }
 
-  .round-complete strong {
-    font-size: 18px;
-  }
+.transcript-panel h2 {
+  margin: 0 0 14px;
+  font-size: 24px;
+}
 
-  .round-complete span {
-    color: #15584f;
-  }
+.transcript-feed {
+  display: grid;
+  gap: 8px;
+  max-width: 720px;
+}
 
-  .round-expired {
-    display: grid;
-    gap: 6px;
-    margin-top: 24px;
-    border: 1px solid #9b2c2c;
-    border-radius: 8px;
-    padding: 18px;
-    background: #fff1f1;
-    color: #842020;
-  }
-
-  .round-expired strong {
-    font-size: 18px;
-  }
-
-  .round-expired span {
-    color: #842020;
-  }
-
+.transcript-feed p {
+  margin: 0;
+  border: 1px solid #d6d0c4;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #fffaf1;
+  color: #18212f;
+  line-height: 1.45;
+}
 
 
 @media (max-width: 720px) {
