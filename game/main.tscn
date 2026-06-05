@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://buaq673iyr04d"]
+
+[ext_resource type="Texture2D" uid="uid://dbe8okx1febs7" path="res://assets/livingroom/livingroom_background.png" id="1_0xm2m"]
+[ext_resource type="Texture2D" uid="uid://b2cu8ouukuck" path="res://assets/livingroom/plant.png" id="2_h2yge"]
+
+[node name="main" type="Node2D" unique_id=234294754]
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1454188114]
+
+[node name="background" type="Sprite2D" parent="." unique_id=1651821241]
+texture = ExtResource("1_0xm2m")
+
+[node name="plant" type="Sprite2D" parent="." unique_id=344952452]
+position = Vector2(-668, 226)
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("2_h2yge")
