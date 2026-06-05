@@ -11,8 +11,14 @@ config_version=5
 [application]
 
 config/name="game"
+run/main_scene="uid://buaq673iyr04d"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=1774
+window/size/viewport_height=887
 
 [physics]
 
