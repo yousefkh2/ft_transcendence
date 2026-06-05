@@ -438,7 +438,15 @@ const App = {
         h("span", "Time ran out before all apartment objectives were satisfied."),
       ])
     : null,
-
+    h("section", { class: "game-panel" }, [
+    h("h2", "Godot Game"),
+      h("iframe", {
+        src: "/game.html",
+        title: "Godot game",
+        class: "game-iframe",
+        allow: "autoplay; fullscreen; pointer-lock",
+      }),
+    ]),
       ]);
   },
 };
