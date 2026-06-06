@@ -5,7 +5,7 @@ var dragging = false
 var of = Vector2(0,0)
 
 
-#var snap = 64
+var snap = 64
 
 # Called every frame. 'deltax' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

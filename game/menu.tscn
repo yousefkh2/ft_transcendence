@@ -1,0 +1,56 @@
+[gd_scene format=3 uid="uid://y7txpxu8meo6"]
+
+[ext_resource type="Texture2D" uid="uid://bjgra1i3id4ye" path="res://assets/main_menu/lucid-origin_make_me_a_roblox_pfp_with_a_simple_roblox_character_face_diffderent_no-0.jpg" id="1_lti8b"]
+[ext_resource type="Script" uid="uid://cyo8ty4no24b4" path="res://lobby_button.gd" id="2_ouk20"]
+
+[node name="Control" type="Control" unique_id=1248428916]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="background" type="TextureRect" parent="." unique_id=468326197]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("1_lti8b")
+
+[node name="title" type="Label" parent="." unique_id=1861832759]
+layout_mode = 0
+offset_left = 294.0
+offset_top = 129.0
+offset_right = 579.0
+offset_bottom = 152.0
+text = "cool game cool gamen test test"
+uppercase = true
+
+[node name="lobby button" type="Button" parent="." unique_id=903084614]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.165
+anchor_top = 0.20500001
+anchor_right = 0.4
+anchor_bottom = 0.25800002
+offset_left = -3.710022
+offset_top = -3.8350067
+offset_right = 3.6499634
+offset_bottom = 0.34500122
+text = "LOBBY BUTTON"
+script = ExtResource("2_ouk20")
+
+[node name="settings" type="Button" parent="." unique_id=1863112125]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.165
+anchor_top = 0.20500001
+anchor_right = 0.4
+anchor_bottom = 0.25800002
+offset_left = -5.710022
+offset_top = 71.16499
+offset_right = 1.6499634
+offset_bottom = 75.345
+text = "Settings but we have no settings"
+
+[connection signal="pressed" from="lobby button" to="lobby button" method="_on_pressed"]
