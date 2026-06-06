@@ -61,6 +61,17 @@ const App = {
           objectPositions.value = message.objectPositions || {};
           remainingSeconds.value = message.remainingSeconds || 0;
         }
+        const iframe = document.getElementById("godot-game") as HTMLIFrameElement;
+
+        iframe?.contentWindow?.postMessage(
+          {
+            type: "player_info",
+            role: message.role,
+            playerId: message.playerId,
+            roomCode: message.roomCode,
+          },
+          "*"
+        );
         if (
           message.type === "game.state_updated" ||
           message.type === "game.round_completed" ||
