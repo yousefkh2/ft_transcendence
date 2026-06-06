@@ -61,14 +61,15 @@ const App = {
           objectPositions.value = message.objectPositions || {};
           remainingSeconds.value = message.remainingSeconds || 0;
         }
-        const iframe = document.getElementById("godot-game") as HTMLIFrameElement;
+        const gameFrame = document.querySelector(
+          ".game-iframe"
+        ) as HTMLIFrameElement;
 
-        iframe?.contentWindow?.postMessage(
+        gameFrame?.contentWindow?.postMessage(
           {
             type: "player_info",
             role: message.role,
             playerId: message.playerId,
-            roomCode: message.roomCode,
           },
           "*"
         );
