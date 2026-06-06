@@ -36,7 +36,7 @@ offset_bottom = -180.0
 metadata/_edit_use_anchors_ = true
 
 [node name="sofa" type="Sprite2D" parent="." unique_id=477604241]
-position = Vector2(-121, 234)
+position = Vector2(-148, 211)
 scale = Vector2(0.75, 0.75)
 texture = ExtResource("5_272bh")
 script = ExtResource("4_lquwl")
@@ -48,10 +48,10 @@ anchor_left = 0.096
 anchor_top = 0.24425252
 anchor_right = 0.9623333
 anchor_bottom = 1.0114039
-offset_left = -204.74666
-offset_top = -507.27002
-offset_right = -204.58664
-offset_bottom = -507.09668
+offset_left = -246.08
+offset_top = -171.27002
+offset_right = -245.91998
+offset_bottom = -171.09668
 metadata/_edit_use_anchors_ = true
 
 [node name="lamp" type="Sprite2D" parent="." unique_id=825073205]
