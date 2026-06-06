@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bjgra1i3id4ye"
-path="res://.godot/imported/lucid-origin_make_me_a_roblox_pfp_with_a_simple_roblox_character_face_diffderent_no-0.jpg-44f6bc1115ef4edf5e9cffbd2877cadb.ctex"
+path="res://.godot/imported/main_menu_background.jpg-7e0c4934fd10798bcf78b357de183987.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/main_menu/lucid-origin_make_me_a_roblox_pfp_with_a_simple_roblox_character_face_diffderent_no-0.jpg"
-dest_files=["res://.godot/imported/lucid-origin_make_me_a_roblox_pfp_with_a_simple_roblox_character_face_diffderent_no-0.jpg-44f6bc1115ef4edf5e9cffbd2877cadb.ctex"]
+source_file="res://assets/main_menu/main_menu_background.jpg"
+dest_files=["res://.godot/imported/main_menu_background.jpg-7e0c4934fd10798bcf78b357de183987.ctex"]
 
 [params]
 

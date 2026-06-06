@@ -8,7 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://1mt044gyerxk" path="res://assets/livingroom/lamp.png" id="6_5vw27"]
 [ext_resource type="Texture2D" uid="uid://byfgya7emseiv" path="res://assets/livingroom/table.png" id="7_kek77"]
 
-[node name="main" type="Node2D" unique_id=234294754]
+[node name="livingroom" type="Node2D" unique_id=234294754]
 script = ExtResource("1_1bvp3")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1454188114]

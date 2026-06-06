@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://y7txpxu8meo6"]
 
-[ext_resource type="Texture2D" uid="uid://bjgra1i3id4ye" path="res://assets/main_menu/lucid-origin_make_me_a_roblox_pfp_with_a_simple_roblox_character_face_diffderent_no-0.jpg" id="1_lti8b"]
+[ext_resource type="Texture2D" uid="uid://bjgra1i3id4ye" path="res://assets/main_menu/main_menu_background.jpg" id="1_lti8b"]
 [ext_resource type="Script" uid="uid://cyo8ty4no24b4" path="res://lobby_button.gd" id="2_ouk20"]
 
 [node name="Control" type="Control" unique_id=1248428916]

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://0l6eupeil5t8"
-path="res://.godot/imported/cool-photoshop-of-bosnian-spongebob-v0-ukuyotg4e4ib1.webp-6419cba5ccef3659822dc54eb9a43b4b.ctex"
+path="res://.godot/imported/lobby.webp-36e7e2af6523fc1fe691390629f73bc0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/main_menu/cool-photoshop-of-bosnian-spongebob-v0-ukuyotg4e4ib1.webp"
-dest_files=["res://.godot/imported/cool-photoshop-of-bosnian-spongebob-v0-ukuyotg4e4ib1.webp-6419cba5ccef3659822dc54eb9a43b4b.ctex"]
+source_file="res://assets/main_menu/lobby.webp"
+dest_files=["res://.godot/imported/lobby.webp-36e7e2af6523fc1fe691390629f73bc0.ctex"]
 
 [params]
 
