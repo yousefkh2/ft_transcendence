@@ -16,18 +16,15 @@ func _ready():
 
 func _process(delta):
 
-	if !OS.has_feature("web"):
+	if not OS.has_feature("web"):
 		return
 
 	var json = JavaScriptBridge.eval(
     "JSON.stringify(window.godotPlayerInfo || null)"
 	)
 
-	#print("JSON =", json)
-
 	var data = JSON.parse_string(json)
 
-	#print("DATA =", data)
 	if data:
 		role_label.text = "Role: " + str(data.role)
 
