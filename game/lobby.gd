@@ -23,11 +23,11 @@ func _process(delta):
     "JSON.stringify(window.godotPlayerInfo || null)"
 	)
 
-	print("JSON =", json)
+	#print("JSON =", json)
 
 	var data = JSON.parse_string(json)
 
-	print("DATA =", data)
+	#print("DATA =", data)
 	if data:
 		role_label.text = "Role: " + str(data.role)
 
