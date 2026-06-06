@@ -50,6 +50,5 @@ offset_left = 25.0
 offset_top = 121.0
 offset_right = 65.0
 offset_bottom = 144.0
-text = "Waiting for role..."
 
 [connection signal="pressed" from="play_button" to="play_button" method="_on_pressed"]

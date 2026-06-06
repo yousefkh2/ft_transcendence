@@ -20,14 +20,14 @@ func _process(delta):
 		return
 
 	var json = JavaScriptBridge.eval(
-        "JSON.stringify(window.godotPlayerInfo || null)"
+    "JSON.stringify(window.godotPlayerInfo || null)"
 	)
 
-	if json == "null":
-		return
+	print("JSON =", json)
 
 	var data = JSON.parse_string(json)
 
+	print("DATA =", data)
 	if data:
 		role_label.text = "Role: " + str(data.role)
 
