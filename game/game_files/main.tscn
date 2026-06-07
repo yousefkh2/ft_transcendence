@@ -1,26 +1,26 @@
 [gd_scene format=3 uid="uid://buaq673iyr04d"]
 
-[ext_resource type="Texture2D" uid="uid://dbe8okx1febs7" path="res://assets/livingroom/livingroom_background.png" id="1_0xm2m"]
-[ext_resource type="Script" uid="uid://yow5y37d3njq" path="res://main.gd" id="1_1bvp3"]
-[ext_resource type="Texture2D" uid="uid://b2cu8ouukuck" path="res://assets/livingroom/plant.png" id="2_h2yge"]
-[ext_resource type="Script" uid="uid://dt2e5bphkhegn" path="res://object.gd" id="4_lquwl"]
-[ext_resource type="Texture2D" uid="uid://bb3xwbovf7jgs" path="res://assets/livingroom/sofa.png" id="5_272bh"]
-[ext_resource type="Texture2D" uid="uid://1mt044gyerxk" path="res://assets/livingroom/lamp.png" id="6_5vw27"]
-[ext_resource type="Texture2D" uid="uid://byfgya7emseiv" path="res://assets/livingroom/table.png" id="7_kek77"]
+[ext_resource type="Script" uid="uid://yow5y37d3njq" path="res://main.gd" id="1_tnn0p"]
+[ext_resource type="Texture2D" uid="uid://dbe8okx1febs7" path="res://assets/livingroom/livingroom_background.png" id="2_bx3jd"]
+[ext_resource type="Texture2D" uid="uid://b2cu8ouukuck" path="res://assets/livingroom/plant.png" id="3_p848u"]
+[ext_resource type="Script" uid="uid://dt2e5bphkhegn" path="res://object.gd" id="4_5odt6"]
+[ext_resource type="Texture2D" uid="uid://bb3xwbovf7jgs" path="res://assets/livingroom/sofa.png" id="5_au1nr"]
+[ext_resource type="Texture2D" uid="uid://1mt044gyerxk" path="res://assets/livingroom/lamp.png" id="6_kemar"]
+[ext_resource type="Texture2D" uid="uid://byfgya7emseiv" path="res://assets/livingroom/table.png" id="7_gjxtx"]
 
 [node name="livingroom" type="Node2D" unique_id=234294754]
-script = ExtResource("1_1bvp3")
+script = ExtResource("1_tnn0p")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1454188114]
 
 [node name="background" type="Sprite2D" parent="." unique_id=1651821241]
-texture = ExtResource("1_0xm2m")
+texture = ExtResource("2_bx3jd")
 
 [node name="plant" type="Sprite2D" parent="." unique_id=1857933016]
 position = Vector2(-504, 183)
 scale = Vector2(0.75, 0.75)
-texture = ExtResource("2_h2yge")
-script = ExtResource("4_lquwl")
+texture = ExtResource("3_p848u")
+script = ExtResource("4_5odt6")
 
 [node name="Button" type="Button" parent="plant" unique_id=1763284418]
 self_modulate = Color(1, 1, 1, 0)
@@ -38,8 +38,8 @@ metadata/_edit_use_anchors_ = true
 [node name="sofa" type="Sprite2D" parent="." unique_id=477604241]
 position = Vector2(-148, 211)
 scale = Vector2(0.75, 0.75)
-texture = ExtResource("5_272bh")
-script = ExtResource("4_lquwl")
+texture = ExtResource("5_au1nr")
+script = ExtResource("4_5odt6")
 
 [node name="Button" type="Button" parent="sofa" unique_id=2113762632]
 self_modulate = Color(1, 1, 1, 0)
@@ -57,8 +57,8 @@ metadata/_edit_use_anchors_ = true
 [node name="lamp" type="Sprite2D" parent="." unique_id=825073205]
 position = Vector2(362, 193)
 scale = Vector2(0.75, 0.75)
-texture = ExtResource("6_5vw27")
-script = ExtResource("4_lquwl")
+texture = ExtResource("6_kemar")
+script = ExtResource("4_5odt6")
 
 [node name="Button" type="Button" parent="lamp" unique_id=1381699498]
 self_modulate = Color(1, 1, 1, 0)
@@ -76,8 +76,8 @@ metadata/_edit_use_anchors_ = true
 [node name="table" type="Sprite2D" parent="." unique_id=2089251197]
 position = Vector2(660, 269)
 scale = Vector2(0.75, 0.75)
-texture = ExtResource("7_kek77")
-script = ExtResource("4_lquwl")
+texture = ExtResource("7_gjxtx")
+script = ExtResource("4_5odt6")
 
 [node name="Button" type="Button" parent="table" unique_id=54897176]
 self_modulate = Color(1, 1, 1, 0)
@@ -91,6 +91,15 @@ offset_top = -150.03331
 offset_right = -234.79007
 offset_bottom = -150.09332
 metadata/_edit_use_anchors_ = true
+
+[node name="Player1" type="Label" parent="." unique_id=88983933]
+self_modulate = Color(0, 0, 0, 1)
+offset_left = -688.0
+offset_top = -362.0
+offset_right = -495.0
+offset_bottom = -293.0
+theme_override_font_sizes/font_size = 50
+text = "Player 1"
 
 [connection signal="button_down" from="plant/Button" to="plant" method="_on_button_button_down"]
 [connection signal="button_up" from="plant/Button" to="plant" method="_on_button_button_up"]
