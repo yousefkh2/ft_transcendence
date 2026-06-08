@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://byfgya7emseiv"
-path="res://.godot/imported/table.png-bbb766302f776cb5fae14c0b2fffa0f5.ctex"
+uid="uid://b2cu8ouukuck"
+path="res://.godot/imported/plant.png-ba8f8ca5e855eb8dc7faea06e3f7143b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/livingroom/table.png"
-dest_files=["res://.godot/imported/table.png-bbb766302f776cb5fae14c0b2fffa0f5.ctex"]
+source_file="res://games/livingroom/assets/plant.png"
+dest_files=["res://.godot/imported/plant.png-ba8f8ca5e855eb8dc7faea06e3f7143b.ctex"]
 
 [params]
 

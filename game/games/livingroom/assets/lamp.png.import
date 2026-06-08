@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://3wq7nbpu41p0"
-path="res://.godot/imported/check_in_button.png-fc8b1b2d6f56fd522b4897124cc28010.ctex"
+uid="uid://1mt044gyerxk"
+path="res://.godot/imported/lamp.png-873c2de4e0dd1a4e77d80f8c8c6f0159.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/livingroom/check_in_button.png"
-dest_files=["res://.godot/imported/check_in_button.png-fc8b1b2d6f56fd522b4897124cc28010.ctex"]
+source_file="res://games/livingroom/assets/lamp.png"
+dest_files=["res://.godot/imported/lamp.png-873c2de4e0dd1a4e77d80f8c8c6f0159.ctex"]
 
 [params]
 

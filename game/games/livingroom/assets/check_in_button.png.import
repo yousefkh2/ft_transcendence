@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bb3xwbovf7jgs"
-path="res://.godot/imported/sofa.png-ff1113f79c3c077a12ecdad6acc4be0b.ctex"
+uid="uid://3wq7nbpu41p0"
+path="res://.godot/imported/check_in_button.png-adc730b5d4b172b4d4c5213405e13ee4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/livingroom/sofa.png"
-dest_files=["res://.godot/imported/sofa.png-ff1113f79c3c077a12ecdad6acc4be0b.ctex"]
+source_file="res://games/livingroom/assets/check_in_button.png"
+dest_files=["res://.godot/imported/check_in_button.png-adc730b5d4b172b4d4c5213405e13ee4.ctex"]
 
 [params]
 

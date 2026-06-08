@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://1mt044gyerxk"
-path="res://.godot/imported/lamp.png-5172361f9ed30efc5aa4b0cbeab04e8f.ctex"
+uid="uid://bjgra1i3id4ye"
+path="res://.godot/imported/main_menu_background.jpg-a0dba004c9a0224f31724d9b9ca888c9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/livingroom/lamp.png"
-dest_files=["res://.godot/imported/lamp.png-5172361f9ed30efc5aa4b0cbeab04e8f.ctex"]
+source_file="res://games/main_menu/main_menu_background.jpg"
+dest_files=["res://.godot/imported/main_menu_background.jpg-a0dba004c9a0224f31724d9b9ca888c9.ctex"]
 
 [params]
 

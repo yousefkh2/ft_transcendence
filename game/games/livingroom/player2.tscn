@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://bcl0npgkfkhyw"]
+
+[ext_resource type="Texture2D" uid="uid://1nas84nhon21" path="res://games/livingroom/assets/player_2_background.png" id="1_nrig4"]
+
+[node name="Node2D" type="Node2D" unique_id=562714961]
+position = Vector2(1921, 1081)
+
+[node name="Background" type="Sprite2D" parent="." unique_id=1149370281]
+texture = ExtResource("1_nrig4")
+
+[node name="sofa_text" type="Label" parent="." unique_id=795765242]
+offset_left = -1775.0
+offset_top = -922.0
+offset_right = -1061.0
+offset_bottom = -834.0
+theme_override_font_sizes/font_size = 64
+text = "Sofa under the window"
+metadata/_edit_use_anchors_ = true
+
+[node name="sofa_text2" type="Label" parent="." unique_id=11177867]
+offset_left = -1769.0
+offset_top = -818.0
+offset_right = -1055.0
+offset_bottom = -730.0
+theme_override_font_sizes/font_size = 64
+text = "lamp right from sofa"
+metadata/_edit_use_anchors_ = true
+
+[node name="sofa_text3" type="Label" parent="." unique_id=1562242655]
+offset_left = -1776.0
+offset_top = -730.0
+offset_right = -1062.0
+offset_bottom = -642.0
+theme_override_font_sizes/font_size = 64
+text = "fries in the back"
+metadata/_edit_use_anchors_ = true

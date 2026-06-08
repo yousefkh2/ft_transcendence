@@ -1,8 +1,9 @@
 [gd_scene format=3 uid="uid://tavodcfudfxs"]
 
-[ext_resource type="Script" uid="uid://cjdu1k17h6ite" path="res://lobby.gd" id="1_2wvic"]
-[ext_resource type="Texture2D" uid="uid://0l6eupeil5t8" path="res://assets/main_menu/lobby.webp" id="1_ll2xe"]
-[ext_resource type="Script" uid="uid://c7q7ycdq6pgw7" path="res://play_button.gd" id="2_xrgmn"]
+[ext_resource type="Script" uid="uid://cjdu1k17h6ite" path="res://lobby.gd" id="1_2nora"]
+[ext_resource type="Texture2D" uid="uid://0l6eupeil5t8" path="res://games/main_menu/lobby.webp" id="2_urq01"]
+[ext_resource type="Script" uid="uid://c7q7ycdq6pgw7" path="res://play_button.gd" id="3_e25pb"]
+[ext_resource type="Script" uid="uid://b6et61n4xtc4j" path="res://games/livingroom/scripts/player_2_button.gd" id="4_urq01"]
 
 [node name="lobby" type="Control" unique_id=1315476839]
 layout_mode = 3
@@ -11,13 +12,13 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_2wvic")
+script = ExtResource("1_2nora")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1545697975]
 layout_mode = 0
 offset_right = 1080.0
 offset_bottom = 1078.0
-texture = ExtResource("1_ll2xe")
+texture = ExtResource("2_urq01")
 
 [node name="title" type="Label" parent="." unique_id=1639197666]
 self_modulate = Color(0, 0, 1, 1)
@@ -29,7 +30,7 @@ offset_bottom = 113.0
 text = "Lobby test testcool bosna"
 uppercase = true
 
-[node name="play_button" type="Button" parent="." unique_id=1393400828]
+[node name="player_1_button" type="Button" parent="." unique_id=1393400828]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.015000001
@@ -40,8 +41,23 @@ offset_left = 0.3899994
 offset_top = 0.37998962
 offset_right = -0.64801025
 offset_bottom = 0.36798096
-text = "PLAY"
-script = ExtResource("2_xrgmn")
+text = "PLAYER 1"
+script = ExtResource("3_e25pb")
+
+[node name="player_2_button" type="Button" parent="." unique_id=1707495089]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.015000001
+anchor_top = 0.351
+anchor_right = 0.15100001
+anchor_bottom = 0.42000002
+offset_left = -0.6100006
+offset_top = -0.33700562
+offset_right = 0.12597656
+offset_bottom = -0.34902954
+text = "PLAYER 2
+"
+script = ExtResource("4_urq01")
 
 [node name="role" type="Label" parent="." unique_id=2098608315]
 self_modulate = Color(1, 0, 0, 1)
@@ -51,4 +67,5 @@ offset_top = 121.0
 offset_right = 65.0
 offset_bottom = 144.0
 
-[connection signal="pressed" from="play_button" to="play_button" method="_on_pressed"]
+[connection signal="pressed" from="player_1_button" to="player_1_button" method="_on_pressed"]
+[connection signal="pressed" from="player_2_button" to="player_2_button" method="_on_pressed"]

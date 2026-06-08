@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://buaq673iyr04d"]
 
 [ext_resource type="Script" uid="uid://yow5y37d3njq" path="res://main.gd" id="1_tnn0p"]
-[ext_resource type="Texture2D" uid="uid://dbe8okx1febs7" path="res://assets/livingroom/livingroom_background.png" id="2_bx3jd"]
-[ext_resource type="Texture2D" uid="uid://b2cu8ouukuck" path="res://assets/livingroom/plant.png" id="3_p848u"]
+[ext_resource type="Texture2D" uid="uid://dbe8okx1febs7" path="res://games/livingroom/assets/livingroom_background.png" id="2_bx3jd"]
+[ext_resource type="Texture2D" uid="uid://b2cu8ouukuck" path="res://games/livingroom/assets/plant.png" id="3_p848u"]
 [ext_resource type="Script" uid="uid://dt2e5bphkhegn" path="res://object.gd" id="4_5odt6"]
-[ext_resource type="Texture2D" uid="uid://bb3xwbovf7jgs" path="res://assets/livingroom/sofa.png" id="5_au1nr"]
-[ext_resource type="Texture2D" uid="uid://1mt044gyerxk" path="res://assets/livingroom/lamp.png" id="6_kemar"]
-[ext_resource type="Texture2D" uid="uid://byfgya7emseiv" path="res://assets/livingroom/table.png" id="7_gjxtx"]
+[ext_resource type="Texture2D" uid="uid://bb3xwbovf7jgs" path="res://games/livingroom/assets/sofa.png" id="5_au1nr"]
+[ext_resource type="Texture2D" uid="uid://1mt044gyerxk" path="res://games/livingroom/assets/lamp.png" id="6_kemar"]
+[ext_resource type="Texture2D" uid="uid://byfgya7emseiv" path="res://games/livingroom/assets/table.png" id="7_gjxtx"]
 
 [node name="livingroom" type="Node2D" unique_id=234294754]
 script = ExtResource("1_tnn0p")
