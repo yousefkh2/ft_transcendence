@@ -8,7 +8,5 @@ func _process(delta: float) -> void:
 
 
 func _on_button_pressed() -> void:
-	print("stream is: ", stream)
 	visible = true
 	play()
-	print("is playing: ", is_playing())

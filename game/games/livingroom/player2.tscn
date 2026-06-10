@@ -48,7 +48,6 @@ offset_right = 890.0
 offset_bottom = 124.0
 stream = ExtResource("2_2wrob")
 volume_db = 2.0
-autoplay = true
 loop = true
 script = ExtResource("3_7ucbt")
 
