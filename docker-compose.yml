@@ -11,6 +11,9 @@ services:
       DB_HOST: db
       DB_PORT: 5432
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      POSTGRES_USER: ${POSTGRES_USER:-transcendence}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-transcendence_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-transcendence}
     ports:
       - "${BACKEND_PORT:-8080}:8080"
     depends_on:

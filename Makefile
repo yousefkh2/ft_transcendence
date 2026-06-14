@@ -1,6 +1,6 @@
 COMPOSE=docker compose
 
-.PHONY: up down restart build logs ps test health clean
+.PHONY: up down restart build logs ps test health clean migrate
 
 up:
 	$(COMPOSE) up -d --build
@@ -28,3 +28,6 @@ health:
 
 clean:
 	$(COMPOSE) down --remove-orphans
+
+migrate:
+	docker exec -i transcendence-db psql -U transcendence -d transcendence < backend/sql/migrations/001_initial_schema.sql
