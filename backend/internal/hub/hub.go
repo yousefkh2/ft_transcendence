@@ -34,20 +34,26 @@ type Room struct {
 type Hub struct {
 	mu    sync.Mutex
 	rooms map[string]*Room
+	allowedOrigins []string
 }
 
 func NewHub() *Hub {
 	return &Hub{
 		rooms: make(map[string]*Room),
+		allowedOrigins: []string{"http://localhost:5173"},
+	}
+}
+
+func NewHubWithOrigins(origins []string) *Hub {
+	return &Hub{
+		rooms: make(map[string]*Room),
+		allowedOrigins: origins,
 	}
 }
 
 func (h *Hub) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
-	opts := &websocket.AcceptOptions{
-		OriginPatterns: []string{"http://localhost:5173"},
-	}
 
-	conn, err := websocket.Accept(w, r, opts)
+	conn, err := websocket.Accept(w, r, &websocket.AcceptOptions{OriginPatterns: h.allowedOrigins})
 	if err != nil {
 		log.Printf("websocket upgrade failed: %v", err)
 		return
