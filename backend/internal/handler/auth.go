@@ -40,7 +40,7 @@ func (h *AuthHandler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 	).Scan(&userID)
 
 	if err != nil {
-		http.Error(w, "user already exist", http.StatusConflict)
+		http.Error(w, "user already exists", http.StatusConflict)
 		return
 	}
 

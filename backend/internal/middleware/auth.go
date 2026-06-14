@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -22,8 +23,15 @@ func WithAuth(next http.HandlerFunc) http.HandlerFunc {
 
 		tokenString := strings.TrimPrefix(header, "Bearer ")
 		secret := os.Getenv("JWT_SECRET")
+		if secret == "" {
+			http.Error(w, "internal error", http.StatusInternalServerError)
+			return
+		}
 
 		token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method")
+			}
 			return []byte(secret), nil
 		})
 
@@ -33,7 +41,11 @@ func WithAuth(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		claims := token.Claims.(jwt.MapClaims)
-		userID := claims["subs"].(string)
+		userID, ok := claims["sub"].(string)
+		if !ok {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
 
 		ctx := context.WithValue(r.Context(), UserIDKey, userID)
 		next(w, r.WithContext(ctx))

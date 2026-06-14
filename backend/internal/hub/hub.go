@@ -32,8 +32,9 @@ type Room struct {
 
 // Hub  = owner of all live rooms.
 type Hub struct {
-	mu    sync.Mutex
-	rooms map[string]*Room
+	mu		sync.Mutex
+	rooms	map[string]*Room
+	
 }
 
 func NewHub() *Hub {
