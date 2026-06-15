@@ -6,7 +6,7 @@
 -- IDENTITY & GAMIFICATION LAYER
 -- ==========================================
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE users (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE friendships (
+CREATE TABLE IF NOT EXISTS friendships (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     requester_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     addressee_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -24,19 +24,19 @@ CREATE TABLE friendships (
     CONSTRAINT check_not_self CHECK (requester_id != addressee_id)
 );
 
-CREATE UNIQUE INDEX idx_unique_friendship ON friendships (
+CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_friendship ON friendships (
     LEAST(requester_id, addressee_id),
     GREATEST(requester_id, addressee_id)
 );
 
-CREATE INDEX idx_friendships_requester ON friendships(requester_id);
-CREATE INDEX idx_friendships_addressee ON friendships(addressee_id);
+CREATE INDEX IF NOT EXISTS idx_friendships_requester ON friendships(requester_id);
+CREATE INDEX IF NOT EXISTS idx_friendships_addressee ON friendships(addressee_id);
 
 -- ==========================================
 -- MATCHMAKING & GAME ENGINE LAYER
 -- ==========================================
 
-CREATE TABLE game_sessions (
+CREATE TABLE IF NOT EXISTS game_sessions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     game_mode VARCHAR(50) NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'active',
@@ -44,7 +44,7 @@ CREATE TABLE game_sessions (
     ended_at TIMESTAMPTZ
 );
 
-CREATE TABLE session_participants (
+CREATE TABLE IF NOT EXISTS session_participants (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     session_id UUID NOT NULL REFERENCES game_sessions(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -54,14 +54,14 @@ CREATE TABLE session_participants (
     CONSTRAINT unique_user_per_session UNIQUE (session_id, user_id)
 );
 
-CREATE INDEX idx_participants_user_id ON session_participants(user_id);
-CREATE INDEX idx_participants_session_id ON session_participants(session_id);
+CREATE INDEX IF NOT EXISTS idx_participants_user_id ON session_participants(user_id);
+CREATE INDEX IF NOT EXISTS idx_participants_session_id ON session_participants(session_id);
 
 -- ==========================================
 -- AI REVIEW & LEARNING LAYER
 -- ==========================================
 
-CREATE TABLE flashcards (
+CREATE TABLE IF NOT EXISTS flashcards (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     session_id UUID NOT NULL REFERENCES game_sessions(id) ON DELETE CASCADE,
@@ -72,4 +72,4 @@ CREATE TABLE flashcards (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_flashcards_user_id ON flashcards(user_id);
+CREATE INDEX IF NOT EXISTS idx_flashcards_user_id ON flashcards(user_id);

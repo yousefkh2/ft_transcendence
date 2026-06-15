@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/pgconn"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -43,7 +43,8 @@ func (h *AuthHandler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 	).Scan(&userID)
 
 	if err != nil {
-		if strings.Contains(err.Error(), "unique") {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
 			http.Error(w, "user already exists", http.StatusConflict)
 		} else {
 			http.Error(w, "internal error", http.StatusInternalServerError)

@@ -30,4 +30,5 @@ clean:
 	$(COMPOSE) down --remove-orphans
 
 migrate:
-	docker exec -i transcendence-db psql -U $${POSTGRES_USER:-transcendence} -d $${POSTGRES_DB:-transcendence} < backend/sql/migrations/001_initial_schema.sql
+	docker exec -i transcendence-db psql -v ON_ERROR_STOP=1 -U $${POSTGRES_USER:-transcendence} -d $${POSTGRES_DB:-transcendence} -c 'CREATE EXTENSION IF NOT EXISTS pgcrypto;'
+	docker exec -i transcendence-db psql -v ON_ERROR_STOP=1 -1 -U $${POSTGRES_USER:-transcendence} -d $${POSTGRES_DB:-transcendence} < backend/sql/migrations/001_initial_schema.sql

@@ -40,7 +40,11 @@ func WithAuth(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		claims := token.Claims.(jwt.MapClaims)
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
 		userID, ok := claims["sub"].(string)
 		if !ok {
 			http.Error(w, "unauthorized", http.StatusUnauthorized)
