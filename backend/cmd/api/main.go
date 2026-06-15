@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"transcendence/backend/internal/db"
 	"transcendence/backend/internal/handler"
 	"transcendence/backend/internal/hub"
 	"transcendence/backend/internal/middleware"
@@ -12,6 +13,13 @@ import (
 
 func main() {
 	hub := hub.NewHub()
+	pool, err := db.Connect()
+	if err != nil {
+		log.Fatalf("database connection failed: %v", err)
+	}
+	defer pool.Close()
+
+	authHandler := &handler.AuthHandler{DB: pool}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler.HandleRoot)
@@ -22,6 +30,9 @@ func main() {
 	mux.HandleFunc("/transcriptions", handler.HandleTranscription)
 	mux.HandleFunc("/realtime/transcription-session", handler.HandleRealtimeTranscriptionSession)
 
+	mux.HandleFunc("POST /api/auth/register", authHandler.HandleRegister)
+	mux.HandleFunc("POST /api/auth/login", authHandler.HandleLogin)
+	
 	port := handler.Getenv("PORT", "8080")
 	addr := ":" + port
 
