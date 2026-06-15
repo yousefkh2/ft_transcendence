@@ -17,5 +17,12 @@ func Connect() (*pgxpool.Pool, error) {
 		os.Getenv("POSTGRES_PASSWORD"),
 		os.Getenv("POSTGRES_DB"),
 	)
-	return pgxpool.New(context.Background(), dsn)
+	pool, err := pgxpool.New(context.Background(), dsn)
+	if err != nil {
+		return nil, err
+	}
+	if err := pool.Ping(context.Background()); err != nil {
+		return nil, err
+	}
+	return pool, nil
 }

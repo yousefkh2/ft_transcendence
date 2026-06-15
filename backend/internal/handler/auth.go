@@ -2,8 +2,11 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
+	"strings"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -40,7 +43,11 @@ func (h *AuthHandler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 	).Scan(&userID)
 
 	if err != nil {
-		http.Error(w, "user already exists", http.StatusConflict)
+		if strings.Contains(err.Error(), "unique") {
+			http.Error(w, "user already exists", http.StatusConflict)
+		} else {
+			http.Error(w, "internal error", http.StatusInternalServerError)
+		}
 		return
 	}
 
@@ -68,7 +75,11 @@ func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	).Scan(&userID, &passwordHash)
 
 	if err != nil {
-		http.Error(w, "invalid credentials", http.StatusUnauthorized)
+		if errors.Is(err, pgx.ErrNoRows) {
+			http.Error(w, "invalid credentials", http.StatusUnauthorized)
+		} else {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
 		return
 	}
 
