@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://tavodcfudfxs"]
 
 [ext_resource type="Script" uid="uid://cjdu1k17h6ite" path="res://lobby.gd" id="1_2nora"]
+[ext_resource type="Script" uid="uid://ck0vbdk15n0y7" path="res://game_files/http_request.gd" id="2_e25pb"]
 [ext_resource type="Texture2D" uid="uid://0l6eupeil5t8" path="res://games/main_menu/lobby.webp" id="2_urq01"]
 [ext_resource type="Script" uid="uid://c7q7ycdq6pgw7" path="res://play_button.gd" id="3_e25pb"]
 [ext_resource type="Script" uid="uid://b6et61n4xtc4j" path="res://games/livingroom/scripts/player_2_button.gd" id="4_urq01"]
@@ -13,6 +14,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_2nora")
+
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=115465134]
+script = ExtResource("2_e25pb")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1545697975]
 layout_mode = 0
