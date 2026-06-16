@@ -1,20 +1,22 @@
 package hub
 
 import (
-	"log"
-	"net/http"
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"log"
+	"net/http"
 	"strings"
-	"time"
 	"sync"
+	"time"
 
-	"github.com/jackc/pgx/v5/pgxpool"
+	"transcendence/backend/internal/game"
+	"transcendence/backend/internal/handler"
+	"transcendence/backend/internal/model"
+
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"transcendence/backend/internal/model"
-	"transcendence/backend/internal/game"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Player struct {
@@ -29,6 +31,8 @@ type Room struct {
 	completedObjectives	map[string]bool
 	objectPositions		map[string]model.Position
 	roundDeadline		time.Time
+	userIDs				map[string]string
+	startedAt			time.Time
 }
 
 // Hub  = owner of all live rooms.
@@ -118,6 +122,14 @@ func (h *Hub) handleRoomJoin(
 	joinedRoom *string,
 	joinedRole *string,
 ) {
+	userID, err := handler.ParseJWT(message.Token)
+	if err != nil {
+		_ = wsjson.Write(ctx, conn, model.ServerMessage{
+			Type: "error",
+			Message: "invalid or missing token",
+		})
+	}
+
 	if strings.TrimSpace(message.RoomCode) == "" {
 		_ = wsjson.Write(ctx, conn, model.ServerMessage{
 			Type:    "error",
@@ -145,6 +157,7 @@ func (h *Hub) handleRoomJoin(
 			players:             make(map[string]*Player),
 			completedObjectives: make(map[string]bool),
 			objectPositions:     game.InitialObjectPositions(),
+			userIDs: make(map[string]string),
 		}
 		h.rooms[roomCode] = room
 	}
@@ -166,9 +179,11 @@ func (h *Hub) handleRoomJoin(
 	}
 
 	room.players[role] = player
+	room.userIDs[role] = userID
 
 	if len(room.players) == 2 && room.roundDeadline.IsZero() {
 		room.roundDeadline = time.Now().Add(game.RoundDuration)
+		room.startedAt = time.Now()
 	}
 
 	*joinedRoom = room.code
