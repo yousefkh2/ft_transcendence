@@ -10,6 +10,7 @@ import (
 	"time"
 	"sync"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
 	"transcendence/backend/internal/model"
@@ -17,30 +18,32 @@ import (
 )
 
 type Player struct {
-	id      string
-	conn    *websocket.Conn
-	writeMu sync.Mutex
+	id		string
+	conn	*websocket.Conn
+	writeMu	sync.Mutex
 }
 
 type Room struct {
-	code                string
-	players             map[string]*Player
-	completedObjectives map[string]bool
-	objectPositions     map[string]model.Position
-	roundDeadline       time.Time
+	code				string
+	players				map[string]*Player
+	completedObjectives	map[string]bool
+	objectPositions		map[string]model.Position
+	roundDeadline		time.Time
 }
 
 // Hub  = owner of all live rooms.
 type Hub struct {
-	mu    sync.Mutex
-	rooms map[string]*Room
-	allowedOrigins []string
+	mu				sync.Mutex
+	rooms			map[string]*Room
+	allowedOrigins	[]string
+	db				*pgxpool.Pool
 }
 
-func NewHub() *Hub {
+func NewHub(db *pgxpool.Pool) *Hub {
 	return &Hub{
 		rooms: make(map[string]*Room),
 		allowedOrigins: []string{"http://localhost:5173"},
+		db: db,
 	}
 }
 
