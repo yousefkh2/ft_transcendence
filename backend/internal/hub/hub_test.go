@@ -2,14 +2,17 @@ package hub_test
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
+	"github.com/golang-jwt/jwt/v5"
 
 	"transcendence/backend/internal/hub"
 	"transcendence/backend/internal/model"
@@ -45,6 +48,23 @@ func dial(t *testing.T, server *httptest.Server) *websocket.Conn {
 	return conn
 }
 
+func generateTestToken(t *testing.T) string {
+	t.Helper()
+
+	claims := jwt.MapClaims{
+		"sub": fmt.Sprintf("test-user-%d", time.Now().UnixNano()),
+		"exp": time.Now().Add(time.Hour).Unix(),
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	signed, err := token.SignedString([]byte("test_secret_for_hub_tests"))
+	if err != nil {
+		t.Fatalf("failed to sign test token: %v", err)
+	}
+
+	return signed
+}
+
 func joinRoom(t *testing.T, conn *websocket.Conn, roomCode string) model.ServerMessage {
 	t.Helper()
 
@@ -54,6 +74,7 @@ func joinRoom(t *testing.T, conn *websocket.Conn, roomCode string) model.ServerM
 	if err := wsjson.Write(ctx, conn, model.ClientMessage{
 		Type:     "room.join",
 		RoomCode: roomCode,
+		Token: generateTestToken(t),
 	}); err != nil {
 		t.Fatalf("write room.join failed: %v", err)
 	}
@@ -204,4 +225,9 @@ func TestRoomJoin_RoomDeletedAfterLastPlayerLeaves(t *testing.T) {
 	if second.Role != "mission_control" {
 		t.Fatalf("expected recreated room to assign mission_control, got %s", second.Role)
 	}
+}
+
+func TestMain(m *testing.M) {
+	os.Setenv("JWT_SECRET", "test_secret_for_hub_tests")
+	os.Exit(m.Run())
 }

@@ -12,12 +12,13 @@ import (
 
 
 func main() {
-	hub := hub.NewHub()
 	pool, err := db.Connect()
 	if err != nil {
 		log.Fatalf("database connection failed: %v", err)
 	}
 	defer pool.Close()
+	
+	hub := hub.NewHub(pool)
 
 	authHandler := &handler.AuthHandler{DB: pool}
 

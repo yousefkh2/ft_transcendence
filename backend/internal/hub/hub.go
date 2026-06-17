@@ -1,46 +1,54 @@
 package hub
 
 import (
-	"log"
-	"net/http"
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"log"
+	"net/http"
 	"strings"
-	"time"
 	"sync"
+	"time"
+
+	"transcendence/backend/internal/db"
+	"transcendence/backend/internal/game"
+	"transcendence/backend/internal/handler"
+	"transcendence/backend/internal/model"
 
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"transcendence/backend/internal/model"
-	"transcendence/backend/internal/game"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Player struct {
-	id      string
-	conn    *websocket.Conn
-	writeMu sync.Mutex
+	id		string
+	conn	*websocket.Conn
+	writeMu	sync.Mutex
 }
 
 type Room struct {
-	code                string
-	players             map[string]*Player
-	completedObjectives map[string]bool
-	objectPositions     map[string]model.Position
-	roundDeadline       time.Time
+	code				string
+	players				map[string]*Player
+	completedObjectives	map[string]bool
+	objectPositions		map[string]model.Position
+	roundDeadline		time.Time
+	userIDs				map[string]string
+	startedAt			time.Time
 }
 
 // Hub  = owner of all live rooms.
 type Hub struct {
-	mu    sync.Mutex
-	rooms map[string]*Room
-	allowedOrigins []string
+	mu				sync.Mutex
+	rooms			map[string]*Room
+	allowedOrigins	[]string
+	db				*pgxpool.Pool
 }
 
-func NewHub() *Hub {
+func NewHub(db *pgxpool.Pool) *Hub {
 	return &Hub{
 		rooms: make(map[string]*Room),
 		allowedOrigins: []string{"http://localhost:5173"},
+		db: db,
 	}
 }
 
@@ -115,6 +123,15 @@ func (h *Hub) handleRoomJoin(
 	joinedRoom *string,
 	joinedRole *string,
 ) {
+	userID, err := handler.ParseJWT(message.Token)
+	if err != nil {
+		_ = wsjson.Write(ctx, conn, model.ServerMessage{
+			Type: "error",
+			Message: "invalid or missing token",
+		})
+		return
+	}
+
 	if strings.TrimSpace(message.RoomCode) == "" {
 		_ = wsjson.Write(ctx, conn, model.ServerMessage{
 			Type:    "error",
@@ -142,6 +159,7 @@ func (h *Hub) handleRoomJoin(
 			players:             make(map[string]*Player),
 			completedObjectives: make(map[string]bool),
 			objectPositions:     game.InitialObjectPositions(),
+			userIDs: make(map[string]string),
 		}
 		h.rooms[roomCode] = room
 	}
@@ -163,9 +181,11 @@ func (h *Hub) handleRoomJoin(
 	}
 
 	room.players[role] = player
+	room.userIDs[role] = userID
 
 	if len(room.players) == 2 && room.roundDeadline.IsZero() {
 		room.roundDeadline = time.Now().Add(game.RoundDuration)
+		room.startedAt = time.Now()
 	}
 
 	*joinedRoom = room.code
@@ -234,6 +254,8 @@ func (h *Hub) handleObjectMoved(
 		completedObjectives := game.CompletedObjectiveIDs(room.completedObjectives)
 		objectPositions := game.CopyObjectPositions(room.objectPositions)
 		remaining := game.RemainingSeconds(room.roundDeadline)
+		startedAt := room.startedAt
+		userIDs := copyUserIDs(room.userIDs)
 
 		players := make([]*Player, 0, len(room.players))
 		for _, roomPlayer := range room.players {
@@ -242,6 +264,19 @@ func (h *Hub) handleObjectMoved(
 
 		h.mu.Unlock()
 
+		go func() {
+			result := db.MatchResult{
+				GameMode:		"apartment_setup",
+				StartedAt: 		startedAt,
+				EndedAt: 		time.Now(),
+				Won: 			false,
+				Participants: 	userIDs,
+			}
+			if err := db.SaveMatch(context.Background(), h.db, result); err != nil {
+				log.Printf("failed to save expired match for room %s: %v", joinedRoom, err)
+			}
+		}()
+		
 		expiredMessage := model.ServerMessage{
 			Type:                "game.round_expired",
 			RoomCode:            joinedRoom,
@@ -276,9 +311,14 @@ func (h *Hub) handleObjectMoved(
 	messageType := "game.state_updated"
 	stateMessage := "object moved"
 
+	var startedAt time.Time
+	var userIDs map[string]string
+
 	if game.AllObjectivesCompleted(room.completedObjectives) {
 		messageType = "game.round_completed"
 		stateMessage = "round completed"
+		startedAt = room.startedAt
+		userIDs = copyUserIDs(room.userIDs)
 	}
 
 	players := make([]*Player, 0, len(room.players))
@@ -288,6 +328,21 @@ func (h *Hub) handleObjectMoved(
 
 	h.mu.Unlock()
 
+	if messageType == "game.round_completed" {
+		go func() {
+			result := db.MatchResult{
+				GameMode:		"apartment_setup",
+				StartedAt:		startedAt,
+				EndedAt:		time.Now(),
+				Won:			true,
+				Participants:	userIDs,
+			}
+			if err := db.SaveMatch(context.Background(), h.db, result); err != nil {
+				log.Printf("failed to save completed match for room %s: %v", joinedRoom, err)
+			}
+		}()
+	}
+	
 	log.Printf("object moved in room %s: %s to (%d,%d)", joinedRoom,
 		message.ObjectID, message.X, message.Y)
 
@@ -407,4 +462,12 @@ func newPlayerID() (string, error) {
 	}
 
 	return "player_" + hex.EncodeToString(bytes), nil
+}
+
+func copyUserIDs(src map[string]string) map[string]string {
+	dst := make(map[string]string, len(src))
+	for k, v := range src {
+		dst[k] = v
+	}
+	return dst
 }
