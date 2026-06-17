@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"golang.org/x/crypto/nacl/secretbox"
+	// "golang.org/x/crypto/nacl/secretbox"
 )
 
 func createJWT(userID string) (string, error) {
