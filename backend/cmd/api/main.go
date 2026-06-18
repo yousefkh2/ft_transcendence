@@ -21,7 +21,8 @@ func main() {
 	hub := hub.NewHub(pool)
 
 	authHandler := &handler.AuthHandler{DB: pool}
-
+	profileHandler := &handler.ProfileHandler{DB: pool}
+	
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler.HandleRoot)
 	mux.HandleFunc("/health", handler.HandleHealth)
@@ -33,6 +34,8 @@ func main() {
 
 	mux.HandleFunc("POST /api/auth/register", authHandler.HandleRegister)
 	mux.HandleFunc("POST /api/auth/login", authHandler.HandleLogin)
+	mux.HandleFunc("GET /api/users/me", middleware.WithAuth(profileHandler.HandleMe))
+	mux.HandleFunc("GET /api/users/me/matches", middleware.WithAuth(profileHandler.HandleMatchHistory))
 	
 	port := handler.Getenv("PORT", "8080")
 	addr := ":" + port
