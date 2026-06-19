@@ -7,6 +7,9 @@ node_modules/
 .env
 *.log
 .DS_STORE
+.gitignore
+moves.txt
+test_*.sh
 
 # Frontend
 frontend/node_modules/

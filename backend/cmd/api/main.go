@@ -8,6 +8,8 @@ import (
 	"transcendence/backend/internal/handler"
 	"transcendence/backend/internal/hub"
 	"transcendence/backend/internal/middleware"
+
+	"github.com/labstack/echo/v4"
 )
 
 
@@ -22,6 +24,7 @@ func main() {
 
 	authHandler := &handler.AuthHandler{DB: pool}
 	profileHandler := &handler.ProfileHandler{DB: pool}
+	friendHandler := &handler.FriendHandler{DB: pool}
 	
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler.HandleRoot)
@@ -36,6 +39,17 @@ func main() {
 	mux.HandleFunc("POST /api/auth/login", authHandler.HandleLogin)
 	mux.HandleFunc("GET /api/users/me", middleware.WithAuth(profileHandler.HandleMe))
 	mux.HandleFunc("GET /api/users/me/matches", middleware.WithAuth(profileHandler.HandleMatchHistory))
+
+	e := echo.New()
+	e.Use(middleware.EchoWithAuth)
+	e.POST("/api/friends/requests", friendHandler.HandleSendRequest)
+	e.GET("/api/friends/requests", friendHandler.HandleListRequests)
+	e.POST("/api/friends/requests/:id/accept", friendHandler.HandleAcceptRequest)
+	e.POST("/api/friends/requests/:id/decline", friendHandler.HandleDeclineRequest)
+	e.GET("/api/friends", friendHandler.HandleListFriends)
+
+	mux.Handle("/api/friends", e)
+	mux.Handle("/api/friends/", e)
 	
 	port := handler.Getenv("PORT", "8080")
 	addr := ":" + port

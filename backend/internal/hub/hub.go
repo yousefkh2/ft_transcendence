@@ -12,7 +12,7 @@ import (
 
 	"transcendence/backend/internal/db"
 	"transcendence/backend/internal/game"
-	"transcendence/backend/internal/handler"
+	"transcendence/backend/internal/auth"
 	"transcendence/backend/internal/model"
 
 	"github.com/coder/websocket"
@@ -123,7 +123,7 @@ func (h *Hub) handleRoomJoin(
 	joinedRoom *string,
 	joinedRole *string,
 ) {
-	userID, err := handler.ParseJWT(message.Token)
+	userID, err := auth.ParseJWT(message.Token)
 	if err != nil {
 		_ = wsjson.Write(ctx, conn, model.ServerMessage{
 			Type: "error",

@@ -1,4 +1,4 @@
-package handler
+package auth
 
 import (
 	"fmt"
@@ -7,10 +7,9 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	// "golang.org/x/crypto/nacl/secretbox"
 )
 
-func createJWT(userID string) (string, error) {
+func CreateJWT(userID string) (string, error) {
 	secret := os.Getenv("JWT_SECRET")
 	if secret == "" {
 		return "", fmt.Errorf("JWT_SECRET is not set")
