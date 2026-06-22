@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"transcendence/backend/internal/auth"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -89,7 +90,7 @@ func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := createJWT(userID)
+	token, err := auth.CreateJWT(userID)
 	if err != nil {
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
