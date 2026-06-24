@@ -1,14 +1,15 @@
 package handler
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 
 	"transcendence/backend/internal/auth"
+
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -22,21 +23,19 @@ type registerRequest struct {
 	Password	string `json:"password"`
 }
 
-func (h *AuthHandler) HandleRegister(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) HandleRegister(c echo.Context) error {
 	var req registerRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid json", http.StatusBadRequest)
-		return
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadGateway, "invalid json")
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
-		http.Error(w, "internal error", http.StatusInternalServerError)
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 	}
 
 	var userID string
-	err = h.DB.QueryRow(r.Context(),
+	err = h.DB.QueryRow(c.Request().Context(),
 		`INSERT INTO users (username, email, password_hash)
 		VALUES ($1, $2, $3)
 		RETURNING id`,
@@ -46,16 +45,12 @@ func (h *AuthHandler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			http.Error(w, "user already exists", http.StatusConflict)
-		} else {
-			http.Error(w, "internal error", http.StatusInternalServerError)
+			return echo.NewHTTPError(http.StatusConflict, "user already exists")
 		}
-		return
+			return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{"id": userID})
+	
+	return echo.NewHTTPError(http.StatusCreated, map[string]string{"id": userID})
 }
 
 type loginRequest struct {
@@ -63,39 +58,33 @@ type loginRequest struct {
 	Password	string `json:"password"`
 }
 
-func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) HandleLogin(c echo.Context) error {
 	var req loginRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid json", http.StatusBadRequest)
-		return
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
 	}
 
 	var userID, passwordHash string
-	err := h.DB.QueryRow(r.Context(),
+	err := h.DB.QueryRow(c.Request().Context(),
 		`SELECT id, password_hash FROM users WHERE email = $1`,
 		req.Email,
 	).Scan(&userID, &passwordHash)
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			http.Error(w, "invalid credentials", http.StatusUnauthorized)
-		} else {
-			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return echo.NewHTTPError(http.StatusUnauthorized, "invalid credentials")
 		}
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal server error")
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(passwordHash), []byte(req.Password)); err != nil {
-		http.Error(w, "invalid credentials", http.StatusUnauthorized)
-		return
+		return echo.NewHTTPError(http.StatusUnauthorized, "invlaid credentials")
 	}
 
 	token, err := auth.CreateJWT(userID)
 	if err != nil {
-		http.Error(w, "internal error", http.StatusInternalServerError)
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal server error")
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"token": token})
+	return c.JSON(http.StatusOK, map[string]string{"token": token})
 }
