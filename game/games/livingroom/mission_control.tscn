@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bcl0npgkfkhyw"]
 
 [ext_resource type="Texture2D" uid="uid://1nas84nhon21" path="res://games/livingroom/assets/player_2_background.png" id="1_nrig4"]
-[ext_resource type="Script" uid="uid://f0yoi8mu6o2r" path="res://games/livingroom/easteregg.gd" id="3_7ucbt"]
+[ext_resource type="Script" uid="uid://f0yoi8mu6o2r" path="res://games/livingroom/scripts/easteregg.gd" id="3_7ucbt"]
 
 [sub_resource type="VideoStreamTheora" id="VideoStreamTheora_mh6wk"]
 file = "res://games/livingroom/assets/easteregg3123.ogv"

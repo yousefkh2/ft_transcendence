@@ -1,9 +1,8 @@
 [gd_scene format=3 uid="uid://tavodcfudfxs"]
 
-[ext_resource type="Script" uid="uid://cjdu1k17h6ite" path="res://lobby.gd" id="1_2nora"]
+[ext_resource type="Script" uid="uid://cjdu1k17h6ite" path="res://games/livingroom/scripts/lobby.gd" id="1_2nora"]
 [ext_resource type="Texture2D" uid="uid://0l6eupeil5t8" path="res://games/main_menu/lobby.webp" id="2_urq01"]
-[ext_resource type="Script" uid="uid://c7q7ycdq6pgw7" path="res://play_button.gd" id="3_e25pb"]
-[ext_resource type="Script" uid="uid://b6et61n4xtc4j" path="res://games/livingroom/scripts/player_2_button.gd" id="4_urq01"]
+[ext_resource type="Script" uid="uid://c7q7ycdq6pgw7" path="res://games/livingroom/scripts/play_button.gd" id="3_e25pb"]
 [ext_resource type="Script" uid="uid://upatq3htbwxo" path="res://game_files/network_manager.gd" id="5_e25pb"]
 
 [node name="lobby" type="Control" unique_id=1315476839]
@@ -45,21 +44,6 @@ offset_bottom = 0.36798096
 text = "PLAYER 1"
 script = ExtResource("3_e25pb")
 
-[node name="player_2_button" type="Button" parent="." unique_id=1707495089]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.015000001
-anchor_top = 0.351
-anchor_right = 0.15100001
-anchor_bottom = 0.42000002
-offset_left = -0.6100006
-offset_top = -0.33700562
-offset_right = 0.12597656
-offset_bottom = -0.34902954
-text = "PLAYER 2
-"
-script = ExtResource("4_urq01")
-
 [node name="role" type="Label" parent="." unique_id=2098608315]
 self_modulate = Color(1, 0, 0, 1)
 layout_mode = 0
@@ -72,4 +56,3 @@ offset_bottom = 144.0
 script = ExtResource("5_e25pb")
 
 [connection signal="pressed" from="player_1_button" to="player_1_button" method="_on_pressed"]
-[connection signal="pressed" from="player_2_button" to="player_2_button" method="_on_pressed"]
