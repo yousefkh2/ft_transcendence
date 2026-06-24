@@ -1,37 +1,28 @@
 extends Control
 
 @onready var role_label = $role
-@onready var http_request = $HTTPRequest
 
 func _ready():
-	role_label.text = "Loading role..."
+	role_label.text = "Connecting..."
 
-	http_request.request_completed.connect(_on_request_completed)
+	NetworkManager.connected.connect(_on_connected)
+	NetworkManager.room_joined.connect(_on_room_joined)
+	NetworkManager.connection_failed.connect(_on_connection_failed)
 
-	var err = http_request.request(
-		"http://localhost:8080/api/player"
-	)
-
-	if err != OK:
-		role_label.text = "Request failed"
+	NetworkManager.connect_to_server()
 
 
-func _on_request_completed(
-	result,
-	response_code,
-	headers,
-	body
-):
+func _on_connected():
+	print("Connected, joining room...")
 
-	if response_code != 200:
-		role_label.text = "Server Error"
-		return
+	NetworkManager.join_room("TEST")
 
-	var text = body.get_string_from_utf8()
 
-	print(text)
+func _on_room_joined(role: String):
+	print("Assigned role:", role)
 
-	var data = JSON.parse_string(text)
+	role_label.text = "Role: " + role
 
-	if data:
-		role_label.text = "Role: " + str(data.role)
+
+func _on_connection_failed(message: String):
+	role_label.text = "Error: " + message

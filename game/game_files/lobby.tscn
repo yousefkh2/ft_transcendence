@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://tavodcfudfxs"]
 
 [ext_resource type="Script" uid="uid://cjdu1k17h6ite" path="res://lobby.gd" id="1_2nora"]
-[ext_resource type="Script" uid="uid://ck0vbdk15n0y7" path="res://game_files/http_request.gd" id="2_e25pb"]
 [ext_resource type="Texture2D" uid="uid://0l6eupeil5t8" path="res://games/main_menu/lobby.webp" id="2_urq01"]
 [ext_resource type="Script" uid="uid://c7q7ycdq6pgw7" path="res://play_button.gd" id="3_e25pb"]
 [ext_resource type="Script" uid="uid://b6et61n4xtc4j" path="res://games/livingroom/scripts/player_2_button.gd" id="4_urq01"]
+[ext_resource type="Script" uid="uid://upatq3htbwxo" path="res://game_files/network_manager.gd" id="5_e25pb"]
 
 [node name="lobby" type="Control" unique_id=1315476839]
 layout_mode = 3
@@ -15,12 +15,9 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_2nora")
 
-[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=115465134]
-script = ExtResource("2_e25pb")
-
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1545697975]
 layout_mode = 0
-offset_right = 1080.0
+offset_right = 1919.0
 offset_bottom = 1078.0
 texture = ExtResource("2_urq01")
 
@@ -70,6 +67,9 @@ offset_left = 25.0
 offset_top = 121.0
 offset_right = 65.0
 offset_bottom = 144.0
+
+[node name="NetworkManager" type="Node" parent="." unique_id=1152700285]
+script = ExtResource("5_e25pb")
 
 [connection signal="pressed" from="player_1_button" to="player_1_button" method="_on_pressed"]
 [connection signal="pressed" from="player_2_button" to="player_2_button" method="_on_pressed"]

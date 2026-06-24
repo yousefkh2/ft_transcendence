@@ -1,8 +1,10 @@
 [gd_scene format=3 uid="uid://bcl0npgkfkhyw"]
 
 [ext_resource type="Texture2D" uid="uid://1nas84nhon21" path="res://games/livingroom/assets/player_2_background.png" id="1_nrig4"]
-[ext_resource type="VideoStream" uid="uid://ck2jp0cw7kyq7" path="res://games/livingroom/assets/easteregg3123.ogv" id="2_2wrob"]
 [ext_resource type="Script" uid="uid://f0yoi8mu6o2r" path="res://games/livingroom/easteregg.gd" id="3_7ucbt"]
+
+[sub_resource type="VideoStreamTheora" id="VideoStreamTheora_mh6wk"]
+file = "res://games/livingroom/assets/easteregg3123.ogv"
 
 [node name="Node2D" type="Node2D" unique_id=562714961]
 position = Vector2(1921, 1081)
@@ -11,7 +13,7 @@ position = Vector2(1921, 1081)
 position = Vector2(-1031, -639)
 
 [node name="Background" type="Sprite2D" parent="." unique_id=1149370281]
-position = Vector2(3, -1)
+position = Vector2(-64, -91)
 texture = ExtResource("1_nrig4")
 
 [node name="sofa_text" type="Label" parent="." unique_id=795765242]
@@ -46,7 +48,7 @@ offset_left = -790.0
 offset_top = -708.0
 offset_right = 890.0
 offset_bottom = 124.0
-stream = ExtResource("2_2wrob")
+stream = SubResource("VideoStreamTheora_mh6wk")
 volume_db = 2.0
 loop = true
 script = ExtResource("3_7ucbt")

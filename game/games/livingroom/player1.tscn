@@ -14,6 +14,8 @@ script = ExtResource("1_tnn0p")
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1454188114]
 
 [node name="background" type="Sprite2D" parent="." unique_id=1651821241]
+position = Vector2(-3.0000076, -0.99998856)
+scale = Vector2(1.0811726, 1.2220969)
 texture = ExtResource("2_bx3jd")
 
 [node name="plant" type="Sprite2D" parent="." unique_id=1857933016]

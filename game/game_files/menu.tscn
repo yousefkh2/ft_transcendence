@@ -13,8 +13,8 @@ grow_vertical = 2
 
 [node name="background" type="TextureRect" parent="." unique_id=468326197]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 1923.0
+offset_bottom = 1082.0
 texture = ExtResource("1_vgymj")
 
 [node name="title" type="Label" parent="." unique_id=1861832759]
