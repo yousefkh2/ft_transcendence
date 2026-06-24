@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"log"
-	"net/http"
 	"strings"
 	"sync"
 	"time"
@@ -18,6 +17,7 @@ import (
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/labstack/echo/v4"
 )
 
 type Player struct {
@@ -59,19 +59,18 @@ func NewHubWithOrigins(origins []string) *Hub {
 	}
 }
 
-func (h *Hub) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
-
-	conn, err := websocket.Accept(w, r, &websocket.AcceptOptions{OriginPatterns: h.allowedOrigins})
+func (h *Hub) HandleWebSocket(c echo.Context) error {
+	conn, err := websocket.Accept(c.Response().Writer, c.Request(), &websocket.AcceptOptions{OriginPatterns: h.allowedOrigins})
 	if err != nil {
 		log.Printf("websocket upgrade failed: %v", err)
-		return
+		return nil
 	}
 	defer conn.CloseNow()
 
 	playerID, err := newPlayerID()
 	if err != nil {
 		log.Printf("player ID generation failed: %v", err)
-		return
+		return nil
 	}
 
 	player := &Player{
@@ -95,7 +94,7 @@ func (h *Hub) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 		if err := wsjson.Read(ctx, conn, &message); err != nil {
 			log.Printf("websocket client disconnected: %s", playerID)
-			return
+			return nil
 		}
 
 		switch message.Type {

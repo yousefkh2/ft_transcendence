@@ -1,12 +1,11 @@
 package handler
 
 import (
-	"encoding/json"
 	"net/http"
 	"time"
 
-	"transcendence/backend/internal/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/labstack/echo/v4"
 )
 
 type ProfileHandler struct {
@@ -23,26 +22,23 @@ type matchHistoryEntry struct {
 	IsWinner	*bool		`json:"isWinner,omitempty"`
 }
 
-func (h *ProfileHandler) HandleMe(w http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
+func (h *ProfileHandler) HandleMe(c echo.Context) error {
+	userID, ok := c.Get("userID").(string)
 	if !ok {
-		http.Error(w, "unauthorized", http.StatusUnauthorized)
-		return
+		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
 	}
 
 	var username, email string
 	var xp int
-	err := h.DB.QueryRow(r.Context(),
+	err := h.DB.QueryRow(c.Request().Context(),
 		`SELECT username, email, xp FROM users WHERE id = $1`,
 	userID,
 	).Scan(&username, &email, &xp)
 	if err != nil {
-		http.Error(w, "internal error oben", http.StatusInternalServerError)
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]any{
+	return c.JSON(http.StatusOK, map[string]any{
 		"id":		userID,
 		"username":	username,
 		"email":	email,
@@ -50,14 +46,13 @@ func (h *ProfileHandler) HandleMe(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (h *ProfileHandler) HandleMatchHistory(w http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
+func (h *ProfileHandler) HandleMatchHistory(c echo.Context) error {
+	userID, ok := c.Get("userID").(string)
 	if !ok {
-		http.Error(w, "unauthorized", http.StatusUnauthorized)
-		return
+		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
 	}
 
-	rows, err := h.DB.Query(r.Context(),
+	rows, err := h.DB.Query(c.Request().Context(),
 		`SELECT gs.id, gs.game_mode, gs.status, gs.started_at, gs.ended_at, sp.role, sp.is_winner
 		FROM session_participants sp
 		JOIN game_sessions gs ON gs.id = sp.session_id
@@ -66,8 +61,7 @@ func (h *ProfileHandler) HandleMatchHistory(w http.ResponseWriter, r *http.Reque
 		userID,
 	)
 	if err != nil {
-		http.Error(w, "internal error mitte", http.StatusInternalServerError)
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 	}
 	defer rows.Close()
 
@@ -78,16 +72,13 @@ func (h *ProfileHandler) HandleMatchHistory(w http.ResponseWriter, r *http.Reque
 			&entry.SessionID, &entry.GameMode, &entry.Status,
 			&entry.StartedAt, &entry.EndedAt, &entry.Role, &entry.IsWinner,
 		); err != nil {
-			http.Error(w, "internal error unten", http.StatusInternalServerError)
-			return
+			return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 		}
 		matches = append(matches, entry)
 	}
 	if err := rows.Err(); err != nil {
-		http.Error(w, "internal error ganz unten", http.StatusInternalServerError)
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(matches)
+	return c.JSON(http.StatusOK, matches)
 }

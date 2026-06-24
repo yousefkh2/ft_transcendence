@@ -6,6 +6,8 @@ import (
 	"strings"
 	"os"
 	"net"
+
+	"github.com/labstack/echo/v4"
 )
 
 func Getenv(key string, fallback string) string {
@@ -16,38 +18,32 @@ func Getenv(key string, fallback string) string {
 	return value
 }
 
-func HandleRoot(w http.ResponseWriter, _ *http.Request) {
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	_, _ = w.Write([]byte("ft_transcendence API\n"))
+func HandleRoot(c echo.Context) error {
+	return c.String(http.StatusOK, "ft_transcendence API\n")
 }
 
-func HandleHealth(w http.ResponseWriter, _ *http.Request) {
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	_, _ = w.Write([]byte("ok\n"))
+func HandleHealth(c echo.Context) error {
+	return c.String(http.StatusOK, "ok\n")
 }
 
-func HandleDatabaseHealth(w http.ResponseWriter, _ *http.Request) {
+func HandleDatabaseHealth(c echo.Context) error {
 	host := Getenv("DB_HOST", "localhost")
 	port := Getenv("DB_PORT", "5432")
 	address := net.JoinHostPort(host, port)
 
 	conn, err := net.DialTimeout("tcp", address, 2*time.Second)
 	if err != nil {
-		http.Error(w, "database unreachable\n", http.StatusServiceUnavailable)
-		return
+		return c.String(http.StatusServiceUnavailable, "database unreachable \n")
 	}
 	_ = conn.Close()
 
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	_, _ = w.Write([]byte("database reachable\n"))
+	return c.String(http.StatusOK, "database healthy\n")
 }
 
-func HandleOpenAIHealth(w http.ResponseWriter, _ *http.Request) {
+func HandleOpenAIHealth(c echo.Context) error {
 	if strings.TrimSpace(os.Getenv("OPENAI_API_KEY")) == "" {
-		http.Error(w, "openai api key missing\n", http.StatusServiceUnavailable)
-		return
+		return c.String(http.StatusServiceUnavailable, "openai api key missing\n")
 	}
 
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	_, _ = w.Write([]byte("openai api key configured\n"))
+	return c.String(http.StatusOK, "openai api key configured\n")
 }

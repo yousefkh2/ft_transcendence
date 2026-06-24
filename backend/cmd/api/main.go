@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"net/http"
 
 	"transcendence/backend/internal/db"
 	"transcendence/backend/internal/handler"
@@ -26,34 +25,32 @@ func main() {
 	profileHandler := &handler.ProfileHandler{DB: pool}
 	friendHandler := &handler.FriendHandler{DB: pool}
 	
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", handler.HandleRoot)
-	mux.HandleFunc("/health", handler.HandleHealth)
-	mux.HandleFunc("/health/db", handler.HandleDatabaseHealth)
-	mux.HandleFunc("/health/openai", handler.HandleOpenAIHealth)
-	mux.HandleFunc("/ws", hub.HandleWebSocket)
-	mux.HandleFunc("/transcriptions", handler.HandleTranscription)
-	mux.HandleFunc("/realtime/transcription-session", handler.HandleRealtimeTranscriptionSession)
-
-	mux.HandleFunc("POST /api/auth/register", authHandler.HandleRegister)
-	mux.HandleFunc("POST /api/auth/login", authHandler.HandleLogin)
-	mux.HandleFunc("GET /api/users/me", middleware.WithAuth(profileHandler.HandleMe))
-	mux.HandleFunc("GET /api/users/me/matches", middleware.WithAuth(profileHandler.HandleMatchHistory))
-
 	e := echo.New()
-	e.Use(middleware.EchoWithAuth)
-	e.POST("/api/friends/requests", friendHandler.HandleSendRequest)
-	e.GET("/api/friends/requests", friendHandler.HandleListRequests)
-	e.POST("/api/friends/requests/:id/accept", friendHandler.HandleAcceptRequest)
-	e.POST("/api/friends/requests/:id/decline", friendHandler.HandleDeclineRequest)
-	e.GET("/api/friends", friendHandler.HandleListFriends)
+	e.Use(middleware.WithCors)
+	e.Any("/", handler.HandleRoot)
+	e.Any("/health", handler.HandleHealth)
+	e.Any("/health/db", handler.HandleDatabaseHealth)
+	e.Any("/health/openai", handler.HandleOpenAIHealth)
+	e.Any("/ws", hub.HandleWebSocket)
+	e.Any("/transcriptions", handler.HandleTranscription)
+	e.Any("/realtime/transcription-session", handler.HandleRealtimeTranscriptionSession)
 
-	mux.Handle("/api/friends", e)
-	mux.Handle("/api/friends/", e)
-	
+	e.POST("/api/auth/register", authHandler.HandleRegister)
+	e.POST("/api/auth/login", authHandler.HandleLogin)
+
+	e.GET("/api/users/me", profileHandler.HandleMe, middleware.EchoWithAuth)
+	e.GET("/api/users/me/matches", profileHandler.HandleMatchHistory, middleware.EchoWithAuth)
+
+	friends := e.Group("/api/friends", middleware.EchoWithAuth)
+	friends.POST("/requests", friendHandler.HandleSendRequest)
+	friends.GET("/requests", friendHandler.HandleListRequests)
+	friends.POST("/requests/:id/accept", friendHandler.HandleAcceptRequest)
+	friends.POST("/requests/:id/decline", friendHandler.HandleDeclineRequest)
+	friends.GET("", friendHandler.HandleListFriends)
+
 	port := handler.Getenv("PORT", "8080")
 	addr := ":" + port
 
 	log.Printf("API server listening on http://localhost%s", addr)
-	log.Fatal(http.ListenAndServe(addr, middleware.WithCORS(mux)))
+	log.Fatal(e.Start(addr))
 }
