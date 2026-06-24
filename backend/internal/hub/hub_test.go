@@ -3,7 +3,6 @@ package hub_test
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"net/http/httptest"
 	"os"
 	"strings"
@@ -13,6 +12,7 @@ import (
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/labstack/echo/v4"
 
 	"transcendence/backend/internal/hub"
 	"transcendence/backend/internal/model"
@@ -23,10 +23,10 @@ func newTestServer(t *testing.T) *httptest.Server {
 
 	h := hub.NewHubWithOrigins([]string{"*"})
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/ws", h.HandleWebSocket)
+	e := echo.New()
+	e.GET("/ws", h.HandleWebSocket)
 
-	server := httptest.NewServer(mux)
+	server := httptest.NewServer(e)
 	t.Cleanup(server.Close)
 
 	return server

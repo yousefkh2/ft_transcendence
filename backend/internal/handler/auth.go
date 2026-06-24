@@ -26,7 +26,7 @@ type registerRequest struct {
 func (h *AuthHandler) HandleRegister(c echo.Context) error {
 	var req registerRequest
 	if err := c.Bind(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadGateway, "invalid json")
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
@@ -50,7 +50,7 @@ func (h *AuthHandler) HandleRegister(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 	}
 	
-	return echo.NewHTTPError(http.StatusCreated, map[string]string{"id": userID})
+	return c.JSON(http.StatusCreated, map[string]string{"id": userID})
 }
 
 type loginRequest struct {
