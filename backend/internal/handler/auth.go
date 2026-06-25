@@ -78,7 +78,7 @@ func (h *AuthHandler) HandleLogin(c echo.Context) error {
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(passwordHash), []byte(req.Password)); err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, "invlaid credentials")
+		return echo.NewHTTPError(http.StatusUnauthorized, "invalid credentials")
 	}
 
 	token, err := auth.CreateJWT(userID)

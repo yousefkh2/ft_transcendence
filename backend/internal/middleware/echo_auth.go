@@ -25,3 +25,7 @@ func EchoWithAuth(next echo.HandlerFunc) echo.HandlerFunc {
 		return next(c)
 	}
 }
+
+func UserID(c echo.Context) string {
+	return c.Get("userID").(string)
+}

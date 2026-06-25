@@ -9,6 +9,7 @@ import (
 	"transcendence/backend/internal/middleware"
 
 	"github.com/labstack/echo/v4"
+	echomw "github.com/labstack/echo/v4/middleware"
 )
 
 
@@ -26,20 +27,22 @@ func main() {
 	friendHandler := &handler.FriendHandler{DB: pool}
 	
 	e := echo.New()
+	e.Use(echomw.Recover())
 	e.Use(middleware.WithCors)
-	e.Any("/", handler.HandleRoot)
-	e.Any("/health", handler.HandleHealth)
-	e.Any("/health/db", handler.HandleDatabaseHealth)
-	e.Any("/health/openai", handler.HandleOpenAIHealth)
-	e.Any("/ws", hub.HandleWebSocket)
+	e.GET("/", handler.HandleRoot)
+	e.GET("/health", handler.HandleHealth)
+	e.GET("/health/db", handler.HandleDatabaseHealth)
+	e.GET("/health/openai", handler.HandleOpenAIHealth)
+	e.GET("/ws", hub.HandleWebSocket)
 	e.Any("/transcriptions", handler.HandleTranscription)
 	e.Any("/realtime/transcription-session", handler.HandleRealtimeTranscriptionSession)
 
 	e.POST("/api/auth/register", authHandler.HandleRegister)
 	e.POST("/api/auth/login", authHandler.HandleLogin)
 
-	e.GET("/api/users/me", profileHandler.HandleMe, middleware.EchoWithAuth)
-	e.GET("/api/users/me/matches", profileHandler.HandleMatchHistory, middleware.EchoWithAuth)
+	users := e.Group("/api/users", middleware.EchoWithAuth)
+	users.GET("/me", profileHandler.HandleMe, middleware.EchoWithAuth)
+	users.GET("/me/matches", profileHandler.HandleMatchHistory, middleware.EchoWithAuth)
 
 	friends := e.Group("/api/friends", middleware.EchoWithAuth)
 	friends.POST("/requests", friendHandler.HandleSendRequest)

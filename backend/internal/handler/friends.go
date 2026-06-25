@@ -3,8 +3,9 @@ package handler
 import (
 	"errors"
 	"net/http"
-	
+
 	"transcendence/backend/internal/db"
+	"transcendence/backend/internal/middleware"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -21,10 +22,7 @@ type sendRequestBody struct {
 }
 
 func (h *FriendHandler) HandleSendRequest(c echo.Context) error {
-	requesterID, ok := c.Get("userID").(string)
-	if !ok {
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
-	}
+	requesterID := middleware.UserID(c)
 
 	var body sendRequestBody
 	if err := c.Bind(&body); err != nil {
@@ -56,10 +54,7 @@ func (h *FriendHandler) HandleSendRequest(c echo.Context) error {
 }
 
 func (h *FriendHandler) HandleListRequests(c echo.Context) error {
-	userID, ok := c.Get("userID").(string)
-	if !ok {
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
-	}
+	userID := middleware.UserID(c)
 
 	requests, err := db.ListPendingFriendRequests(c.Request().Context(), h.DB, userID)
 	if err != nil {
@@ -78,10 +73,7 @@ func (h *FriendHandler) HandleDeclineRequest(c echo.Context) error {
 }
 
 func (h *FriendHandler) respondToRequest(c echo.Context, targetStatus string) error {
-	userID, ok := c.Get("userID").(string)
-	if !ok {
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
-	}
+	userID := middleware.UserID(c)
 
 	requestID := c.Param("id")
 
@@ -110,10 +102,7 @@ func (h *FriendHandler) respondToRequest(c echo.Context, targetStatus string) er
 }
 
 func (h *FriendHandler) HandleListFriends(c echo.Context) error {
-	userID, ok := c.Get("userID").(string)
-	if !ok {
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
-	}
+	userID := middleware.UserID(c)
 
 	friends, err := db.ListFriends(c.Request().Context(), h.DB, userID)
 	if err != nil {
