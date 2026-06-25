@@ -47,7 +47,7 @@ type Hub struct {
 func NewHub(db *pgxpool.Pool) *Hub {
 	return &Hub{
 		rooms: make(map[string]*Room),
-		allowedOrigins: []string{"http://localhost:5173"},
+		allowedOrigins: []string{"localhost:5173"},
 		db: db,
 	}
 }
