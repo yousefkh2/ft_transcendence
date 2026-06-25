@@ -27,8 +27,8 @@ func main() {
 	friendHandler := &handler.FriendHandler{DB: pool}
 	
 	e := echo.New()
-	e.Use(middleware.WithCors)
 	e.Use(echomw.Recover())
+	e.Use(middleware.WithCors)
 	e.GET("/", handler.HandleRoot)
 	e.GET("/health", handler.HandleHealth)
 	e.GET("/health/db", handler.HandleDatabaseHealth)
