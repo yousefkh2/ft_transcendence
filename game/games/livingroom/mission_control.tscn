@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://b3gvrq4vjw3rn" path="res://games/livingroom/assets/mission_control_background.png" id="1_vytyf"]
 [ext_resource type="FontFile" uid="uid://bjdy3xurn6bij" path="res://game_files/fonts/PixelifySans-VariableFont_wght.ttf" id="2_psslg"]
 [ext_resource type="Script" uid="uid://f0yoi8mu6o2r" path="res://games/livingroom/scripts/easteregg.gd" id="3_7ucbt"]
+[ext_resource type="Texture2D" uid="uid://3wq7nbpu41p0" path="res://games/livingroom/assets/check_in_button.png" id="4_psslg"]
 
 [sub_resource type="VideoStreamTheora" id="VideoStreamTheora_mh6wk"]
 file = "res://games/livingroom/assets/easteregg3123.ogv"
@@ -74,7 +75,7 @@ theme_override_font_sizes/font_size = 64
 text = "Sofa under the window"
 metadata/_edit_use_anchors_ = true
 
-[node name="sofa_text4" type="Label" parent="." unique_id=1350745953]
+[node name="header" type="Label" parent="." unique_id=1350745953]
 offset_left = -1327.0
 offset_top = -914.0
 offset_right = -613.0
@@ -84,5 +85,21 @@ theme_override_fonts/font = ExtResource("2_psslg")
 theme_override_font_sizes/font_size = 64
 text = "YOUR INSTRUCTIONS"
 metadata/_edit_use_anchors_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1746591922]
+position = Vector2(-669, -430)
+scale = Vector2(0.256, 0.25)
+texture = ExtResource("4_psslg")
+
+[node name="Button" type="Button" parent="Sprite2D" unique_id=1226971509]
+anchors_preset = -1
+anchor_left = 0.080000006
+anchor_top = 0.215
+anchor_right = 0.94000006
+anchor_bottom = 0.71500003
+offset_left = -767.41125
+offset_top = -512.16003
+offset_right = -768.05884
+offset_bottom = -512.16003
 
 [connection signal="pressed" from="Button" to="VideoPlayer" method="_on_button_pressed"]
