@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bcl0npgkfkhyw"]
 
-[ext_resource type="Texture2D" uid="uid://1nas84nhon21" path="res://games/livingroom/assets/player_2_background.png" id="1_nrig4"]
+[ext_resource type="Texture2D" uid="uid://b3gvrq4vjw3rn" path="res://games/livingroom/assets/mission_control_background.png" id="1_vytyf"]
+[ext_resource type="FontFile" uid="uid://bjdy3xurn6bij" path="res://game_files/fonts/PixelifySans-VariableFont_wght.ttf" id="2_psslg"]
 [ext_resource type="Script" uid="uid://f0yoi8mu6o2r" path="res://games/livingroom/scripts/easteregg.gd" id="3_7ucbt"]
 
 [sub_resource type="VideoStreamTheora" id="VideoStreamTheora_mh6wk"]
@@ -13,32 +14,28 @@ position = Vector2(1921, 1081)
 position = Vector2(-1031, -639)
 
 [node name="Background" type="Sprite2D" parent="." unique_id=1149370281]
-position = Vector2(-64, -91)
-texture = ExtResource("1_nrig4")
-
-[node name="sofa_text" type="Label" parent="." unique_id=795765242]
-offset_left = -1775.0
-offset_top = -922.0
-offset_right = -1061.0
-offset_bottom = -834.0
-theme_override_font_sizes/font_size = 64
-text = "Sofa under the window"
-metadata/_edit_use_anchors_ = true
+position = Vector2(-1033.9999, -637)
+scale = Vector2(1.2526042, 1.0605469)
+texture = ExtResource("1_vytyf")
 
 [node name="sofa_text2" type="Label" parent="." unique_id=11177867]
-offset_left = -1769.0
-offset_top = -818.0
-offset_right = -1055.0
-offset_bottom = -730.0
+offset_left = -1585.0
+offset_top = -645.0
+offset_right = -871.0
+offset_bottom = -557.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_psslg")
 theme_override_font_sizes/font_size = 64
 text = "lamp right from sofa"
 metadata/_edit_use_anchors_ = true
 
 [node name="sofa_text3" type="Label" parent="." unique_id=1562242655]
-offset_left = -1776.0
-offset_top = -730.0
-offset_right = -1062.0
-offset_bottom = -642.0
+offset_left = -1592.0
+offset_top = -557.0
+offset_right = -878.0
+offset_bottom = -469.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_psslg")
 theme_override_font_sizes/font_size = 64
 text = "fries in the back"
 metadata/_edit_use_anchors_ = true
@@ -59,10 +56,33 @@ anchor_left = 0.98
 anchor_top = 0.583
 anchor_right = 1.0400001
 anchor_bottom = 0.62
-offset_left = -258.0
-offset_top = -584.0
-offset_right = -158.0
-offset_bottom = -553.0
+offset_left = -742.0
+offset_top = -311.0
+offset_right = -642.0
+offset_bottom = -280.0
 text = "what is that"
+
+[node name="sofa_text" type="Label" parent="." unique_id=795765242]
+offset_left = -1585.0
+offset_top = -749.0
+offset_right = -871.0
+offset_bottom = -661.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_psslg")
+theme_override_font_sizes/font_size = 64
+text = "Sofa under the window"
+metadata/_edit_use_anchors_ = true
+
+[node name="sofa_text4" type="Label" parent="." unique_id=1350745953]
+offset_left = -1327.0
+offset_top = -914.0
+offset_right = -613.0
+offset_bottom = -826.0
+theme_override_colors/font_color = Color(0.7254902, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_psslg")
+theme_override_font_sizes/font_size = 64
+text = "YOUR INSTRUCTIONS"
+metadata/_edit_use_anchors_ = true
 
 [connection signal="pressed" from="Button" to="VideoPlayer" method="_on_button_pressed"]
