@@ -35,6 +35,7 @@ func (h *LobbyHandler) HandleCreateLobby(c echo.Context) error {
 
 	lobby, err := db.CreateLobby(c.Request().Context(), h.DB, userID, gameMode)
 	if err != nil {
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 	}
 
@@ -64,7 +65,7 @@ func (h *LobbyHandler) HandleJoinLobby(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusConflict, "lobby is not joinable")
 		case errors.Is(err, db.ErrLobbyFull):
 			return echo.NewHTTPError(http.StatusConflict, "lobby is full")
-		case errors.Is(err, db.ErrAlreadyJoined)
+		case errors.Is(err, db.ErrAlreadyJoined):
 			return echo.NewHTTPError(http.StatusConflict, "already joioned this lobby")
 		default:
 			return echo.NewHTTPError(http.StatusInternalServerError, "internal error")

@@ -50,7 +50,7 @@ func CreateLobby(ctx context.Context, pool *pgxpool.Pool, hostUserID, gameMode s
 
 	var sessionID string
 	err = pool.QueryRow(ctx,
-		`INSERT INTO game_sessions (game_mode, status, code, host_user_od)
+		`INSERT INTO game_sessions (game_mode, status, code, host_user_id)
 		VALUES ($1, 'waiting', $2, $3)
 		RETURNING id`,
 		gameMode, code, hostUserID,
@@ -132,7 +132,7 @@ func JoinLobby(ctx context.Context, pool *pgxpool.Pool, code, userID string) (Lo
 
 	var alreadyJoined bool
 	if err := tx.QueryRow(ctx,
-		`SELECT EXITS(SELECT 1 FROM session_participants WHERE session_id = $1 AND user_id = $2)`,
+		`SELECT EXISTS(SELECT 1 FROM session_participants WHERE session_id = $1 AND user_id = $2)`,
 		sessionID, userID,
 	).Scan(&alreadyJoined); err != nil {
 		return Lobby{}, err
@@ -198,7 +198,7 @@ func LeaveLobby(ctx context.Context, pool *pgxpool.Pool, code, userID string) er
 		}
 	} else {
 		if _, err := tx.Exec(ctx,
-			`DELETE FROM sessions_participants WHERE session_id = $1 AND user_id = $2`,
+			`DELETE FROM session_participants WHERE session_id = $1 AND user_id = $2`,
 			sessionID, userID,
 		); err != nil {
 			return err

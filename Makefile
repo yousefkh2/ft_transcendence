@@ -31,4 +31,7 @@ clean:
 
 migrate:
 	docker exec -i transcendence-db psql -v ON_ERROR_STOP=1 -U $${POSTGRES_USER:-transcendence} -d $${POSTGRES_DB:-transcendence} -c 'CREATE EXTENSION IF NOT EXISTS pgcrypto;'
-	docker exec -i transcendence-db psql -v ON_ERROR_STOP=1 -1 -U $${POSTGRES_USER:-transcendence} -d $${POSTGRES_DB:-transcendence} < backend/sql/migrations/001_initial_schema.sql
+	for f in backend/sql/migrations/*.sql; do \
+		echo "Applying $$f"; \
+		docker exec -i transcendence-db psql -v ON_ERROR_STOP=1 -1 -U $${POSTGRES_USER:-transcendence} -d $${POSTGRES_DB:-transcendence} < $$f; \
+	done
