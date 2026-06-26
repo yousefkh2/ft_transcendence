@@ -6,6 +6,7 @@ import (
 	"errors"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -15,7 +16,7 @@ const lobbyCodeAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 
 var (
 	ErrLobbyNotFound	= errors.New("lobby not found")
-	ErrLobbyNotJoinAble	= errors.New("lobby is not joinable")
+	ErrLobbyNotJoinable	= errors.New("lobby is not joinable")
 	ErrLobbyFull		= errors.New("lobby is full")
 	ErrAlreadyJoined	= errors.New("already joined this lobby")
 )
@@ -48,8 +49,14 @@ func CreateLobby(ctx context.Context, pool *pgxpool.Pool, hostUserID, gameMode s
 		return Lobby{}, err
 	}
 
+	tx, err := pool.Begin(ctx)
+	if err != nil {
+		return Lobby{}, err
+	}
+	defer tx.Rollback(ctx)
+
 	var sessionID string
-	err = pool.QueryRow(ctx,
+	err = tx.QueryRow(ctx,
 		`INSERT INTO game_sessions (game_mode, status, code, host_user_id)
 		VALUES ($1, 'waiting', $2, $3)
 		RETURNING id`,
@@ -59,10 +66,14 @@ func CreateLobby(ctx context.Context, pool *pgxpool.Pool, hostUserID, gameMode s
 		return Lobby{}, err
 	}
 
-	if _,err := pool.Exec(ctx,
+	if _,err := tx.Exec(ctx,
 		`INSERT INTO session_participants (session_id, user_id) VALUES ($1, $2)`,
 		sessionID, hostUserID,
 	); err != nil {
+		return Lobby{}, err
+	}
+
+	if err := tx.Commit(ctx); err != nil {
 		return Lobby{}, err
 	}
 
@@ -127,18 +138,7 @@ func JoinLobby(ctx context.Context, pool *pgxpool.Pool, code, userID string) (Lo
 		return Lobby{}, err
 	}
 	if status != "waiting" {
-		return Lobby{}, ErrLobbyNotJoinAble
-	}
-
-	var alreadyJoined bool
-	if err := tx.QueryRow(ctx,
-		`SELECT EXISTS(SELECT 1 FROM session_participants WHERE session_id = $1 AND user_id = $2)`,
-		sessionID, userID,
-	).Scan(&alreadyJoined); err != nil {
-		return Lobby{}, err
-	}
-	if alreadyJoined {
-		return Lobby{}, ErrAlreadyJoined
+		return Lobby{}, ErrLobbyNotJoinable
 	}
 
 	var playerCount int
@@ -156,6 +156,10 @@ func JoinLobby(ctx context.Context, pool *pgxpool.Pool, code, userID string) (Lo
 		`INSERT INTO session_participants (session_id, user_id) VALUES ($1, $2)`,
 		sessionID, userID,
 	); err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return Lobby{}, ErrAlreadyJoined
+		}
 		return Lobby{}, err
 	}
 
