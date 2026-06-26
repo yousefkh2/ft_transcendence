@@ -25,6 +25,7 @@ func main() {
 	authHandler := &handler.AuthHandler{DB: pool}
 	profileHandler := &handler.ProfileHandler{DB: pool}
 	friendHandler := &handler.FriendHandler{DB: pool}
+	lobbyHandler := &handler.LobbyHandler{DB: pool}
 	
 	e := echo.New()
 	e.Use(echomw.Recover())
@@ -50,6 +51,12 @@ func main() {
 	friends.POST("/requests/:id/accept", friendHandler.HandleAcceptRequest)
 	friends.POST("/requests/:id/decline", friendHandler.HandleDeclineRequest)
 	friends.GET("", friendHandler.HandleListFriends)
+
+	lobbies := e.Group("/api/lobbies", middleware.EchoWithAuth)
+	lobbies.POST("", lobbyHandler.HandleCreateLobby)
+	lobbies.GET("", lobbyHandler.HandleListLobbies)
+	lobbies.POST("/:code/join", lobbyHandler.HandleJoinLobby)
+	lobbies.POST("/:code/leave", lobbyHandler.HandleLeaveLobby)
 
 	port := handler.Getenv("PORT", "8080")
 	addr := ":" + port
