@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://yow5y37d3njq" path="res://games/livingroom/scripts/main.gd" id="1_tnn0p"]
 [ext_resource type="Texture2D" uid="uid://dbe8okx1febs7" path="res://games/livingroom/assets/livingroom_background.png" id="2_bx3jd"]
+[ext_resource type="Script" uid="uid://bp1ywlv000xxc" path="res://games/livingroom/slots.gd" id="2_eiqwb"]
 [ext_resource type="Texture2D" uid="uid://b2cu8ouukuck" path="res://games/livingroom/assets/plant.png" id="3_p848u"]
 [ext_resource type="Script" uid="uid://dt2e5bphkhegn" path="res://games/livingroom/scripts/object.gd" id="4_5odt6"]
 [ext_resource type="Texture2D" uid="uid://bb3xwbovf7jgs" path="res://games/livingroom/assets/sofa.png" id="5_au1nr"]
@@ -10,6 +11,49 @@
 
 [node name="livingroom" type="Node2D" unique_id=234294754]
 script = ExtResource("1_tnn0p")
+
+[node name="Slots" type="Node2D" parent="." unique_id=211812470]
+script = ExtResource("2_eiqwb")
+
+[node name="slot_00" type="Marker2D" parent="Slots" unique_id=1825373260]
+position = Vector2(-500, 180)
+script = ExtResource("2_eiqwb")
+
+[node name="slot_01" type="Marker2D" parent="Slots" unique_id=2021726390]
+position = Vector2(100, 180)
+script = ExtResource("2_eiqwb")
+
+[node name="slot_02" type="Marker2D" parent="Slots" unique_id=1514434964]
+position = Vector2(-300, 180)
+script = ExtResource("2_eiqwb")
+
+[node name="slot_03" type="Marker2D" parent="Slots" unique_id=31327339]
+position = Vector2(-100, 180)
+script = ExtResource("2_eiqwb")
+
+[node name="slot_04" type="Marker2D" parent="Slots" unique_id=1714658137]
+position = Vector2(300, 180)
+script = ExtResource("2_eiqwb")
+
+[node name="slot_05" type="Marker2D" parent="Slots" unique_id=1312979760]
+position = Vector2(-500, 350)
+script = ExtResource("2_eiqwb")
+
+[node name="slot_06" type="Marker2D" parent="Slots" unique_id=1946669554]
+position = Vector2(-300, 350)
+script = ExtResource("2_eiqwb")
+
+[node name="slot_07" type="Marker2D" parent="Slots" unique_id=1948524598]
+position = Vector2(-100, 350)
+script = ExtResource("2_eiqwb")
+
+[node name="slot_08" type="Marker2D" parent="Slots" unique_id=238618527]
+position = Vector2(100, 350)
+script = ExtResource("2_eiqwb")
+
+[node name="slot_09" type="Marker2D" parent="Slots" unique_id=642470101]
+position = Vector2(300, 350)
+script = ExtResource("2_eiqwb")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1454188114]
 
@@ -23,6 +67,7 @@ position = Vector2(-504, 183)
 scale = Vector2(0.75, 0.75)
 texture = ExtResource("3_p848u")
 script = ExtResource("4_5odt6")
+slots_parent = NodePath("../Slots")
 
 [node name="Button" type="Button" parent="plant" unique_id=1763284418]
 self_modulate = Color(1, 1, 1, 0)
@@ -42,6 +87,7 @@ position = Vector2(-148, 211)
 scale = Vector2(0.75, 0.75)
 texture = ExtResource("5_au1nr")
 script = ExtResource("4_5odt6")
+slots_parent = NodePath("../Slots")
 
 [node name="Button" type="Button" parent="sofa" unique_id=2113762632]
 self_modulate = Color(1, 1, 1, 0)
@@ -61,6 +107,7 @@ position = Vector2(362, 193)
 scale = Vector2(0.75, 0.75)
 texture = ExtResource("6_kemar")
 script = ExtResource("4_5odt6")
+slots_parent = NodePath("../Slots")
 
 [node name="Button" type="Button" parent="lamp" unique_id=1381699498]
 self_modulate = Color(1, 1, 1, 0)
@@ -80,6 +127,7 @@ position = Vector2(660, 269)
 scale = Vector2(0.75, 0.75)
 texture = ExtResource("7_gjxtx")
 script = ExtResource("4_5odt6")
+slots_parent = NodePath("../Slots")
 
 [node name="Button" type="Button" parent="table" unique_id=54897176]
 self_modulate = Color(1, 1, 1, 0)
@@ -93,15 +141,6 @@ offset_top = -150.03331
 offset_right = -234.79007
 offset_bottom = -150.09332
 metadata/_edit_use_anchors_ = true
-
-[node name="Player1" type="Label" parent="." unique_id=88983933]
-self_modulate = Color(0, 0, 0, 1)
-offset_left = -688.0
-offset_top = -362.0
-offset_right = -495.0
-offset_bottom = -293.0
-theme_override_font_sizes/font_size = 50
-text = "Player 1"
 
 [connection signal="button_down" from="plant/Button" to="plant" method="_on_button_button_down"]
 [connection signal="button_up" from="plant/Button" to="plant" method="_on_button_button_up"]
