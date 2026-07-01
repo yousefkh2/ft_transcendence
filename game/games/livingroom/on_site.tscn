@@ -16,43 +16,43 @@ script = ExtResource("1_tnn0p")
 script = ExtResource("2_eiqwb")
 
 [node name="slot_00" type="Marker2D" parent="Slots" unique_id=1825373260]
-position = Vector2(-500, 180)
+position = Vector2(-700, 180)
 script = ExtResource("2_eiqwb")
 
 [node name="slot_01" type="Marker2D" parent="Slots" unique_id=2021726390]
-position = Vector2(100, 180)
+position = Vector2(150, 180)
 script = ExtResource("2_eiqwb")
 
 [node name="slot_02" type="Marker2D" parent="Slots" unique_id=1514434964]
-position = Vector2(-300, 180)
+position = Vector2(-400, 180)
 script = ExtResource("2_eiqwb")
 
 [node name="slot_03" type="Marker2D" parent="Slots" unique_id=31327339]
-position = Vector2(-100, 180)
+position = Vector2(-150, 180)
 script = ExtResource("2_eiqwb")
 
 [node name="slot_04" type="Marker2D" parent="Slots" unique_id=1714658137]
-position = Vector2(300, 180)
+position = Vector2(400, 180)
 script = ExtResource("2_eiqwb")
 
 [node name="slot_05" type="Marker2D" parent="Slots" unique_id=1312979760]
-position = Vector2(-500, 350)
+position = Vector2(-700, 350)
 script = ExtResource("2_eiqwb")
 
 [node name="slot_06" type="Marker2D" parent="Slots" unique_id=1946669554]
-position = Vector2(-300, 350)
+position = Vector2(-400, 350)
 script = ExtResource("2_eiqwb")
 
 [node name="slot_07" type="Marker2D" parent="Slots" unique_id=1948524598]
-position = Vector2(-100, 350)
+position = Vector2(-150, 350)
 script = ExtResource("2_eiqwb")
 
 [node name="slot_08" type="Marker2D" parent="Slots" unique_id=238618527]
-position = Vector2(100, 350)
+position = Vector2(150, 350)
 script = ExtResource("2_eiqwb")
 
 [node name="slot_09" type="Marker2D" parent="Slots" unique_id=642470101]
-position = Vector2(300, 350)
+position = Vector2(400, 350)
 script = ExtResource("2_eiqwb")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1454188114]
@@ -67,7 +67,6 @@ position = Vector2(-504, 183)
 scale = Vector2(0.75, 0.75)
 texture = ExtResource("3_p848u")
 script = ExtResource("4_5odt6")
-slots_parent = NodePath("../Slots")
 
 [node name="Button" type="Button" parent="plant" unique_id=1763284418]
 self_modulate = Color(1, 1, 1, 0)
@@ -87,7 +86,6 @@ position = Vector2(-148, 211)
 scale = Vector2(0.75, 0.75)
 texture = ExtResource("5_au1nr")
 script = ExtResource("4_5odt6")
-slots_parent = NodePath("../Slots")
 
 [node name="Button" type="Button" parent="sofa" unique_id=2113762632]
 self_modulate = Color(1, 1, 1, 0)
@@ -107,7 +105,6 @@ position = Vector2(362, 193)
 scale = Vector2(0.75, 0.75)
 texture = ExtResource("6_kemar")
 script = ExtResource("4_5odt6")
-slots_parent = NodePath("../Slots")
 
 [node name="Button" type="Button" parent="lamp" unique_id=1381699498]
 self_modulate = Color(1, 1, 1, 0)
@@ -127,7 +124,6 @@ position = Vector2(660, 269)
 scale = Vector2(0.75, 0.75)
 texture = ExtResource("7_gjxtx")
 script = ExtResource("4_5odt6")
-slots_parent = NodePath("../Slots")
 
 [node name="Button" type="Button" parent="table" unique_id=54897176]
 self_modulate = Color(1, 1, 1, 0)
