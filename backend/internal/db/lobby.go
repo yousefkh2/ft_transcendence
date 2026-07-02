@@ -14,11 +14,18 @@ const LobbyCapacity = 2
 
 const lobbyCodeAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 
+const (
+	RoleMissionControl = "mission_control"
+	RoleOnSite = "on_site"
+)
+
 var (
 	ErrLobbyNotFound	= errors.New("lobby not found")
 	ErrLobbyNotJoinable	= errors.New("lobby is not joinable")
 	ErrLobbyFull		= errors.New("lobby is full")
 	ErrAlreadyJoined	= errors.New("already joined this lobby")
+	ErrNotInLobby		= errors.New("user is not part of this lobby")
+	ErrLobbyNotStarted	= errors.New("lobby has not started yet")
 )
 
 type Lobby struct {
@@ -163,6 +170,27 @@ func JoinLobby(ctx context.Context, pool *pgxpool.Pool, code, userID string) (Lo
 		return Lobby{}, err
 	}
 
+	newPlayerCount := playerCount + 1
+
+	if newPlayerCount == LobbyCapacity {
+		if _, err := tx.Exec(ctx,
+			`UPDATE session_participants
+			SET role = CASE WHEN user_id = $1 THEN $2 ELSE $3 END
+			WHERE session_id = $4`,
+			hostUserID, RoleMissionControl, RoleOnSite, sessionID,
+		); err != nil {
+			return Lobby{}, err
+		}
+
+		if _, err := tx.Exec(ctx,
+			`UPDATE game_sessions SET status = 'active' WHERE id = $1`,
+			sessionID,
+		); err != nil {
+			return Lobby{}, err
+		}
+		status = "active"
+	}
+
 	if err := tx.Commit(ctx); err != nil {
 		return Lobby{}, err
 	}
@@ -173,7 +201,7 @@ func JoinLobby(ctx context.Context, pool *pgxpool.Pool, code, userID string) (Lo
 		GameMode:		gameMode,
 		Status:			status,
 		HostUserID:		hostUserID,
-		PlayerCount:	playerCount + 1,
+		PlayerCount:	newPlayerCount,
 	}, nil
 }
 
@@ -210,4 +238,25 @@ func LeaveLobby(ctx context.Context, pool *pgxpool.Pool, code, userID string) er
 	}
 	
 	return tx.Commit(ctx)
+}
+
+func GetParticipantRole(ctx context.Context, pool *pgxpool.Pool, code, userID string) (sessionID, role string, err error) {
+	var roleNullable *string
+	err = pool.QueryRow(ctx,
+		`SELECT gs.id, sp.role
+		FROM game_sessions gs
+		JOIN session_participants sp ON sp.session_id = gs.id
+		WHERE gs.code = $1 AND sp.user_id = $2`,
+		code, userID,
+	).Scan(&sessionID, &roleNullable)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return "", "", ErrNotInLobby
+		}
+		return "", "", err
+	}
+	if roleNullable == nil {
+		return "", "", ErrLobbyNotStarted
+	}
+	return sessionID, *roleNullable, nil
 }
