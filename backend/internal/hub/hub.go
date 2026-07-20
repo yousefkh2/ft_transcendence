@@ -251,7 +251,7 @@ func (h *Hub) handleObjectMoved(
 		return
 	}
 
-	if joinedRole != "on_site" {
+	if joinedRole != db.RoleOnSite {
 		_ = player.send(ctx, model.ServerMessage{
 			Type:    "error",
 			Message: "only on_site can move objects",
@@ -343,7 +343,7 @@ func (h *Hub) handleObjectMoved(
 	if messageType == "game.round_completed" {
 		go func() {
 			if err := db.FinishMatch(context.Background(), h.db, joinedRoom, startedAt, time.Now(), true); err != nil {
-				log.Printf("failed to save expired match for room %s: %v", joinedRoom, err)
+				log.Printf("failed to save completed match for room %s: %v", joinedRoom, err)
 			}
 		}()
 	}

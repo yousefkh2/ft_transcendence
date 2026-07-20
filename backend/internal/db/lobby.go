@@ -29,7 +29,7 @@ var (
 )
 
 type Lobby struct {
-	ID			string	`json:"iD"`
+	ID			string	`json:"id"`
 	Code		string	`json:"code"`
 	GameMode	string	`json:"gameMode"`
 	Status		string	`json:"status"`
@@ -122,7 +122,7 @@ func ListOpenLobbies(ctx context.Context, pool *pgxpool.Pool) ([]Lobby, error) {
 		return nil, err
 	}
 
-	return lobbies, err
+	return lobbies, nil
 }
 
 func JoinLobby(ctx context.Context, pool *pgxpool.Pool, code, userID string) (Lobby, error) {

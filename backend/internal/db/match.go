@@ -29,6 +29,13 @@ func FinishMatch(ctx context.Context, pool *pgxpool.Pool, code string, startedAt
 	}
 
 	if _, err := tx.Exec(ctx,
+		`UPDATE game_sessions SET status = 'completed', started_at = $1, ended_at = $2 WHERE id = $3`,
+		startedAt, endedAt, sessionID,
+	); err != nil {
+		return err
+	}
+
+	if _, err := tx.Exec(ctx,
 		`UPDATE session_participants SET is_winner = $1 WHERE session_id = $2`,
 		won,sessionID,
 	); err != nil {
