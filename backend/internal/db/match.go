@@ -37,7 +37,7 @@ func FinishMatch(ctx context.Context, pool *pgxpool.Pool, code string, startedAt
 
 	if _, err := tx.Exec(ctx,
 		`UPDATE session_participants SET is_winner = $1 WHERE session_id = $2`,
-		won,sessionID,
+		won, sessionID,
 	); err != nil {
 		return err
 	}

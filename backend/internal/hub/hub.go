@@ -179,6 +179,13 @@ func (h *Hub) handleRoomJoin(
 		})
 		return
 	}
+	if role != db.RoleMissionControl && role != db.RoleOnSite {
+		_ = wsjson.Write(ctx, conn, model.ServerMessage{
+			Type: "error",
+			Message: "invalid role assigned",
+		})
+		return
+	}
 
 	h.mu.Lock()
 
