@@ -17,7 +17,16 @@ shadow_size = 5
 shadow_offset = Vector2(0, 3.41)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e1b82"]
-bg_color = Color(0.8625217, 0.86252177, 0.86252177, 1)
+bg_color = Color(0.79836667, 0.79836625, 0.7983663, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_txcq3"]
+bg_color = Color(0.9079417, 0.9079417, 0.90794164, 1)
 corner_radius_top_left = 16
 corner_radius_top_right = 16
 corner_radius_bottom_right = 16
@@ -89,7 +98,7 @@ theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 32
 theme_override_styles/normal = SubResource("StyleBoxFlat_8ef6c")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_e1b82")
-theme_override_styles/hover = SubResource("StyleBoxFlat_8ef6c")
+theme_override_styles/hover = SubResource("StyleBoxFlat_txcq3")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_kdacn")
 text = "Lobby"
 script = ExtResource("2_txcq3")
@@ -101,7 +110,7 @@ theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 32
 theme_override_styles/normal = SubResource("StyleBoxFlat_8ef6c")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_e1b82")
-theme_override_styles/hover = SubResource("StyleBoxFlat_8ef6c")
+theme_override_styles/hover = SubResource("StyleBoxFlat_txcq3")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_kdacn")
 text = "Settings"
 script = ExtResource("2_txcq3")
