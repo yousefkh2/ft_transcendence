@@ -1,0 +1,110 @@
+[gd_scene format=3 uid="uid://y7txpxu8meo6"]
+
+[ext_resource type="Texture2D" uid="uid://dbe8okx1febs7" path="res://games/livingroom/assets/livingroom_background.png" id="1_txcq3"]
+[ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="2_8ef6c"]
+[ext_resource type="Script" uid="uid://cyo8ty4no24b4" path="res://games/livingroom/scripts/lobby_button.gd" id="2_txcq3"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mg185"]
+texture = ExtResource("1_txcq3")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8ef6c"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e1b82"]
+bg_color = Color(0.8625217, 0.86252177, 0.86252177, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_kdacn"]
+
+[node name="Control" type="Control" unique_id=1248428916]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="." unique_id=1552086906]
+modulate = Color(0.871141, 0.8711411, 0.8711411, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_mg185")
+
+[node name="title" type="Label" parent="." unique_id=1861832759]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -219.5
+offset_top = 209.0
+offset_right = 65.5
+offset_bottom = 297.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_constants/outline_size = 1
+theme_override_fonts/font = ExtResource("2_8ef6c")
+theme_override_font_sizes/font_size = 236
+text = "lingo"
+horizontal_alignment = 1
+vertical_alignment = 2
+uppercase = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=889149050]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -189.0
+offset_top = -64.5
+offset_right = 34.0
+offset_bottom = 90.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="lobby button" type="Button" parent="VBoxContainer" unique_id=1306803648]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_8ef6c")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_e1b82")
+theme_override_styles/hover = SubResource("StyleBoxFlat_8ef6c")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_kdacn")
+text = "Lobby"
+script = ExtResource("2_txcq3")
+
+[node name="settings" type="Button" parent="VBoxContainer" unique_id=903084614]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_8ef6c")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_e1b82")
+theme_override_styles/hover = SubResource("StyleBoxFlat_8ef6c")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_kdacn")
+text = "Settings"
+script = ExtResource("2_txcq3")
+
+[connection signal="pressed" from="VBoxContainer/lobby button" to="VBoxContainer/lobby button" method="_on_pressed"]
+[connection signal="pressed" from="VBoxContainer/settings" to="VBoxContainer/settings" method="_on_pressed"]

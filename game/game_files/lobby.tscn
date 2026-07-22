@@ -3,7 +3,9 @@
 [ext_resource type="Script" uid="uid://cjdu1k17h6ite" path="res://games/livingroom/scripts/lobby.gd" id="1_2nora"]
 [ext_resource type="Texture2D" uid="uid://0l6eupeil5t8" path="res://games/main_menu/lobby.webp" id="2_urq01"]
 [ext_resource type="Script" uid="uid://c7q7ycdq6pgw7" path="res://games/livingroom/scripts/play_button.gd" id="3_e25pb"]
+[ext_resource type="Script" uid="uid://dxornjc6f6m" path="res://game_files/on_site.gd" id="5_bm06h"]
 [ext_resource type="Script" uid="uid://upatq3htbwxo" path="res://game_files/network_manager.gd" id="5_e25pb"]
+[ext_resource type="Script" uid="uid://bilti1y1p7onr" path="res://game_files/mission_control.gd" id="6_yh0ef"]
 
 [node name="lobby" type="Control" unique_id=1315476839]
 layout_mode = 3
@@ -55,4 +57,35 @@ offset_bottom = 144.0
 [node name="NetworkManager" type="Node" parent="." unique_id=1152700285]
 script = ExtResource("5_e25pb")
 
+[node name="on_site" type="Button" parent="." unique_id=333073962]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.023000002
+anchor_top = 0.45100003
+anchor_right = 0.15300001
+anchor_bottom = 0.52000004
+offset_left = 0.83999634
+offset_top = -0.08004761
+offset_right = 0.23999023
+offset_bottom = 0.39996338
+text = "ON_SITE"
+script = ExtResource("5_bm06h")
+
+[node name="mission_control" type="Button" parent="." unique_id=2108055723]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.021000002
+anchor_top = 0.53300005
+anchor_right = 0.15400001
+anchor_bottom = 0.59900004
+offset_left = 0.6799965
+offset_top = 0.35992432
+offset_right = -0.6800232
+offset_bottom = 0.079956055
+text = "MISSION_CONTROL"
+script = ExtResource("6_yh0ef")
+
 [connection signal="pressed" from="player_1_button" to="player_1_button" method="_on_pressed"]
+[connection signal="pressed" from="on_site" to="." method="_on_on_site_pressed"]
+[connection signal="pressed" from="on_site" to="on_site" method="_on_pressed"]
+[connection signal="pressed" from="mission_control" to="mission_control" method="_on_pressed"]
