@@ -15,11 +15,12 @@
 				<button class="btn btn-ghost">How It Works</button>
 			</div>
 		</div>
-		<div class="hero-visual" aria-hidden="true"></div>
+		<HeroVisual class="hero-visual" />
 	</section>
 </template>
 
 <script setup lang="ts">
+import HeroVisual from './HeroVisual.vue';
 </script>
 
 <style scoped>
@@ -98,12 +99,6 @@
 		background: transparent;
 		color: var(--color-on-surface);
 		border: 2px solid var(--color-outline);
-	}
-
-	.hero-visual {
-		aspect-ratio: 4 / 3;
-		border-radius: var(--radius-lg);
-		background: linear-gradient(135deg, var(--color-primary-container), var(--color-primary));
 	}
 
 	@media (max-width: 900px) {
