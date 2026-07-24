@@ -3,12 +3,11 @@
 		<div class="hero-copy">
 			<span class="badge">Beta · Two-Player Mode</span>
 			<h1 class="headline">
-				Talk Fast, Build Together
-				<span class="accent">In German.</span>
+				Learn Languages
+				<span class="accent">Through Play.</span>
 			</h1>
 			<p class="subtext">
-				One player sees the room. The other holds the plan. Describe it, argue
-				about it, and race the clock to furnish the apartment before time runs out.
+				Jump into fast-paced multiplayer games built to get you speaking from day one. Describe, argue, guess, and race the clock - whichever language you're learning.
 			</p>
 			<div class="cta-row">
 				<button class="btn btn-primary">Play Now</button>
@@ -65,7 +64,7 @@ import HeroVisual from './HeroVisual.vue';
 		color: var(--color-on-surface-variant);
 		font-size: 16px;
 		line-height: 1.6;
-		margin: 0 0 32px;
+		margin: 32px 0 32px;
 	}
 
 	.cta-row {
@@ -115,6 +114,10 @@ import HeroVisual from './HeroVisual.vue';
 
 		.hero-visual {
 			order: -1;
+		}
+
+		.cta-row {
+			justify-content: center;
 		}
 	}
 
