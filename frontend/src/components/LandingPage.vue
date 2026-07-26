@@ -4,11 +4,13 @@
 		<Hero />
 		<HowItWorks />
 		<GameModesPreview />
+		<Gamification />
 	</main>
 </template>
 
 <script setup lang="ts">
 import GameModesPreview from './landing/GameModesPreview.vue';
+import Gamification from './landing/Gamification.vue';
 import Hero from './landing/Hero.vue';
 import HowItWorks from './landing/HowItWorks.vue';
 import Navbar from './landing/Navbar.vue';
