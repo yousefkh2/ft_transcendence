@@ -7,7 +7,7 @@
 
 		<nav class="nav-links">
 			<a href="#how-it-works">How it Works</a>
-			<a href="#games">Games</a>
+			<a href="#game-modes">Games</a>
 		</nav>
 
 		<button class="btn-login">Login</button>
