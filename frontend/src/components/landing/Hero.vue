@@ -1,7 +1,6 @@
 <template>
 	<section class="hero">
 		<div class="hero-copy">
-			<span class="badge">Beta · Two-Player Mode</span>
 			<h1 class="headline">
 				Learn Languages
 				<span class="accent">Through Play.</span>
@@ -31,20 +30,6 @@ import HeroVisual from './HeroVisual.vue';
 		max-width: 1200px;
 		margin: 0 auto;
 		padding: 96px 40px;
-	}
-
-	.badge {
-		display: inline-flex;
-		padding: 6px 14px;
-		border-radius: var(--radius-pill);
-		background: var(--color-secondary-container);
-		color: var(--color-on-secondary-container);
-		font-family: (--font-mono);
-		font-size: 12px;
-		font-weight: 700;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		margin-bottom: 20px;
 	}
 
 	.headling {

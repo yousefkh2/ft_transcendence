@@ -6,7 +6,7 @@
 		</div>
 
 		<nav class="nav-links">
-			<a href="#gameplay-loop">How it Works</a>
+			<a href="#how-it-works">How it Works</a>
 			<a href="#games">Games</a>
 		</nav>
 
