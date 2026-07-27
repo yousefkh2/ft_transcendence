@@ -5,10 +5,12 @@
 		<HowItWorks />
 		<GameModesPreview />
 		<Gamification />
+		<Footer />
 	</main>
 </template>
 
 <script setup lang="ts">
+import Footer from './landing/Footer.vue';
 import GameModesPreview from './landing/GameModesPreview.vue';
 import Gamification from './landing/Gamification.vue';
 import Hero from './landing/Hero.vue';
