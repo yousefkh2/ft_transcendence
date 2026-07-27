@@ -1,5 +1,6 @@
 import { createApp, h, ref } from "vue";
 import "./style.css";
+import LandingPage from "./components/LandingPage.vue"
 
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
 type Position = {
@@ -443,4 +444,8 @@ const App = {
   },
 };
 
-createApp(App).mount("#app");
+if (window.location.pathname == "/landingpage") {
+	createApp(LandingPage).mount('#app');
+} else {
+	createApp(App).mount('#app');
+}
