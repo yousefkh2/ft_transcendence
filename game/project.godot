@@ -25,6 +25,10 @@ window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/stretch/mode="canvas_items"
 
+[internationalization]
+
+locale/translations=PackedStringArray("res://game_files/languages/PolyglotGamedev - Master.ENGLISH.translation", "res://game_files/languages/PolyglotGamedev - Master.GERMAN.translation", "res://game_files/languages/PolyglotGamedev - Master.FRENCH.translation", "res://game_files/languages/PolyglotGamedev - Master.POLISH.translation", "res://game_files/languages/PolyglotGamedev - Master.BOSNIAN.translation", "res://game_files/languages/PolyglotGamedev - Master.TURKISH.translation")
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

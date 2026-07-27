@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://ca07s5femgm8p" path="res://games/main_menu/menu.gd" id="1_8ef6c"]
 [ext_resource type="Texture2D" uid="uid://dbe8okx1febs7" path="res://games/livingroom/assets/livingroom_background.png" id="1_txcq3"]
 [ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="2_8ef6c"]
+[ext_resource type="Script" uid="uid://dmrdnt8ndxtfk" path="res://games/main_menu/language_selecter.gd" id="4_8ef6c"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mg185"]
 texture = ExtResource("1_txcq3")
@@ -104,6 +105,7 @@ theme_override_constants/separation = 8
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("2_8ef6c")
 theme_override_font_sizes/font_size = 48
 theme_override_styles/normal = SubResource("StyleBoxFlat_8ef6c")
@@ -116,13 +118,14 @@ text = "Lobby"
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("2_8ef6c")
 theme_override_font_sizes/font_size = 48
 theme_override_styles/normal = SubResource("StyleBoxFlat_8ef6c")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_e1b82")
 theme_override_styles/hover = SubResource("StyleBoxFlat_txcq3")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_kdacn")
-text = "Settings"
+text = "MENU_OPTIONS"
 
 [node name="settings" type="Panel" parent="." unique_id=2042374073]
 layout_mode = 1
@@ -137,7 +140,22 @@ offset_right = 8.199951
 offset_bottom = -1.8000488
 theme_override_styles/panel = SubResource("StyleBoxFlat_mg185")
 
-[node name="Label" type="Label" parent="settings" unique_id=1765314395]
+[node name="language" type="Label" parent="settings" unique_id=426331824]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.121290326
+anchor_top = 0.18656716
+anchor_right = 0.49806452
+anchor_bottom = 0.26616916
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("2_8ef6c")
+theme_override_font_sizes/font_size = 48
+text = "MENU_LABEL_LANGUAGE"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Menu_options" type="Label" parent="settings" unique_id=1765314395]
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
@@ -145,7 +163,7 @@ anchor_bottom = 0.171
 offset_bottom = -0.11299896
 theme_override_fonts/font = ExtResource("2_8ef6c")
 theme_override_font_sizes/font_size = 64
-text = "Settings"
+text = "MENU_OPTIONS"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -164,13 +182,39 @@ grow_horizontal = 2
 grow_vertical = 0
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("2_8ef6c")
 theme_override_font_sizes/font_size = 48
 theme_override_styles/normal = SubResource("StyleBoxFlat_8ef6c")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_e1b82")
 theme_override_styles/hover = SubResource("StyleBoxFlat_txcq3")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_kdacn")
-text = "Back"
+text = "MENU_LABEL_BACK"
+
+[node name="language_selecter" type="OptionButton" parent="settings" unique_id=456487335]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.551
+anchor_top = 0.163
+anchor_right = 0.929
+anchor_bottom = 0.3
+offset_left = -8.024994
+offset_top = -0.28900146
+offset_right = 0.024963379
+offset_bottom = 0.099990845
+theme_override_fonts/font = ExtResource("2_8ef6c")
+theme_override_font_sizes/font_size = 48
+selected = 0
+item_count = 4
+popup/item_0/text = "English"
+popup/item_0/id = 0
+popup/item_1/text = "Deutsch"
+popup/item_1/id = 1
+popup/item_2/text = "Polski"
+popup/item_2/id = 2
+popup/item_3/text = "Turkish"
+popup/item_3/id = 3
+script = ExtResource("4_8ef6c")
 
 [connection signal="pressed" from="Menu/lobby_button" to="." method="_on_lobby_button_pressed"]
 [connection signal="pressed" from="Menu/lobby_button" to="Menu/lobby_button" method="_on_pressed"]
@@ -178,3 +222,5 @@ text = "Back"
 [connection signal="pressed" from="Menu/settings_button" to="Menu/settings_button" method="_on_pressed"]
 [connection signal="pressed" from="settings/back_button" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="settings/back_button" to="settings/back_button" method="_on_pressed"]
+[connection signal="item_selected" from="settings/language_selecter" to="settings/language_selecter" method="_on_item_selected"]
+[connection signal="ready" from="settings/language_selecter" to="settings/language_selecter" method="_on_ready"]
