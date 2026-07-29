@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://y7txpxu8meo6"]
 
-[ext_resource type="Script" uid="uid://ca07s5femgm8p" path="res://games/main_menu/menu.gd" id="1_8ef6c"]
+[ext_resource type="Script" uid="uid://ca07s5femgm8p" path="res://games/main_menu/scripts/menu.gd" id="1_8ef6c"]
 [ext_resource type="Texture2D" uid="uid://dbe8okx1febs7" path="res://games/livingroom/assets/livingroom_background.png" id="1_txcq3"]
 [ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="2_8ef6c"]
-[ext_resource type="Script" uid="uid://dmrdnt8ndxtfk" path="res://games/main_menu/language_selecter.gd" id="4_8ef6c"]
+[ext_resource type="Script" uid="uid://dmrdnt8ndxtfk" path="res://games/main_menu/scripts/language_selecter.gd" id="4_8ef6c"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mg185"]
 texture = ExtResource("1_txcq3")

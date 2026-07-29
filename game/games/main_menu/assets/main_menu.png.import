@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://draokscs7awtl"
-path="res://.godot/imported/pl.webp-65a7ec147f4ea67aaa4ac7e20962d4fe.ctex"
+uid="uid://chrfc7x8hkteh"
+path="res://.godot/imported/main_menu.png-9fa1ba6fe04ffeb428940f8bf439faab.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://game_files/pl.webp"
-dest_files=["res://.godot/imported/pl.webp-65a7ec147f4ea67aaa4ac7e20962d4fe.ctex"]
+source_file="res://games/main_menu/assets/main_menu.png"
+dest_files=["res://.godot/imported/main_menu.png-9fa1ba6fe04ffeb428940f8bf439faab.ctex"]
 
 [params]
 
