@@ -15,7 +15,7 @@
 							{{
 								tab === 'login'
 									? 'Log in to keep your streak going.'
-									: 'Start learning through play — free forever.'
+									: 'Start learning through play - free forever.'
 							}}
 						</p>
 					</div>
@@ -334,19 +334,20 @@ function close() {
 		margin-top: 4px;
 		border: none;
 		border-radius: 12px;
-		background: linear-gradient(135deg, #4648d4, #6063ee);
+		background: linear-gradient(135deg, #3739b8 0%, #4648d4 55%, #6063ee 100%);
 		color: #ffffff;
 		font-family: var(--font-display);
 		font-weight: 700;
 		font-size: 15px;
 		cursor: pointer;
-		box-shadow: 0 12px 24px rgba(70, 72, 212, 0.28);
-		transition: transform 0.15s ease, box-shadow 0.15s ease;
+		box-shadow: 0 10px 20px -8px rgba(53, 55, 170, 0.55), 0 20px 40px -16px rgba(53, 55, 170, 0.4);
+		transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 	}
 
 	.submit-btn:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 16px 30px rgba(70, 72, 212, 0.38);
+		filter: brightness(1.08);
+		box-shadow: 0 14px 26px -8px rgba(53, 55, 170, 0.6), 0 26px 48px -16px rgba(53, 55, 170, 0.48);
 	}
 
 	.switch-line {
