@@ -42,45 +42,51 @@
 
 					<div class="form-area">
 						<Transition :name="direction === 'forward' ? 'slide-fwd' : 'slide-back'">
-							<form v-if="tab === 'login'" key="login" class="auth-form" @submit.prevent>
+							<form v-if="tab === 'login'" key="login" class="auth-form" @submit.prevent="handleLogin">
+								<p v-if="loginError" class="form-error">{{ loginError }}</p>
 								<label class="field">
 									<span class="field-label">Email</span>
-									<input type="email" required placeholder="you@example.com" />
+									<input v-model="loginForm.email" type="email" required placeholder="you@example.com" />
 								</label>
 								<label class="field">
 									<span class="field-label">Password</span>
-									<input type="password" required placeholder="••••••••" />
+									<input v-model="loginForm.password" type="password" required placeholder="••••••••" />
 								</label>
 								<a href="#" class="forgot-link">Forgot password?</a>
-								<button type="submit" class="submit-btn">Log In</button>
+								<button type="submit" class="submit-btn" :disabled="loginLoading">
+									{{ loginLoading ? 'Logging in…' : 'Log In' }}
+								</button>
 								<p class="switch-line">
 									Don't have an account?
 									<a href="#" @click.prevent="switchTab('register')">Sign Up</a>
 								</p>
 							</form>
-							<form v-else key="register" class="auth-form" @submit.prevent>
+							<form v-else key="register" class="auth-form" @submit.prevent="handleRegister">
+								<p v-if="registerError" class="form-error">{{ registerError }}</p>
 								<label class="field">
 									<span class="field-label">Username</span>
-									<input type="text" required placeholder="yourname" />
+									<input v-model="registerForm.username" type="text" required placeholder="yourname" />
 								</label>
 								<label class="field">
 									<span class="field-label">Email</span>
-									<input type="email" required placeholder="you@example.com" />
+									<input v-model="registerForm.email" type="email" required placeholder="you@example.com" />
 								</label>
 								<label class="field">
 									<span class="field-label">Password</span>
-									<input type="password" required placeholder="••••••••" />
+									<input v-model="registerForm.password" type="password" required placeholder="••••••••" />
 								</label>
 								<label class="field">
 									<span class="field-label">Learning language</span>
-									<select v-model="learningLanguage">
+									<select v-model="registerForm.language">
 										<option value="de">German</option>
 										<option value="es" disabled>Spanish — coming soon</option>
 										<option value="fr" disabled>French — coming soon</option>
 										<option value="ja" disabled>Japanese — coming soon</option>
 									</select>
 								</label>
-								<button type="submit" class="submit-btn">Create Account</button>
+								<button type="submit" class="submit-btn" :disabled="registerLoading">
+									{{ registerLoading ? 'Creating account…' : 'Create Account' }}
+								</button>
 								<p class="switch-line">
 									Already have an account?
 									<a href="#" @click.prevent="switchTab('login')">Log In</a>
@@ -95,22 +101,95 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 
 const open = defineModel<boolean>('open', { default: false });
 const tab = defineModel<'login' | 'register'>('tab', { default: 'login' });
 
 const direction = ref<'forward' | 'backward'>('forward');
-const learningLanguage = ref('de');
+
+const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+
+const loginForm = reactive({ email: '', password: '' });
+const loginError = ref('');
+const loginLoading = ref(false);
+
+const registerForm = reactive({ username: '', email: '', password: '', language: 'de' });
+const registerError = ref('');
+const registerLoading = ref(false);
 
 function switchTab(next: 'login' | 'register') {
 	if (next === tab.value) return;
 	direction.value = next === 'register' ? 'forward' : 'backward';
 	tab.value = next;
+	loginError.value = '';
+	registerError.value = '';
 }
 
 function close() {
+	loginError.value = '';
+	registerError.value = '';
 	open.value = false;
+}
+
+async function parseErrorMessage(response: Response, fallback: string) {
+	const data = await response.json().catch(() => null);
+	return data && typeof data.message === 'string' ? data.message : fallback;
+}
+
+async function login(email: string, password: string) {
+	const response = await fetch(`${apiUrl}/api/auth/login`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ email, password }),
+	});
+
+	if (!response.ok) {
+		throw new Error(await parseErrorMessage(response, 'Invalid email or password.'));
+	}
+
+	const data = await response.json();
+	localStorage.setItem('lingodash_token', data.token);
+}
+
+async function handleLogin() {
+	loginError.value = '';
+	loginLoading.value = true;
+	try {
+		await login(loginForm.email, loginForm.password);
+		close();
+	} catch (err) {
+		loginError.value = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+	} finally {
+		loginLoading.value = false;
+	}
+}
+
+async function handleRegister() {
+	registerError.value = '';
+	registerLoading.value = true;
+	try {
+		const response = await fetch(`${apiUrl}/api/auth/register`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				username: registerForm.username,
+				email: registerForm.email,
+				password: registerForm.password,
+			}),
+		});
+
+		if (!response.ok) {
+			throw new Error(await parseErrorMessage(response, 'Could not create your account.'));
+		}
+
+		await login(registerForm.email, registerForm.password);
+		close();
+	} catch (err) {
+		registerError.value = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+	} finally {
+		registerLoading.value = false;
+	}
 }
 </script>
 
@@ -285,6 +364,17 @@ function close() {
 		gap: 14px;
 	}
 
+	.form-error {
+		margin: 0;
+		padding: 10px 14px;
+		border-radius: 10px;
+		background: rgba(209, 53, 43, 0.08);
+		color: #d1352b;
+		font-size: 13px;
+		font-weight: 600;
+		line-height: 1.4;
+	}
+
 	.field {
 		display: flex;
 		flex-direction: column;
@@ -348,6 +438,13 @@ function close() {
 		transform: translateY(-2px);
 		filter: brightness(1.08);
 		box-shadow: 0 14px 26px -8px rgba(53, 55, 170, 0.6), 0 26px 48px -16px rgba(53, 55, 170, 0.48);
+	}
+
+	.submit-btn:disabled {
+		cursor: not-allowed;
+		opacity: 0.7;
+		transform: none;
+		filter: none;
 	}
 
 	.switch-line {
