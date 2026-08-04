@@ -16,7 +16,7 @@ func _process(delta: float) -> void:
 
 
 func _on_lobby_button_pressed() -> void:
-	get_tree().change_scene_to_file("res://game_files/lobby.tscn")
+	get_tree().change_scene_to_file("res://games/lobby/lobby.tscn")
 	
 
 func _on_settings_button_pressed() -> void:
