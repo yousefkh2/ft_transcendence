@@ -62,6 +62,18 @@ const App = {
           objectPositions.value = message.objectPositions || {};
           remainingSeconds.value = message.remainingSeconds || 0;
         }
+        const gameFrame = document.querySelector(
+          ".game-iframe"
+        ) as HTMLIFrameElement;
+
+        gameFrame?.contentWindow?.postMessage(
+          {
+            type: "player_info",
+            role: message.role,
+            playerId: message.playerId,
+          },
+          "*"
+        );
         if (
           message.type === "game.state_updated" ||
           message.type === "game.round_completed" ||
@@ -439,7 +451,15 @@ const App = {
         h("span", "Time ran out before all apartment objectives were satisfied."),
       ])
     : null,
-
+    h("section", { class: "game-panel" }, [
+    h("h2", "Godot Game"),
+      h("iframe", {
+        src: "/game.html",
+        title: "Godot game",
+        class: "game-iframe",
+        allow: "autoplay; fullscreen; pointer-lock",
+      }),
+    ]),
       ]);
   },
 };

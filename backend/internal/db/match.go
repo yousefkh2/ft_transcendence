@@ -2,41 +2,45 @@ package db
 
 import (
 	"context"
+	"errors"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type MatchResult struct {
-	GameMode		string
-	StartedAt		time.Time
-	EndedAt			time.Time
-	Won				bool // true if round_completed, false if round_expired
-	Participants	map[string]string
-}
-
-func SaveMatch(ctx context.Context, pool *pgxpool.Pool, result MatchResult) error {
-	var sessionID string
-	err := pool.QueryRow(ctx,
-		`INSERT INTO game_sessions (game_mode, status, started_at, ended_at)
-		VALUES ($1, 'completed', $2, $3)
-		RETURNING id`,
-		result.GameMode, result.StartedAt, result.EndedAt,
-	).Scan(&sessionID)
+func FinishMatch(ctx context.Context, pool *pgxpool.Pool, code string, startedAt, endedAt time.Time, won bool) error {
+	tx, err := pool.Begin(ctx)
 	if err != nil {
 		return err
 	}
+	defer tx.Rollback(ctx)
 
-	for role, userID := range result.Participants {
-		_, err := pool.Exec(ctx,
-			`INSERT INTO session_participants (session_id, user_id, role, is_winner)
-			VALUES ($1, $2, $3, $4)`,
-			sessionID, userID, role, result.Won,
-		)
-		if err != nil {
-			return err
+	var sessionID string
+	err = tx.QueryRow(ctx,
+		`SELECT id FROM game_sessions WHERE code = $1 FOR UPDATE`,
+		code,
+	).Scan(&sessionID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrLobbyNotFound
 		}
+		return err
 	}
 
-	return nil
+	if _, err := tx.Exec(ctx,
+		`UPDATE game_sessions SET status = 'completed', started_at = $1, ended_at = $2 WHERE id = $3`,
+		startedAt, endedAt, sessionID,
+	); err != nil {
+		return err
+	}
+
+	if _, err := tx.Exec(ctx,
+		`UPDATE session_participants SET is_winner = $1 WHERE session_id = $2`,
+		won, sessionID,
+	); err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
 }
