@@ -1,6 +1,4 @@
--- Draft initial schema for review.
--- This file is intentionally not auto-mounted into Docker Compose.
--- Apply it through a migration tool once auth, match history, and review work start.
+-- Initial schema. Applied automatically via `make up` → `make migrate`.
 
 -- ==========================================
 -- IDENTITY & GAMIFICATION LAYER
