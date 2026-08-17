@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bx8rer41jeowu"]
 
-[ext_resource type="Texture2D" uid="uid://b3gvrq4vjw3rn" path="res://games/livingroom/assets/mission_controll_assets/mission_control_background.png" id="1_vytyf"]
+[ext_resource type="Texture2D" uid="uid://b3gvrq4vjw3rn" path="res://games/livingroom/assets/mission_control_assets/mission_control_background.png" id="1_vytyf"]
 [ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="2_rvbt4"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_vytyf"]
