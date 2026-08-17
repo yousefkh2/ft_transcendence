@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://yow5y37d3njq" path="res://games/livingroom/scripts/main.gd" id="1_tnn0p"]
 [ext_resource type="Texture2D" uid="uid://dbe8okx1febs7" path="res://games/livingroom/assets/livingroom_background.png" id="2_bx3jd"]
-[ext_resource type="Script" uid="uid://bp1ywlv000xxc" path="res://games/livingroom/slots.gd" id="2_eiqwb"]
+[ext_resource type="Script" uid="uid://bp1ywlv000xxc" path="res://games/livingroom/scripts/slots.gd" id="2_eiqwb"]
 [ext_resource type="Texture2D" uid="uid://b2cu8ouukuck" path="res://games/livingroom/assets/plant.png" id="3_p848u"]
 [ext_resource type="Script" uid="uid://dt2e5bphkhegn" path="res://games/livingroom/scripts/object.gd" id="4_5odt6"]
 [ext_resource type="Texture2D" uid="uid://bb3xwbovf7jgs" path="res://games/livingroom/assets/sofa.png" id="5_au1nr"]
