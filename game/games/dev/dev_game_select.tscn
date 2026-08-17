@@ -114,7 +114,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_uwjq0")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_c20b1")
 text = "MENU_LABEL_BACK"
 
-[node name="settings" type="Panel" parent="." unique_id=895693123]
+[node name="dad" type="Panel" parent="." unique_id=895693123]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.021000002
@@ -127,7 +127,7 @@ offset_right = 0.079956055
 offset_bottom = 0.23999023
 theme_override_styles/panel = SubResource("StyleBoxFlat_pnbdg")
 
-[node name="living_room" type="Label" parent="settings" unique_id=912460793]
+[node name="living_room" type="Label" parent="dad" unique_id=912460793]
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
@@ -135,11 +135,11 @@ anchor_bottom = 0.171
 offset_bottom = -0.11299896
 theme_override_fonts/font = ExtResource("3_lt8nw")
 theme_override_font_sizes/font_size = 64
-text = "Living room"
+text = "drag and drop"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="mission_control_button" type="Button" parent="settings" unique_id=1045361582]
+[node name="dad_mission_control_button" type="Button" parent="dad" unique_id=1045361582]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.069000006
@@ -162,7 +162,149 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_uevm5")
 text = "mission_control
 "
 
-[node name="on_site_button" type="Button" parent="settings" unique_id=871266029]
+[node name="dad_on_site_button" type="Button" parent="dad" unique_id=871266029]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.59400004
+anchor_right = 0.93100005
+anchor_bottom = 0.795
+offset_left = 28.0
+offset_top = 0.12399292
+offset_right = 0.049987793
+offset_bottom = 0.069992065
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_lt8nw")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_b5pev")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_8yrp6")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jepwg")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_uevm5")
+text = "on_site
+
+"
+
+[node name="wat" type="Panel" parent="." unique_id=251446965]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.020000001
+anchor_top = 0.291
+anchor_right = 0.254
+anchor_bottom = 0.526
+offset_left = -0.40000153
+offset_top = -0.27999878
+offset_right = 0.3199768
+offset_bottom = -0.08001709
+theme_override_styles/panel = SubResource("StyleBoxFlat_pnbdg")
+
+[node name="living_room" type="Label" parent="wat" unique_id=1971223158]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.171
+offset_bottom = -0.11299896
+theme_override_fonts/font = ExtResource("3_lt8nw")
+theme_override_font_sizes/font_size = 64
+text = "walk and talk"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="wat_mission_control_button" type="Button" parent="wat" unique_id=1572213469]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.069000006
+anchor_top = 0.291
+anchor_right = 0.92700005
+anchor_bottom = 0.48000002
+offset_left = -0.05000305
+offset_top = 8.085999
+offset_right = -0.15002441
+offset_bottom = 8.079994
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_lt8nw")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_b5pev")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_8yrp6")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jepwg")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_uevm5")
+text = "mission_control
+"
+
+[node name="wat_on_site_button" type="Button" parent="wat" unique_id=1811863989]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.59400004
+anchor_right = 0.93100005
+anchor_bottom = 0.795
+offset_left = 28.0
+offset_top = 0.12399292
+offset_right = 0.049987793
+offset_bottom = 0.069992065
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_lt8nw")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_b5pev")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_8yrp6")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jepwg")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_uevm5")
+text = "on_site
+
+"
+
+[node name="settings3" type="Panel" parent="." unique_id=1111416802]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.017
+anchor_top = 0.544
+anchor_right = 0.25100002
+anchor_bottom = 0.77900004
+offset_left = -0.6400032
+offset_top = -0.52001953
+offset_right = 0.08596802
+offset_bottom = -0.32006836
+theme_override_styles/panel = SubResource("StyleBoxFlat_pnbdg")
+
+[node name="living_room" type="Label" parent="settings3" unique_id=1919258033]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.171
+offset_bottom = -0.11299896
+theme_override_fonts/font = ExtResource("3_lt8nw")
+theme_override_font_sizes/font_size = 64
+text = "tag the price"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ttp_mission_control_button" type="Button" parent="settings3" unique_id=656438037]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.069000006
+anchor_top = 0.291
+anchor_right = 0.92700005
+anchor_bottom = 0.48000002
+offset_left = -0.05000305
+offset_top = 8.085999
+offset_right = -0.15002441
+offset_bottom = 8.079994
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_lt8nw")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_b5pev")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_8yrp6")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jepwg")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_uevm5")
+text = "mission_control
+"
+
+[node name="ttp_on_site_button" type="Button" parent="settings3" unique_id=352647816]
 layout_mode = 1
 anchors_preset = -1
 anchor_top = 0.59400004
@@ -187,7 +329,14 @@ text = "on_site
 
 [connection signal="pressed" from="background/back_button" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="background/back_button" to="." method="_on_lobby_button_pressed"]
-[connection signal="pressed" from="settings/mission_control_button" to="." method="_on_mission_control_button_pressed"]
-[connection signal="pressed" from="settings/mission_control_button" to="settings/mission_control_button" method="_on_pressed"]
-[connection signal="pressed" from="settings/on_site_button" to="." method="_on_on_site_button_pressed"]
-[connection signal="pressed" from="settings/on_site_button" to="settings/on_site_button" method="_on_pressed"]
+[connection signal="pressed" from="dad/dad_mission_control_button" to="." method="_on_dad_mission_control_button_pressed"]
+[connection signal="pressed" from="dad/dad_mission_control_button" to="dad/dad_mission_control_button" method="_on_pressed"]
+[connection signal="pressed" from="dad/dad_on_site_button" to="." method="_on_dad_on_site_button_pressed"]
+[connection signal="pressed" from="dad/dad_on_site_button" to="dad/dad_on_site_button" method="_on_pressed"]
+[connection signal="pressed" from="wat/wat_mission_control_button" to="." method="_on_wat_mission_control_button_pressed"]
+[connection signal="pressed" from="wat/wat_on_site_button" to="." method="_on_wat_on_site_button_pressed"]
+[connection signal="pressed" from="wat/wat_on_site_button" to="wat/wat_on_site_button" method="_on_pressed"]
+[connection signal="pressed" from="settings3/ttp_mission_control_button" to="." method="_on_ttp_mission_control_button_pressed"]
+[connection signal="pressed" from="settings3/ttp_mission_control_button" to="settings3/ttp_mission_control_button" method="_on_pressed"]
+[connection signal="pressed" from="settings3/ttp_on_site_button" to="." method="_on_ttp_on_site_button_pressed"]
+[connection signal="pressed" from="settings3/ttp_on_site_button" to="settings3/ttp_on_site_button" method="_on_pressed"]

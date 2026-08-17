@@ -3,9 +3,6 @@
 [ext_resource type="Script" uid="uid://cjdu1k17h6ite" path="res://games/lobby/scripts/lobby.gd" id="1_2nora"]
 [ext_resource type="Texture2D" uid="uid://m1d2xl26tb8t" path="res://games/lobby/assets/lobby_background.png" id="2_a01gq"]
 [ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="3_rdij3"]
-[ext_resource type="Script" uid="uid://dxornjc6f6m" path="res://game_files/on_site.gd" id="5_bm06h"]
-[ext_resource type="Script" uid="uid://upatq3htbwxo" path="res://game_files/network_manager.gd" id="5_e25pb"]
-[ext_resource type="Script" uid="uid://bilti1y1p7onr" path="res://game_files/mission_control.gd" id="6_yh0ef"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_d3fr7"]
 texture = ExtResource("2_a01gq")
@@ -55,50 +52,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_2nora")
-
-[node name="NetworkManager" type="Node" parent="." unique_id=1152700285]
-script = ExtResource("5_e25pb")
-
-[node name="player_1_button" type="Button" parent="." unique_id=1393400828]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.015000001
-anchor_top = 0.26000002
-anchor_right = 0.15200001
-anchor_bottom = 0.32900003
-offset_left = -381.8
-offset_top = -31.800018
-offset_right = -382.838
-offset_bottom = -31.812012
-text = "PLAYER 1"
-
-[node name="on_site" type="Button" parent="." unique_id=333073962]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.023000002
-anchor_top = 0.45100003
-anchor_right = 0.15300001
-anchor_bottom = 0.52000004
-offset_left = -381.35
-offset_top = 228.73996
-offset_right = -381.95
-offset_bottom = 229.21997
-text = "ON_SITE"
-script = ExtResource("5_bm06h")
-
-[node name="mission_control" type="Button" parent="." unique_id=2108055723]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.021000002
-anchor_top = 0.53300005
-anchor_right = 0.15400001
-anchor_bottom = 0.59900004
-offset_left = -381.51
-offset_top = 229.17993
-offset_right = -382.87003
-offset_bottom = 228.89996
-text = "MISSION_CONTROL"
-script = ExtResource("6_yh0ef")
 
 [node name="Background" type="Panel" parent="." unique_id=651566331]
 layout_mode = 1
@@ -384,10 +337,6 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
 text = "Create lobby"
 
-[connection signal="pressed" from="player_1_button" to="player_1_button" method="_on_pressed"]
-[connection signal="pressed" from="on_site" to="." method="_on_on_site_pressed"]
-[connection signal="pressed" from="on_site" to="on_site" method="_on_pressed"]
-[connection signal="pressed" from="mission_control" to="mission_control" method="_on_pressed"]
 [connection signal="pressed" from="Background/lobby_button" to="." method="_on_lobby_button_pressed"]
 [connection signal="pressed" from="create_lobby_interface/create" to="create_lobby_interface/create" method="_on_pressed"]
 [connection signal="item_selected" from="create_lobby_interface/language_selecter" to="create_lobby_interface/language_selecter" method="_on_item_selected"]

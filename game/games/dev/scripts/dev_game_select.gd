@@ -12,13 +12,30 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	pass
 
-
-func _on_mission_control_button_pressed() -> void:
+#DRAG AND DROP
+func _on_dad_mission_control_button_pressed() -> void:
 	get_tree().change_scene_to_file("res://games/livingroom/mission_control.tscn")
-
-
-func _on_on_site_button_pressed() -> void:
+	
+func _on_dad_on_site_button_pressed() -> void:
 	get_tree().change_scene_to_file("res://games/livingroom/on_site.tscn")
+
+#WALK AND TALK
+func _on_wat_mission_control_button_pressed() -> void:
+	get_tree().change_scene_to_file("res://games/walk_and_talk/mission_control.tscn")
+	
+func _on_wat_on_site_button_pressed() -> void:
+	get_tree().change_scene_to_file("res://games/walk_and_talk/on_site.tscn")
+
+
+
+#TAG THE PRICE
+func _on_ttp_mission_control_button_pressed() -> void:
+	get_tree().change_scene_to_file("res://games/tag_the_price/mission_control.tscn")
+
+func _on_ttp_on_site_button_pressed() -> void:
+	get_tree().change_scene_to_file("res://games/tag_the_price/on_site.tscn")
+
+
 
 
 func _on_back_button_pressed() -> void:
