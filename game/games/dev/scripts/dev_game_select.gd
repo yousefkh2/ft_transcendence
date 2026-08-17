@@ -13,13 +13,13 @@ func _process(delta: float) -> void:
 	pass
 
 
-func _back_button_pressed() -> void:
-	get_tree().change_scene_to_file("res://games/lobby/lobby.tscn")
-
-
 func _on_mission_control_button_pressed() -> void:
 	get_tree().change_scene_to_file("res://games/livingroom/mission_control.tscn")
 
 
 func _on_on_site_button_pressed() -> void:
 	get_tree().change_scene_to_file("res://games/livingroom/on_site.tscn")
+
+
+func _on_back_button_pressed() -> void:
+	get_tree().change_scene_to_file("res://games/lobby/lobby.tscn")

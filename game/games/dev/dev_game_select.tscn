@@ -93,11 +93,16 @@ grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_u0rlk")
 
 [node name="back_button" type="Button" parent="background" unique_id=1506251598]
-layout_mode = 0
-offset_left = 58.0
-offset_top = 963.0
-offset_right = 430.0
-offset_bottom = 1029.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.030000001
+anchor_top = 0.892
+anchor_right = 0.224
+anchor_bottom = 0.95300007
+offset_left = 0.33999634
+offset_top = -0.3600464
+offset_right = -0.52801514
+offset_bottom = -0.2401123
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
@@ -180,6 +185,7 @@ text = "on_site
 
 "
 
+[connection signal="pressed" from="background/back_button" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="background/back_button" to="." method="_on_lobby_button_pressed"]
 [connection signal="pressed" from="settings/mission_control_button" to="." method="_on_mission_control_button_pressed"]
 [connection signal="pressed" from="settings/mission_control_button" to="settings/mission_control_button" method="_on_pressed"]
