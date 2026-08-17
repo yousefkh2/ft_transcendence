@@ -11,6 +11,8 @@ texture = ExtResource("2_bx3jd")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mplec"]
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_67isc"]
+
 [node name="OnSite" type="Control" unique_id=281759183]
 layout_mode = 3
 anchors_preset = 15
@@ -34,30 +36,34 @@ layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.074
 anchor_top = 0.38000003
-anchor_right = 0.90200007
-anchor_bottom = 0.94900006
-offset_left = 0.91999817
-offset_top = -0.4000244
-offset_right = -14.840088
-offset_bottom = 53.079956
+anchor_right = 0.9760001
+anchor_bottom = 0.99600005
+offset_left = -117.08
+offset_top = -1.4000244
+offset_right = -0.920166
+offset_bottom = 0.3199463
 columns = 8
 
 [node name="lamp" type="Button" parent="GridContainer" unique_id=361340857]
 layout_mode = 2
 theme_override_styles/focus = SubResource("StyleBoxEmpty_mplec")
 icon = ExtResource("6_kemar")
+flat = true
 
 [node name="Button2" type="Button" parent="GridContainer" unique_id=1328120525]
 layout_mode = 2
 theme_override_styles/focus = SubResource("StyleBoxEmpty_mplec")
 icon = ExtResource("3_p848u")
+flat = true
 
 [node name="Button3" type="Button" parent="GridContainer" unique_id=352909043]
 layout_mode = 2
 theme_override_styles/focus = SubResource("StyleBoxEmpty_mplec")
 icon = ExtResource("5_au1nr")
+flat = true
 
 [node name="Button4" type="Button" parent="GridContainer" unique_id=397078120]
 layout_mode = 2
-theme_override_styles/focus = SubResource("StyleBoxEmpty_mplec")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_67isc")
 icon = ExtResource("7_gjxtx")
+flat = true
