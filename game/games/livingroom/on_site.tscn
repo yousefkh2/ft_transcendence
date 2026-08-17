@@ -1,0 +1,63 @@
+[gd_scene format=3 uid="uid://einby12hffbb"]
+
+[ext_resource type="Texture2D" uid="uid://dbe8okx1febs7" path="res://games/livingroom/assets/on_site_asstes/livingroom_background.png" id="2_bx3jd"]
+[ext_resource type="Texture2D" uid="uid://b2cu8ouukuck" path="res://games/livingroom/assets/on_site_asstes/plant.png" id="3_p848u"]
+[ext_resource type="Texture2D" uid="uid://bb3xwbovf7jgs" path="res://games/livingroom/assets/on_site_asstes/sofa.png" id="5_au1nr"]
+[ext_resource type="Texture2D" uid="uid://1mt044gyerxk" path="res://games/livingroom/assets/on_site_asstes/lamp.png" id="6_kemar"]
+[ext_resource type="Texture2D" uid="uid://byfgya7emseiv" path="res://games/livingroom/assets/on_site_asstes/table.png" id="7_gjxtx"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_0lrx7"]
+texture = ExtResource("2_bx3jd")
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mplec"]
+
+[node name="OnSite" type="Control" unique_id=281759183]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="Panel" parent="." unique_id=427267268]
+modulate = Color(0.871141, 0.8711411, 0.8711411, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_0lrx7")
+
+[node name="GridContainer" type="GridContainer" parent="." unique_id=1929610246]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.074
+anchor_top = 0.38000003
+anchor_right = 0.90200007
+anchor_bottom = 0.94900006
+offset_left = 0.91999817
+offset_top = -0.4000244
+offset_right = -14.840088
+offset_bottom = 53.079956
+columns = 8
+
+[node name="lamp" type="Button" parent="GridContainer" unique_id=361340857]
+layout_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxEmpty_mplec")
+icon = ExtResource("6_kemar")
+
+[node name="Button2" type="Button" parent="GridContainer" unique_id=1328120525]
+layout_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxEmpty_mplec")
+icon = ExtResource("3_p848u")
+
+[node name="Button3" type="Button" parent="GridContainer" unique_id=352909043]
+layout_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxEmpty_mplec")
+icon = ExtResource("5_au1nr")
+
+[node name="Button4" type="Button" parent="GridContainer" unique_id=397078120]
+layout_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxEmpty_mplec")
+icon = ExtResource("7_gjxtx")
