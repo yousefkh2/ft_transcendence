@@ -9,9 +9,40 @@
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_0lrx7"]
 texture = ExtResource("2_bx3jd")
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mplec"]
+[sub_resource type="GDScript" id="GDScript_mplec"]
+script/source = "class_name DragDropCell extends Button
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_67isc"]
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+
+func _get_drag_data(at_position: Vector2) -> Variant:
+	if not icon:
+		return null
+	
+	var preview: TextureRect = TextureRect.new()
+	preview.texture = icon
+	set_drag_preview(preview)
+	
+	return self
+	
+func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
+	if not data is DragDropCell or data == self:
+		return false
+	
+	grab_focus()
+	return true
+	
+func _drop_data(at_position: Vector2, data: Variant) -> void:
+	var temp: Texture2D = icon
+	icon = data.icon
+	data.icon = temp
+	
+"
 
 [node name="OnSite" type="Control" unique_id=281759183]
 layout_mode = 3
@@ -35,35 +66,39 @@ theme_override_styles/panel = SubResource("StyleBoxTexture_0lrx7")
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.074
-anchor_top = 0.38000003
-anchor_right = 0.9760001
+anchor_top = 0.379
+anchor_right = 0.83300006
 anchor_bottom = 0.99600005
-offset_left = -117.08
-offset_top = -1.4000244
-offset_right = -0.920166
-offset_bottom = 0.3199463
-columns = 8
+offset_left = -7.080002
+offset_top = 90.67999
+offset_right = 109.63989
+offset_bottom = -25.680054
+columns = 4
 
 [node name="lamp" type="Button" parent="GridContainer" unique_id=361340857]
+custom_minimum_size = Vector2(100, 50)
 layout_mode = 2
-theme_override_styles/focus = SubResource("StyleBoxEmpty_mplec")
 icon = ExtResource("6_kemar")
 flat = true
+script = SubResource("GDScript_mplec")
 
-[node name="Button2" type="Button" parent="GridContainer" unique_id=1328120525]
+[node name="plant" type="Button" parent="GridContainer" unique_id=1328120525]
+custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
-theme_override_styles/focus = SubResource("StyleBoxEmpty_mplec")
 icon = ExtResource("3_p848u")
 flat = true
+script = SubResource("GDScript_mplec")
 
-[node name="Button3" type="Button" parent="GridContainer" unique_id=352909043]
+[node name="couch" type="Button" parent="GridContainer" unique_id=352909043]
+custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
-theme_override_styles/focus = SubResource("StyleBoxEmpty_mplec")
 icon = ExtResource("5_au1nr")
 flat = true
+script = SubResource("GDScript_mplec")
 
-[node name="Button4" type="Button" parent="GridContainer" unique_id=397078120]
+[node name="table" type="Button" parent="GridContainer" unique_id=397078120]
+custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
-theme_override_styles/focus = SubResource("StyleBoxEmpty_67isc")
 icon = ExtResource("7_gjxtx")
 flat = true
+script = SubResource("GDScript_mplec")
