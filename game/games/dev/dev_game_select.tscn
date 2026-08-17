@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://uqgurie1tyl5"]
+
+[ext_resource type="Texture2D" uid="uid://dtpdc4xbsqudn" path="res://games/dev/assets/dev_background.png" id="1_qjpal"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_u0rlk"]
+texture = ExtResource("1_qjpal")
+
+[node name="dev_game_select" type="Control" unique_id=879091363]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="background" type="Panel" parent="." unique_id=1215136881]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 2.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_u0rlk")

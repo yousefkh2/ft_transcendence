@@ -102,7 +102,7 @@ offset_bottom = 228.89996
 text = "MISSION_CONTROL"
 script = ExtResource("6_yh0ef")
 
-[node name="Panel" type="Panel" parent="." unique_id=651566331]
+[node name="Background" type="Panel" parent="." unique_id=651566331]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -117,7 +117,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_d3fr7")
 
-[node name="lobby_label" type="Label" parent="Panel" unique_id=793847066]
+[node name="lobby_label" type="Label" parent="Background" unique_id=793847066]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -138,7 +138,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 uppercase = true
 
-[node name="lobby_button" type="Button" parent="Panel" unique_id=1015945716]
+[node name="lobby_button" type="Button" parent="Background" unique_id=1015945716]
 layout_mode = 0
 offset_left = 76.5
 offset_top = 945.75
@@ -351,14 +351,37 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
 text = "MENU_LABEL_BACK"
 
+[node name="dev_game_select" type="Panel" parent="." unique_id=2021544984]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="select_dev_game_button" type="Button" parent="dev_game_select" unique_id=1535508040]
+layout_mode = 0
+offset_left = 1499.0
+offset_top = 53.0
+offset_right = 1871.0
+offset_bottom = 119.0
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_rdij3")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_a01gq")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_rdij3")
+theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
+text = "Select Game"
+
 [connection signal="pressed" from="player_1_button" to="player_1_button" method="_on_pressed"]
 [connection signal="pressed" from="on_site" to="." method="_on_on_site_pressed"]
 [connection signal="pressed" from="on_site" to="on_site" method="_on_pressed"]
 [connection signal="pressed" from="mission_control" to="mission_control" method="_on_pressed"]
-[connection signal="pressed" from="Panel/lobby_button" to="." method="_on_lobby_button_pressed"]
+[connection signal="pressed" from="Background/lobby_button" to="." method="_on_lobby_button_pressed"]
 [connection signal="pressed" from="lobby_interface/create_lobby" to="." method="_on_create_lobby_pressed"]
 [connection signal="pressed" from="lobby_interface/create_lobby" to="lobby_interface/create_lobby" method="_on_pressed"]
 [connection signal="pressed" from="create_lobby_interface/create" to="create_lobby_interface/create" method="_on_pressed"]
 [connection signal="item_selected" from="create_lobby_interface/language_selecter" to="create_lobby_interface/language_selecter" method="_on_item_selected"]
 [connection signal="ready" from="create_lobby_interface/language_selecter" to="create_lobby_interface/language_selecter" method="_on_ready"]
 [connection signal="pressed" from="create_lobby_interface/back_button" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="dev_game_select/select_dev_game_button" to="." method="_on_select_dev_game_button_pressed"]
