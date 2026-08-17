@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://1mt044gyerxk"
-path="res://.godot/imported/lamp.png-873c2de4e0dd1a4e77d80f8c8c6f0159.ctex"
+uid="uid://b2cu8ouukuck"
+path="res://.godot/imported/plant.png-0d3f86f2391bcd26439d305eedadacc8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://games/livingroom/assets/lamp.png"
-dest_files=["res://.godot/imported/lamp.png-873c2de4e0dd1a4e77d80f8c8c6f0159.ctex"]
+source_file="res://games/livingroom/assets/on_site_asstes/plant.png"
+dest_files=["res://.godot/imported/plant.png-0d3f86f2391bcd26439d305eedadacc8.ctex"]
 
 [params]
 

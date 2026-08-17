@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://tavodcfudfxs"]
 
-[ext_resource type="Script" uid="uid://cjdu1k17h6ite" path="res://games/livingroom/scripts/lobby.gd" id="1_2nora"]
+[ext_resource type="Script" uid="uid://cjdu1k17h6ite" path="res://games/lobby/lobby.gd" id="1_2nora"]
 [ext_resource type="Texture2D" uid="uid://m1d2xl26tb8t" path="res://games/lobby/assets/lobby_background.png" id="2_a01gq"]
 [ext_resource type="Script" uid="uid://c7q7ycdq6pgw7" path="res://games/livingroom/scripts/play_button.gd" id="3_e25pb"]
 [ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="3_rdij3"]

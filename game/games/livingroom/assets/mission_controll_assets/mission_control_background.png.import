@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dbe8okx1febs7"
-path="res://.godot/imported/livingroom_background.png-c8316e4b43f7b4e53f27a3a27e92e2fa.ctex"
+uid="uid://b3gvrq4vjw3rn"
+path="res://.godot/imported/mission_control_background.png-110edccfd3d81a12f0adfa832e6ccccc.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://games/livingroom/assets/livingroom_background.png"
-dest_files=["res://.godot/imported/livingroom_background.png-c8316e4b43f7b4e53f27a3a27e92e2fa.ctex"]
+source_file="res://games/livingroom/assets/mission_controll_assets/mission_control_background.png"
+dest_files=["res://.godot/imported/mission_control_background.png-110edccfd3d81a12f0adfa832e6ccccc.ctex"]
 
 [params]
 
