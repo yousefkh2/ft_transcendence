@@ -1,9 +1,77 @@
 [gd_scene format=3 uid="uid://uqgurie1tyl5"]
 
 [ext_resource type="Texture2D" uid="uid://dtpdc4xbsqudn" path="res://games/dev/assets/dev_background.png" id="1_qjpal"]
+[ext_resource type="Script" uid="uid://yjdw4o8sygbk" path="res://games/dev/scripts/dev_game_select.gd" id="1_usm0q"]
+[ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="3_lt8nw"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_u0rlk"]
 texture = ExtResource("1_qjpal")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q67p0"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_my3to"]
+bg_color = Color(0.79836667, 0.79836625, 0.7983663, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uwjq0"]
+bg_color = Color(0.9079417, 0.9079417, 0.90794164, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_c20b1"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pnbdg"]
+bg_color = Color(0.6666667, 0.5411765, 0.42352942, 1)
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b5pev"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8yrp6"]
+bg_color = Color(0.79836667, 0.79836625, 0.7983663, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jepwg"]
+bg_color = Color(0.9079417, 0.9079417, 0.90794164, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_uevm5"]
 
 [node name="dev_game_select" type="Control" unique_id=879091363]
 layout_mode = 3
@@ -12,6 +80,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_usm0q")
 
 [node name="background" type="Panel" parent="." unique_id=1215136881]
 layout_mode = 1
@@ -19,4 +88,100 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_right = 2.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_u0rlk")
+
+[node name="back_button" type="Button" parent="background" unique_id=1506251598]
+layout_mode = 0
+offset_left = 58.0
+offset_top = 963.0
+offset_right = 430.0
+offset_bottom = 1029.0
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_lt8nw")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_q67p0")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_my3to")
+theme_override_styles/hover = SubResource("StyleBoxFlat_uwjq0")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_c20b1")
+text = "MENU_LABEL_BACK"
+
+[node name="settings" type="Panel" parent="." unique_id=895693123]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.021000002
+anchor_top = 0.045
+anchor_right = 0.25100002
+anchor_bottom = 0.272
+offset_left = -8.3200035
+offset_top = -8.600002
+offset_right = 0.079956055
+offset_bottom = 0.23999023
+theme_override_styles/panel = SubResource("StyleBoxFlat_pnbdg")
+
+[node name="living_room" type="Label" parent="settings" unique_id=912460793]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.171
+offset_bottom = -0.11299896
+theme_override_fonts/font = ExtResource("3_lt8nw")
+theme_override_font_sizes/font_size = 64
+text = "Living room"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="mission_control_button" type="Button" parent="settings" unique_id=1045361582]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.069000006
+anchor_top = 0.291
+anchor_right = 0.92700005
+anchor_bottom = 0.48000002
+offset_left = -0.05000305
+offset_top = 8.085999
+offset_right = -0.15002441
+offset_bottom = 8.079994
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_lt8nw")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_b5pev")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_8yrp6")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jepwg")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_uevm5")
+text = "mission_control
+"
+
+[node name="on_site_button" type="Button" parent="settings" unique_id=871266029]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.59400004
+anchor_right = 0.93100005
+anchor_bottom = 0.795
+offset_left = 28.0
+offset_top = 0.12399292
+offset_right = 0.049987793
+offset_bottom = 0.069992065
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_lt8nw")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_b5pev")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_8yrp6")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jepwg")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_uevm5")
+text = "on_site
+
+"
+
+[connection signal="pressed" from="background/back_button" to="." method="_on_lobby_button_pressed"]
+[connection signal="pressed" from="settings/mission_control_button" to="." method="_on_mission_control_button_pressed"]
+[connection signal="pressed" from="settings/mission_control_button" to="settings/mission_control_button" method="_on_pressed"]
+[connection signal="pressed" from="settings/on_site_button" to="." method="_on_on_site_button_pressed"]
+[connection signal="pressed" from="settings/on_site_button" to="settings/on_site_button" method="_on_pressed"]

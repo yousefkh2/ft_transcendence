@@ -2,13 +2,27 @@
 
 [ext_resource type="Texture2D" uid="uid://b3gvrq4vjw3rn" path="res://games/livingroom/assets/mission_control_background.png" id="1_vytyf"]
 [ext_resource type="FontFile" uid="uid://bjdy3xurn6bij" path="res://game_files/fonts/PixelifySans-VariableFont_wght.ttf" id="2_psslg"]
-[ext_resource type="Script" uid="uid://f0yoi8mu6o2r" path="res://games/livingroom/scripts/easteregg.gd" id="3_7ucbt"]
 [ext_resource type="Texture2D" uid="uid://3wq7nbpu41p0" path="res://games/livingroom/assets/check_in_button.png" id="4_psslg"]
 
 [sub_resource type="VideoStreamTheora" id="VideoStreamTheora_mh6wk"]
 file = "res://games/livingroom/assets/easteregg3123.ogv"
 
-[node name="Node2D" type="Node2D" unique_id=562714961]
+[sub_resource type="GDScript" id="GDScript_vytyf"]
+script/source = "extends VideoStreamPlayer
+
+func _ready():
+	self.visible = false
+
+func _process(delta: float) -> void:
+	pass
+
+
+func _on_button_pressed() -> void:
+	visible = true
+	play()
+"
+
+[node name="Node2D" type="Marker2D" unique_id=275688541]
 position = Vector2(1921, 1081)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=2089334958]
@@ -49,19 +63,7 @@ offset_bottom = 124.0
 stream = SubResource("VideoStreamTheora_mh6wk")
 volume_db = 2.0
 loop = true
-script = ExtResource("3_7ucbt")
-
-[node name="Button" type="Button" parent="." unique_id=1569733246]
-anchors_preset = -1
-anchor_left = 0.98
-anchor_top = 0.583
-anchor_right = 1.0400001
-anchor_bottom = 0.62
-offset_left = -742.0
-offset_top = -311.0
-offset_right = -642.0
-offset_bottom = -280.0
-text = "what is that"
+script = SubResource("GDScript_vytyf")
 
 [node name="sofa_text" type="Label" parent="." unique_id=795765242]
 offset_left = -1585.0
@@ -101,5 +103,3 @@ offset_left = -767.41125
 offset_top = -512.16003
 offset_right = -768.05884
 offset_bottom = -512.16003
-
-[connection signal="pressed" from="Button" to="VideoPlayer" method="_on_button_pressed"]
