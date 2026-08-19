@@ -1,0 +1,347 @@
+[gd_scene format=3 uid="uid://dtp1bwkmhb4rh"]
+
+[ext_resource type="Script" uid="uid://cjdu1k17h6ite" path="res://games/lobby/scripts/lobby.gd" id="1_070vc"]
+[ext_resource type="Texture2D" uid="uid://fwhexpq4k8r3" path="res://games/pregame_lobby/assets/pregame_lobby_background.png" id="2_070vc"]
+[ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="3_but57"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_d3fr7"]
+texture = ExtResource("2_070vc")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a01gq"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rdij3"]
+bg_color = Color(0.79836667, 0.79836625, 0.7983663, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d3fr7"]
+bg_color = Color(0.9079417, 0.9079417, 0.90794164, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ns8xt"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h1tpx"]
+bg_color = Color(0.6666667, 0.5411765, 0.42352942, 1)
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 3
+
+[node name="lobby" type="Control" unique_id=1315476839]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_070vc")
+
+[node name="Background" type="Panel" parent="." unique_id=651566331]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -960.5
+offset_top = -540.75
+offset_right = 960.5
+offset_bottom = 540.75
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_d3fr7")
+
+[node name="lobby_label" type="Label" parent="Background" unique_id=793847066]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -889.0
+offset_top = 70.75
+offset_right = -569.0
+offset_bottom = 198.75
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.07058824, 0.07058824, 0.07058824, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_fonts/font = ExtResource("3_but57")
+theme_override_font_sizes/font_size = 128
+text = "lobby"
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
+
+[node name="lobby_button" type="Button" parent="Background" unique_id=1015945716]
+layout_mode = 0
+offset_left = 76.5
+offset_top = 945.75
+offset_right = 283.5
+offset_bottom = 1011.75
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_but57")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_a01gq")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_rdij3")
+theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
+text = "MENU_LABEL_BACK"
+
+[node name="lobby_interface" type="Panel" parent="." unique_id=1896010627]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.036000002
+anchor_top = 0.17400001
+anchor_right = 0.31800002
+anchor_bottom = 0.37300003
+offset_left = 0.87999725
+offset_top = 0.07998657
+offset_right = -0.5600586
+offset_bottom = -53.840027
+theme_override_styles/panel = SubResource("StyleBoxFlat_h1tpx")
+
+[node name="language" type="Label" parent="lobby_interface" unique_id=1980547430]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.035185184
+anchor_top = 0.08054567
+anchor_right = 0.45740741
+anchor_bottom = 0.39022315
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_but57")
+theme_override_font_sizes/font_size = 48
+text = "Lobby code"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="LineEdit" type="LineEdit" parent="lobby_interface" unique_id=478690025]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.59300005
+anchor_top = 0.09200001
+anchor_right = 0.924
+anchor_bottom = 0.34600002
+offset_left = -0.22003174
+offset_top = 0.23199463
+offset_right = 0.039978027
+offset_bottom = 0.09799194
+theme_override_fonts/font = ExtResource("3_but57")
+theme_override_font_sizes/font_size = 48
+max_length = 4
+
+[node name="join" type="Button" parent="lobby_interface" unique_id=345272917]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.591
+anchor_right = 0.50600004
+anchor_bottom = 0.81100005
+offset_left = 254.0
+offset_top = -2.151001
+offset_right = 253.75998
+offset_bottom = 10.428986
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_but57")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_a01gq")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_rdij3")
+theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
+text = "JOIN"
+
+[node name="create_lobby_interface" type="Panel" parent="." unique_id=38428379]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.036000002
+anchor_top = 0.17400001
+anchor_right = 0.31800002
+anchor_bottom = 0.31800002
+offset_left = 574.88
+offset_top = 1.0799866
+offset_right = 1201.44
+offset_bottom = 417.55997
+theme_override_styles/panel = SubResource("StyleBoxFlat_h1tpx")
+
+[node name="create" type="Button" parent="create_lobby_interface" unique_id=621446254]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.65300006
+anchor_top = 0.813
+anchor_right = 0.966
+anchor_bottom = 0.947
+offset_left = 0.29595947
+offset_top = -0.036010742
+offset_right = -0.11193848
+offset_bottom = 0.28198242
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_but57")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_a01gq")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_rdij3")
+theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
+text = "Create lobby"
+
+[node name="language" type="Label" parent="create_lobby_interface" unique_id=826454020]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.008
+anchor_top = 0.20500001
+anchor_right = 0.54300004
+anchor_bottom = 0.289
+offset_left = -0.34398556
+offset_top = 0.275589
+offset_right = 0.18243408
+offset_bottom = 0.2276001
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_but57")
+theme_override_font_sizes/font_size = 48
+text = "MENU_LABEL_LANGUAGE"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="language_selecter" type="OptionButton" parent="create_lobby_interface" unique_id=1942003145]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.58900005
+anchor_top = 0.18400002
+anchor_right = 0.97400004
+anchor_bottom = 0.321
+offset_left = 0.25805664
+offset_top = -0.24800873
+offset_right = 0.13195801
+offset_bottom = 0.14099121
+theme_override_fonts/font = ExtResource("3_but57")
+theme_override_font_sizes/font_size = 48
+selected = 0
+item_count = 4
+popup/item_0/text = "English"
+popup/item_0/id = 0
+popup/item_1/text = "Deutsch"
+popup/item_1/id = 1
+popup/item_2/text = "Polski"
+popup/item_2/id = 2
+popup/item_3/text = "Turkish"
+popup/item_3/id = 3
+
+[node name="create_lobby_title" type="Label" parent="create_lobby_interface" unique_id=17610366]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0034246412
+anchor_top = 0.0069930004
+anchor_right = 0.9957192
+anchor_bottom = 0.15034965
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_but57")
+theme_override_font_sizes/font_size = 48
+text = "Create lobby"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="back_button" type="Button" parent="create_lobby_interface" unique_id=223194689]
+layout_mode = 0
+offset_left = 43.0
+offset_top = 475.0
+offset_right = 415.0
+offset_bottom = 541.0
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_but57")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_a01gq")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_rdij3")
+theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
+text = "MENU_LABEL_BACK"
+
+[node name="dev_game_select" type="Panel" parent="." unique_id=2021544984]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="select_dev_game_button" type="Button" parent="dev_game_select" unique_id=1535508040]
+layout_mode = 0
+offset_left = 1499.0
+offset_top = 53.0
+offset_right = 1871.0
+offset_bottom = 119.0
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_but57")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_a01gq")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_rdij3")
+theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
+text = "Select Game"
+
+[node name="create lobby" type="Panel" parent="." unique_id=1369510205]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.036000002
+anchor_top = 0.17400001
+anchor_right = 0.31800002
+anchor_bottom = 0.31800002
+offset_left = 2.8799973
+offset_top = 191.07999
+offset_right = -225.56006
+offset_bottom = 137.55997
+theme_override_styles/panel = SubResource("StyleBoxFlat_h1tpx")
+
+[node name="create_lobby" type="Button" parent="create lobby" unique_id=2007405290]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.591
+anchor_right = 0.50600004
+anchor_bottom = 0.81100005
+offset_left = 1.3499994
+offset_top = -32.282
+offset_right = 137.74199
+offset_bottom = -6.7220078
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_but57")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_a01gq")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_rdij3")
+theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
+text = "Create lobby"
+
+[connection signal="pressed" from="Background/lobby_button" to="." method="_on_lobby_button_pressed"]
+[connection signal="pressed" from="create_lobby_interface/create" to="create_lobby_interface/create" method="_on_pressed"]
+[connection signal="item_selected" from="create_lobby_interface/language_selecter" to="create_lobby_interface/language_selecter" method="_on_item_selected"]
+[connection signal="ready" from="create_lobby_interface/language_selecter" to="create_lobby_interface/language_selecter" method="_on_ready"]
+[connection signal="pressed" from="create_lobby_interface/back_button" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="dev_game_select/select_dev_game_button" to="." method="_on_select_dev_game_button_pressed"]
+[connection signal="pressed" from="create lobby/create_lobby" to="." method="_on_create_lobby_pressed"]
+[connection signal="pressed" from="create lobby/create_lobby" to="create lobby/create_lobby" method="_on_pressed"]
