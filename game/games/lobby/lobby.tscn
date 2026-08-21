@@ -338,6 +338,7 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
 text = "Create lobby"
 
 [connection signal="pressed" from="Background/lobby_button" to="." method="_on_lobby_button_pressed"]
+[connection signal="pressed" from="create_lobby_interface/create" to="." method="_on_create_pressed"]
 [connection signal="pressed" from="create_lobby_interface/create" to="create_lobby_interface/create" method="_on_pressed"]
 [connection signal="item_selected" from="create_lobby_interface/language_selecter" to="create_lobby_interface/language_selecter" method="_on_item_selected"]
 [connection signal="ready" from="create_lobby_interface/language_selecter" to="create_lobby_interface/language_selecter" method="_on_ready"]

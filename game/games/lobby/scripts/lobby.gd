@@ -30,3 +30,7 @@ func _on_lobby_button_pressed() -> void:
 
 func _on_select_dev_game_button_pressed() -> void:
 	get_tree().change_scene_to_file("res://games/dev/dev_game_select.tscn")
+
+
+func _on_create_pressed() -> void:
+	get_tree().change_scene_to_file("res://games/pregame_lobby/pregame_lobby.tscn")
