@@ -29,6 +29,10 @@ func (h *AuthHandler) HandleRegister(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
 	}
 
+	if req.Username == "" || req.Email == "" || req.Password == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "username, email and password are required")
+	}
+
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
@@ -70,6 +74,8 @@ func (h *AuthHandler) HandleLogin(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
 	}
+
+	
 
 	var userID, passwordHash string
 	err := h.DB.QueryRow(c.Request().Context(),
