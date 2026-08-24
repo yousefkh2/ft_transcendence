@@ -1,26 +1,68 @@
 extends HTTPRequest
 
+signal login_success
+signal login_failed(message: String)
 signal lobby_created(code: String)
 signal lobby_creation_failed(message: String)
 
-var auth_token: String = "ff4a1cc7-adf1-4beb-aefa-26a5ebee687c" # set this after login
+var auth_token: String = ""
+
+# Fill these in with real credentials (or pass them in from elsewhere)
+var username: String = "daniel"
+var password: String = "secret123"
+
+func login_and_create_lobby() -> void:
+	request_completed.connect(_on_login_completed, CONNECT_ONE_SHOT)
+	var headers = ["Content-Type: application/json"]
+	var body = JSON.stringify({
+		"username": username,
+		"password": password
+	})
+	var error = request(
+		"http://localhost:8080/api/auth/login",
+		headers,
+		HTTPClient.METHOD_POST,
+		body
+	)
+	if error != OK:
+		login_failed.emit("Login request failed to send.")
+
+func _on_login_completed(result, response_code, headers, body):
+	if response_code != 200:
+		var msg = "Login failed: %s" % body.get_string_from_utf8()
+		push_error(msg)
+		login_failed.emit(msg)
+		return
+
+	var json = JSON.new()
+	if json.parse(body.get_string_from_utf8()) != OK:
+		login_failed.emit("Failed to parse login response.")
+		return
+
+	var response = json.get_data()
+	print(response) # check the actual field name here!
+
+	auth_token = response.get("token", "")
+	if auth_token == "":
+		login_failed.emit("No token in login response.")
+		return
+
+	login_success.emit()
+	create_lobby() # chain straight into lobby creation
 
 func create_lobby():
-	request_completed.connect(_on_create_lobby_completed)
-
+	request_completed.connect(_on_create_lobby_completed, CONNECT_ONE_SHOT)
 	var headers = [
 		"Content-Type: application/json",
 		"Authorization: Bearer " + auth_token
 	]
-
 	var error = request(
 		"http://localhost:8080/api/lobbies",
 		headers,
 		HTTPClient.METHOD_POST,
-		"" # or a JSON body if HandleCreateLobby expects one
+		""
 	)
 	if error != OK:
-		push_error("An error occurred creating the lobby.")
 		lobby_creation_failed.emit("Request failed to send.")
 
 func _on_create_lobby_completed(result, response_code, headers, body):
@@ -31,9 +73,7 @@ func _on_create_lobby_completed(result, response_code, headers, body):
 		return
 
 	var json = JSON.new()
-	var parse_error = json.parse(body.get_string_from_utf8())
-	if parse_error != OK:
-		push_error("Failed to parse JSON response.")
+	if json.parse(body.get_string_from_utf8()) != OK:
 		lobby_creation_failed.emit("Failed to parse JSON response.")
 		return
 

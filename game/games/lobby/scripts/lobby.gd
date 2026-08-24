@@ -22,7 +22,7 @@ func _on_select_dev_game_button_pressed() -> void:
 	get_tree().change_scene_to_file("res://games/dev/dev_game_select.tscn")
 
 func _on_create_pressed() -> void:
-	http_request.create_lobby()
+	http_request.login_and_create_lobby()
 
 func _on_lobby_created(code: String) -> void:
 	print("Lobby created with code: ", code)
