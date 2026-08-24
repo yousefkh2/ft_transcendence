@@ -3,7 +3,7 @@ extends HTTPRequest
 signal lobby_created(code: String)
 signal lobby_creation_failed(message: String)
 
-var auth_token: String = "" # set this after login
+var auth_token: String = "ff4a1cc7-adf1-4beb-aefa-26a5ebee687c" # set this after login
 
 func create_lobby():
 	request_completed.connect(_on_create_lobby_completed)
