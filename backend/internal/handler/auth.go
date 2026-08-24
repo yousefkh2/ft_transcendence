@@ -45,7 +45,14 @@ func (h *AuthHandler) HandleRegister(c echo.Context) error {
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			return echo.NewHTTPError(http.StatusConflict, "user already exists")
+			switch pgErr.ConstraintName {
+			case "users_username_key":
+				return echo.NewHTTPError(http.StatusConflict, "username already taken")
+			case "users_email_key":
+				return echo.NewHTTPError(http.StatusConflict, "email already registered")
+			default:
+				return echo.NewHTTPError(http.StatusConflict, "user already exists")
+			}
 		}
 			return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 	}
