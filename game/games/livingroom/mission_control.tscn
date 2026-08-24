@@ -1,105 +1,190 @@
-[gd_scene format=3 uid="uid://bcl0npgkfkhyw"]
+[gd_scene format=3 uid="uid://bx8rer41jeowu"]
 
-[ext_resource type="Texture2D" uid="uid://b3gvrq4vjw3rn" path="res://games/livingroom/assets/mission_control_background.png" id="1_vytyf"]
-[ext_resource type="FontFile" uid="uid://bjdy3xurn6bij" path="res://game_files/fonts/PixelifySans-VariableFont_wght.ttf" id="2_psslg"]
-[ext_resource type="Script" uid="uid://f0yoi8mu6o2r" path="res://games/livingroom/scripts/easteregg.gd" id="3_7ucbt"]
-[ext_resource type="Texture2D" uid="uid://3wq7nbpu41p0" path="res://games/livingroom/assets/check_in_button.png" id="4_psslg"]
+[ext_resource type="Texture2D" uid="uid://b3gvrq4vjw3rn" path="res://games/livingroom/assets/mission_control_assets/mission_control_background.png" id="1_vytyf"]
+[ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="2_rvbt4"]
 
-[sub_resource type="VideoStreamTheora" id="VideoStreamTheora_mh6wk"]
-file = "res://games/livingroom/assets/easteregg3123.ogv"
-
-[node name="Node2D" type="Node2D" unique_id=562714961]
-position = Vector2(1921, 1081)
-
-[node name="Camera2D" type="Camera2D" parent="." unique_id=2089334958]
-position = Vector2(-1031, -639)
-
-[node name="Background" type="Sprite2D" parent="." unique_id=1149370281]
-position = Vector2(-1033.9999, -637)
-scale = Vector2(1.2526042, 1.0605469)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_vytyf"]
 texture = ExtResource("1_vytyf")
 
-[node name="sofa_text2" type="Label" parent="." unique_id=11177867]
-offset_left = -1585.0
-offset_top = -645.0
-offset_right = -871.0
-offset_bottom = -557.0
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_psslg"]
+bg_color = Color(1, 0.76862746, 0.20392157, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fq3g8"]
+bg_color = Color(0.79836667, 0.79836625, 0.7983663, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m01nn"]
+bg_color = Color(0.9079417, 0.9079417, 0.90794164, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_qrf2b"]
+
+[node name="MissionControllRefac" type="Control" unique_id=1149291135]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="Panel" parent="." unique_id=1866047462]
+modulate = Color(0.871141, 0.8711411, 0.8711411, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_vytyf")
+
+[node name="your_instructions" type="Label" parent="." unique_id=798597869]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -681.0
+offset_top = 237.0
+offset_right = 359.0
+offset_bottom = 365.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.7529412, 0.22745098, 0.2, 1)
+theme_override_colors/font_shadow_color = Color(0.07058824, 0.07058824, 0.07058824, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_fonts/font = ExtResource("2_rvbt4")
+theme_override_font_sizes/font_size = 108
+text = "your instructions"
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
+
+[node name="check_button" type="Button" parent="." unique_id=1874228516]
+layout_mode = 0
+offset_left = 1275.0
+offset_top = 270.0
+offset_right = 1525.0
+offset_bottom = 333.0
+size_flags_vertical = 3
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("2_psslg")
-theme_override_font_sizes/font_size = 64
-text = "lamp right from sofa"
-metadata/_edit_use_anchors_ = true
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_rvbt4")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_psslg")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_fq3g8")
+theme_override_styles/hover = SubResource("StyleBoxFlat_m01nn")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_qrf2b")
+text = "Check"
 
-[node name="sofa_text3" type="Label" parent="." unique_id=1562242655]
-offset_left = -1592.0
-offset_top = -557.0
-offset_right = -878.0
-offset_bottom = -469.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("2_psslg")
-theme_override_font_sizes/font_size = 64
-text = "fries in the back"
-metadata/_edit_use_anchors_ = true
+[node name="first_instruction" type="Label" parent="." unique_id=1015388816]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -520.0
+offset_top = -168.0
+offset_right = 520.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.07058824, 0.07058824, 0.07058824, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_fonts/font = ExtResource("2_rvbt4")
+theme_override_font_sizes/font_size = 60
+text = "_LIVINGROOM_TEXT1_"
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
 
-[node name="VideoPlayer" type="VideoStreamPlayer" parent="." unique_id=2016794521]
-offset_left = -790.0
-offset_top = -708.0
-offset_right = 890.0
-offset_bottom = 124.0
-stream = SubResource("VideoStreamTheora_mh6wk")
-volume_db = 2.0
-loop = true
-script = ExtResource("3_7ucbt")
+[node name="second_instruction" type="Label" parent="." unique_id=1123974834]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -520.0
+offset_top = -64.0
+offset_right = 520.0
+offset_bottom = 64.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.07058824, 0.07058824, 0.07058824, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_fonts/font = ExtResource("2_rvbt4")
+theme_override_font_sizes/font_size = 60
+text = "_LIVINGROOM_TEXT2_"
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
 
-[node name="Button" type="Button" parent="." unique_id=1569733246]
-anchors_preset = -1
-anchor_left = 0.98
-anchor_top = 0.583
-anchor_right = 1.0400001
-anchor_bottom = 0.62
-offset_left = -742.0
-offset_top = -311.0
-offset_right = -642.0
-offset_bottom = -280.0
-text = "what is that"
+[node name="third_instruction" type="Label" parent="." unique_id=1546032899]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -520.0
+offset_top = 144.0
+offset_right = 520.0
+offset_bottom = 272.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.07058824, 0.07058824, 0.07058824, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_fonts/font = ExtResource("2_rvbt4")
+theme_override_font_sizes/font_size = 60
+text = "_LIVINGROOM_TEXT4_"
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
 
-[node name="sofa_text" type="Label" parent="." unique_id=795765242]
-offset_left = -1585.0
-offset_top = -749.0
-offset_right = -871.0
-offset_bottom = -661.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("2_psslg")
-theme_override_font_sizes/font_size = 64
-text = "Sofa under the window"
-metadata/_edit_use_anchors_ = true
+[node name="fourth_instruction" type="Label" parent="." unique_id=1771223219]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -520.0
+offset_top = 39.0
+offset_right = 520.0
+offset_bottom = 167.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.07058824, 0.07058824, 0.07058824, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_fonts/font = ExtResource("2_rvbt4")
+theme_override_font_sizes/font_size = 60
+text = "_LIVINGROOM_TEXT3_"
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
 
-[node name="header" type="Label" parent="." unique_id=1350745953]
-offset_left = -1327.0
-offset_top = -914.0
-offset_right = -613.0
-offset_bottom = -826.0
-theme_override_colors/font_color = Color(0.7254902, 0, 0, 1)
-theme_override_fonts/font = ExtResource("2_psslg")
-theme_override_font_sizes/font_size = 64
-text = "YOUR INSTRUCTIONS"
-metadata/_edit_use_anchors_ = true
-
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1746591922]
-position = Vector2(-669, -430)
-scale = Vector2(0.256, 0.25)
-texture = ExtResource("4_psslg")
-
-[node name="Button" type="Button" parent="Sprite2D" unique_id=1226971509]
-anchors_preset = -1
-anchor_left = 0.080000006
-anchor_top = 0.215
-anchor_right = 0.94000006
-anchor_bottom = 0.71500003
-offset_left = -767.41125
-offset_top = -512.16003
-offset_right = -768.05884
-offset_bottom = -512.16003
-
-[connection signal="pressed" from="Button" to="VideoPlayer" method="_on_button_pressed"]
+[connection signal="pressed" from="check_button" to="check_button" method="_on_pressed"]

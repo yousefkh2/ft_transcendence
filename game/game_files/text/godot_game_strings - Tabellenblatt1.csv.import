@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://q0m42nre7qjd"
+
+[deps]
+
+files=["res://game_files/text/godot_game_strings - Tabellenblatt1.ENGLISH.translation", "res://game_files/text/godot_game_strings - Tabellenblatt1.SPANISH.translation", "res://game_files/text/godot_game_strings - Tabellenblatt1.POLISH.translation", "res://game_files/text/godot_game_strings - Tabellenblatt1.TURKISH.translation", "res://game_files/text/godot_game_strings - Tabellenblatt1.GERMAN.translation"]
+
+source_file="res://game_files/text/godot_game_strings - Tabellenblatt1.csv"
+dest_files=["res://game_files/text/godot_game_strings - Tabellenblatt1.ENGLISH.translation", "res://game_files/text/godot_game_strings - Tabellenblatt1.SPANISH.translation", "res://game_files/text/godot_game_strings - Tabellenblatt1.POLISH.translation", "res://game_files/text/godot_game_strings - Tabellenblatt1.TURKISH.translation", "res://game_files/text/godot_game_strings - Tabellenblatt1.GERMAN.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

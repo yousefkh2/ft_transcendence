@@ -1,12 +1,9 @@
 [gd_scene format=3 uid="uid://tavodcfudfxs"]
 
-[ext_resource type="Script" uid="uid://cjdu1k17h6ite" path="res://games/livingroom/scripts/lobby.gd" id="1_2nora"]
+[ext_resource type="Script" uid="uid://cjdu1k17h6ite" path="res://games/lobby/scripts/lobby.gd" id="1_2nora"]
 [ext_resource type="Texture2D" uid="uid://m1d2xl26tb8t" path="res://games/lobby/assets/lobby_background.png" id="2_a01gq"]
-[ext_resource type="Script" uid="uid://c7q7ycdq6pgw7" path="res://games/livingroom/scripts/play_button.gd" id="3_e25pb"]
 [ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="3_rdij3"]
-[ext_resource type="Script" uid="uid://dxornjc6f6m" path="res://game_files/on_site.gd" id="5_bm06h"]
-[ext_resource type="Script" uid="uid://upatq3htbwxo" path="res://game_files/network_manager.gd" id="5_e25pb"]
-[ext_resource type="Script" uid="uid://bilti1y1p7onr" path="res://game_files/mission_control.gd" id="6_yh0ef"]
+[ext_resource type="Script" uid="uid://y5xwf3ydu2b1" path="res://games/lobby/http_request.gd" id="4_0vj6i"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_d3fr7"]
 texture = ExtResource("2_a01gq")
@@ -57,52 +54,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_2nora")
 
-[node name="NetworkManager" type="Node" parent="." unique_id=1152700285]
-script = ExtResource("5_e25pb")
-
-[node name="player_1_button" type="Button" parent="." unique_id=1393400828]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.015000001
-anchor_top = 0.26000002
-anchor_right = 0.15200001
-anchor_bottom = 0.32900003
-offset_left = -381.8
-offset_top = -31.800018
-offset_right = -382.838
-offset_bottom = -31.812012
-text = "PLAYER 1"
-script = ExtResource("3_e25pb")
-
-[node name="on_site" type="Button" parent="." unique_id=333073962]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.023000002
-anchor_top = 0.45100003
-anchor_right = 0.15300001
-anchor_bottom = 0.52000004
-offset_left = -381.35
-offset_top = 228.73996
-offset_right = -381.95
-offset_bottom = 229.21997
-text = "ON_SITE"
-script = ExtResource("5_bm06h")
-
-[node name="mission_control" type="Button" parent="." unique_id=2108055723]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.021000002
-anchor_top = 0.53300005
-anchor_right = 0.15400001
-anchor_bottom = 0.59900004
-offset_left = -381.51
-offset_top = 229.17993
-offset_right = -382.87003
-offset_bottom = 228.89996
-text = "MISSION_CONTROL"
-script = ExtResource("6_yh0ef")
-
-[node name="Panel" type="Panel" parent="." unique_id=651566331]
+[node name="Background" type="Panel" parent="." unique_id=651566331]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -117,7 +69,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_d3fr7")
 
-[node name="lobby_label" type="Label" parent="Panel" unique_id=793847066]
+[node name="lobby_label" type="Label" parent="Background" unique_id=793847066]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -138,7 +90,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 uppercase = true
 
-[node name="lobby_button" type="Button" parent="Panel" unique_id=1015945716]
+[node name="lobby_button" type="Button" parent="Background" unique_id=1015945716]
 layout_mode = 0
 offset_left = 76.5
 offset_top = 945.75
@@ -197,28 +149,6 @@ offset_bottom = 0.09799194
 theme_override_fonts/font = ExtResource("3_rdij3")
 theme_override_font_sizes/font_size = 48
 max_length = 4
-
-[node name="create_lobby" type="Button" parent="lobby_interface" unique_id=2007405290]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.05
-anchor_top = 0.591
-anchor_right = 0.50600004
-anchor_bottom = 0.81100005
-offset_left = -3.0
-offset_top = -5.1509857
-offset_right = -3.2400208
-offset_bottom = 7.429001
-size_flags_vertical = 3
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("3_rdij3")
-theme_override_font_sizes/font_size = 48
-theme_override_styles/normal = SubResource("StyleBoxFlat_a01gq")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_rdij3")
-theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
-text = "Create lobby"
 
 [node name="join" type="Button" parent="lobby_interface" unique_id=345272917]
 layout_mode = 1
@@ -351,14 +281,72 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
 text = "MENU_LABEL_BACK"
 
-[connection signal="pressed" from="player_1_button" to="player_1_button" method="_on_pressed"]
-[connection signal="pressed" from="on_site" to="." method="_on_on_site_pressed"]
-[connection signal="pressed" from="on_site" to="on_site" method="_on_pressed"]
-[connection signal="pressed" from="mission_control" to="mission_control" method="_on_pressed"]
-[connection signal="pressed" from="Panel/lobby_button" to="." method="_on_lobby_button_pressed"]
-[connection signal="pressed" from="lobby_interface/create_lobby" to="." method="_on_create_lobby_pressed"]
-[connection signal="pressed" from="lobby_interface/create_lobby" to="lobby_interface/create_lobby" method="_on_pressed"]
+[node name="dev_game_select" type="Panel" parent="." unique_id=2021544984]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="select_dev_game_button" type="Button" parent="dev_game_select" unique_id=1535508040]
+layout_mode = 0
+offset_left = 1499.0
+offset_top = 53.0
+offset_right = 1871.0
+offset_bottom = 119.0
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_rdij3")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_a01gq")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_rdij3")
+theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
+text = "Select Game"
+
+[node name="create lobby" type="Panel" parent="." unique_id=1369510205]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.036000002
+anchor_top = 0.17400001
+anchor_right = 0.31800002
+anchor_bottom = 0.31800002
+offset_left = 2.8799973
+offset_top = 191.07999
+offset_right = -225.56006
+offset_bottom = 137.55997
+theme_override_styles/panel = SubResource("StyleBoxFlat_h1tpx")
+
+[node name="create_lobby" type="Button" parent="create lobby" unique_id=2007405290]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.591
+anchor_right = 0.50600004
+anchor_bottom = 0.81100005
+offset_left = 1.3499994
+offset_top = -32.282
+offset_right = 137.74199
+offset_bottom = -6.7220078
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_rdij3")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_a01gq")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_rdij3")
+theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
+text = "Create lobby"
+
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=1953318191]
+script = ExtResource("4_0vj6i")
+
+[connection signal="pressed" from="Background/lobby_button" to="." method="_on_lobby_button_pressed"]
+[connection signal="pressed" from="create_lobby_interface/create" to="." method="_on_create_pressed"]
 [connection signal="pressed" from="create_lobby_interface/create" to="create_lobby_interface/create" method="_on_pressed"]
 [connection signal="item_selected" from="create_lobby_interface/language_selecter" to="create_lobby_interface/language_selecter" method="_on_item_selected"]
 [connection signal="ready" from="create_lobby_interface/language_selecter" to="create_lobby_interface/language_selecter" method="_on_ready"]
 [connection signal="pressed" from="create_lobby_interface/back_button" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="dev_game_select/select_dev_game_button" to="." method="_on_select_dev_game_button_pressed"]
+[connection signal="pressed" from="create lobby/create_lobby" to="." method="_on_create_lobby_pressed"]
+[connection signal="pressed" from="create lobby/create_lobby" to="create lobby/create_lobby" method="_on_pressed"]

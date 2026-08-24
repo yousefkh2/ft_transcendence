@@ -27,7 +27,8 @@ window/stretch/mode="canvas_items"
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://game_files/languages/PolyglotGamedev - Master.ENGLISH.translation", "res://game_files/languages/PolyglotGamedev - Master.GERMAN.translation", "res://game_files/languages/PolyglotGamedev - Master.FRENCH.translation", "res://game_files/languages/PolyglotGamedev - Master.POLISH.translation", "res://game_files/languages/PolyglotGamedev - Master.BOSNIAN.translation", "res://game_files/languages/PolyglotGamedev - Master.TURKISH.translation")
+locale/translation_remaps={}
+locale/translations=PackedStringArray("res://game_files/languages/PolyglotGamedev - Master.ENGLISH.translation", "res://game_files/languages/PolyglotGamedev - Master.GERMAN.translation", "res://game_files/languages/PolyglotGamedev - Master.FRENCH.translation", "res://game_files/languages/PolyglotGamedev - Master.POLISH.translation", "res://game_files/languages/PolyglotGamedev - Master.BOSNIAN.translation", "res://game_files/languages/PolyglotGamedev - Master.TURKISH.translation", "res://game_files/text/godot_game_strings - Tabellenblatt1.ENGLISH.translation", "res://game_files/text/godot_game_strings - Tabellenblatt1.GERMAN.translation", "res://game_files/text/godot_game_strings - Tabellenblatt1.POLISH.translation", "res://game_files/text/godot_game_strings - Tabellenblatt1.SPANISH.translation", "res://game_files/text/godot_game_strings - Tabellenblatt1.TURKISH.translation")
 
 [physics]
 
