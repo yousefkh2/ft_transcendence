@@ -45,6 +45,7 @@ func _on_login_completed(result, response_code, headers, body):
 	print(response) # check the actual field name here!
 
 	auth_token = response.get("token", "")
+	GameState.auth_token = auth_token
 	if auth_token == "":
 		login_failed.emit("No token in login response.")
 		return
@@ -83,5 +84,7 @@ func _on_create_lobby_completed(result, response_code, headers, body):
 	print(response)
 
 	var lobby_code = response.get("code", "")
+	GameState.lobby_code = lobby_code
+	GameState.lobby_data = response
 	print("Lobby code: ", lobby_code)
 	lobby_created.emit(lobby_code)
