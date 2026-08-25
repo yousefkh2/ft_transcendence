@@ -10,13 +10,15 @@ var auth_token: String = ""
 # Fill these in with real credentials (or pass them in from elsewhere)
 var username: String = "daniel"
 var password: String = "secret123"
+var email: String = "test@test.com"
 
 func login_and_create_lobby() -> void:
 	request_completed.connect(_on_login_completed, CONNECT_ONE_SHOT)
 	var headers = ["Content-Type: application/json"]
 	var body = JSON.stringify({
 		"username": username,
-		"password": password
+		"password": password,
+		"email": email
 	})
 	var error = request(
 		"http://localhost:8080/api/auth/login",
