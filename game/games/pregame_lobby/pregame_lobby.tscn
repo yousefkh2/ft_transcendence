@@ -277,7 +277,7 @@ offset_right = -1274.3201
 offset_bottom = -58.04004
 theme_override_styles/panel = SubResource("StyleBoxFlat_ejbtt")
 
-[node name="player_1 name" type="Label" parent="player_interface" unique_id=60784156]
+[node name="player_1_name" type="Label" parent="player_interface" unique_id=60784156]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.10538641

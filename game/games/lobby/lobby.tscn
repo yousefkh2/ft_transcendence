@@ -107,20 +107,20 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
 text = "MENU_LABEL_BACK"
 
-[node name="lobby_interface" type="Panel" parent="." unique_id=1896010627]
+[node name="lobby_interface" type="Panel" parent="." unique_id=86127360]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.036000002
 anchor_top = 0.17400001
 anchor_right = 0.31800002
 anchor_bottom = 0.37300003
-offset_left = 0.87999725
-offset_top = 0.07998657
-offset_right = -0.5600586
-offset_bottom = -53.840027
+offset_left = 0.41600037
+offset_top = -0.40901184
+offset_right = -1.0240479
+offset_bottom = -54.32904
 theme_override_styles/panel = SubResource("StyleBoxFlat_h1tpx")
 
-[node name="language" type="Label" parent="lobby_interface" unique_id=1980547430]
+[node name="language" type="Label" parent="lobby_interface" unique_id=223518496]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.035185184
@@ -135,7 +135,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
 
-[node name="LineEdit" type="LineEdit" parent="lobby_interface" unique_id=478690025]
+[node name="LineEdit" type="LineEdit" parent="lobby_interface" unique_id=761037614]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.59300005
@@ -150,7 +150,7 @@ theme_override_fonts/font = ExtResource("3_rdij3")
 theme_override_font_sizes/font_size = 48
 max_length = 4
 
-[node name="join" type="Button" parent="lobby_interface" unique_id=345272917]
+[node name="join" type="Button" parent="lobby_interface" unique_id=743648604]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.52000004
@@ -171,6 +171,34 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_rdij3")
 theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
 text = "JOIN"
+
+[node name="message_interface" type="Panel" parent="." unique_id=1896010627]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.036000002
+anchor_top = 0.17400001
+anchor_right = 0.31800002
+anchor_bottom = 0.37300003
+offset_left = 5.8799973
+offset_top = 187.07999
+offset_right = 4.4399414
+offset_bottom = 133.15997
+theme_override_styles/panel = SubResource("StyleBoxFlat_h1tpx")
+
+[node name="message" type="Label" parent="message_interface" unique_id=1980547430]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.018518519
+anchor_top = 0.09316763
+anchor_right = 0.9611111
+anchor_bottom = 0.913243
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_rdij3")
+theme_override_font_sizes/font_size = 48
+text = "enter lobby code"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
 
 [node name="create_lobby_interface" type="Panel" parent="." unique_id=38428379]
 layout_mode = 1
@@ -311,9 +339,9 @@ anchor_top = 0.17400001
 anchor_right = 0.31800002
 anchor_bottom = 0.31800002
 offset_left = 2.8799973
-offset_top = 191.07999
+offset_top = 375.08
 offset_right = -225.56006
-offset_bottom = 137.55997
+offset_bottom = 321.55997
 theme_override_styles/panel = SubResource("StyleBoxFlat_h1tpx")
 
 [node name="create_lobby" type="Button" parent="create lobby" unique_id=2007405290]
@@ -342,7 +370,6 @@ text = "Create lobby"
 script = ExtResource("4_0vj6i")
 
 [connection signal="pressed" from="Background/lobby_button" to="." method="_on_lobby_button_pressed"]
-[connection signal="pressed" from="lobby_interface/join" to="." method="_on_join_pressed"]
 [connection signal="pressed" from="create_lobby_interface/create" to="." method="_on_create_pressed"]
 [connection signal="pressed" from="create_lobby_interface/create" to="create_lobby_interface/create" method="_on_pressed"]
 [connection signal="item_selected" from="create_lobby_interface/language_selecter" to="create_lobby_interface/language_selecter" method="_on_item_selected"]

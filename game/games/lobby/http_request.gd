@@ -7,8 +7,10 @@ signal lobby_creation_failed(message: String)
 signal lobby_joined(lobby_data: Dictionary)
 signal lobby_join_failed(message: String)
 
+@onready var message: Label = $"../message_interface/message"
+
 # Fill these in with real credentials (or pass them in from elsewhere)
-var username: String = "daniel"
+var username: String = "gabrijel"
 var password: String = "secret123"
 var email: String = "test@test.com"
 
@@ -33,6 +35,14 @@ func _on_login_completed(result, response_code, headers, body):
 	if response_code != 200:
 		var msg = "Login failed: %s" % body.get_string_from_utf8()
 		push_error(msg)
+
+		var json = JSON.new()
+		if json.parse(body.get_string_from_utf8()) == OK:
+			var err_response = json.get_data()
+			message.text = err_response.get("message", "")
+		else:
+			message.text = "Login failed."
+
 		login_failed.emit(msg)
 		return
 
@@ -78,11 +88,13 @@ func _on_create_lobby_completed(result, response_code, headers, body):
 		return
 
 	var response = json.get_data()
+	GameState.player_name = username
 	GameState.lobby_data = response
 	GameState.lobby_code = response.get("code", "")
 	GameState.game_mode = response.get("gameMode", "")
 	GameState.status = response.get("status", "")
 	GameState.player_count = int(response.get("playerCount", 0))
+
 
 	lobby_created.emit(GameState.lobby_code)
 
@@ -119,5 +131,6 @@ func _on_join_lobby_completed(result, response_code, headers, body):
 	GameState.game_mode = response.get("gameMode", "")
 	GameState.status = response.get("status", "")
 	GameState.player_count = int(response.get("playerCount", 0))
+	GameState.player_name = username
 
 	lobby_joined.emit(response)
