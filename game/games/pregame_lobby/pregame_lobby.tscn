@@ -167,7 +167,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_dpwjk")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_hjrbd")
 text = "start"
 
-[node name="create_lobby_title" type="Label" parent="create_lobby_interface" unique_id=191987271]
+[node name="game_settings" type="Label" parent="create_lobby_interface" unique_id=191987271]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.0034246412
@@ -177,12 +177,12 @@ anchor_bottom = 0.15034965
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_c2lno")
 theme_override_font_sizes/font_size = 48
-text = "GAME INFO"
+text = "GAME SETTINGS"
 horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
 
-[node name="create_lobby_title2" type="Label" parent="create_lobby_interface" unique_id=1283731423]
+[node name="game_type_label" type="Label" parent="create_lobby_interface" unique_id=1283731423]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.042830333
@@ -230,7 +230,7 @@ text = "MENU_LABEL_LANGUAGE"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="create_lobby_title4" type="Label" parent="create_lobby_interface" unique_id=1353578351]
+[node name="game_type" type="Label" parent="create_lobby_interface" unique_id=1353578351]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.6818589
@@ -245,13 +245,17 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
 
-[node name="create_lobby_title4" type="Label" parent="create_lobby_interface/create_lobby_title4" unique_id=466070606]
+[node name="language2" type="Label" parent="create_lobby_interface" unique_id=466070606]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.15355822
-anchor_top = -1.0865632
-anchor_right = 0.8052436
-anchor_bottom = -0.5005517
+anchor_left = 0.11501095
+anchor_top = -1.0953141
+anchor_right = 0.3445815
+anchor_bottom = -1.0113056
+offset_left = 657.7366
+offset_top = 739.82965
+offset_right = 657.7366
+offset_bottom = 739.82965
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_c2lno")
 theme_override_font_sizes/font_size = 48
@@ -273,7 +277,7 @@ offset_right = -1274.3201
 offset_bottom = -58.04004
 theme_override_styles/panel = SubResource("StyleBoxFlat_ejbtt")
 
-[node name="create_lobby_title5" type="Label" parent="player_interface" unique_id=60784156]
+[node name="player_1 name" type="Label" parent="player_interface" unique_id=60784156]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.10538641
@@ -292,7 +296,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
 
-[node name="create_lobby_title4" type="Label" parent="player_interface" unique_id=1506138218]
+[node name="player_2_name" type="Label" parent="player_interface" unique_id=1506138218]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.091334894
@@ -338,6 +342,54 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="lobby_code" type="Label" parent="lobby_code_interface" unique_id=1287775501]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.089
+anchor_top = 0.35200003
+anchor_right = 1.0350001
+anchor_bottom = 0.74300003
+offset_left = 0.0030021667
+offset_top = -0.088012695
+offset_right = 0.05496216
+offset_bottom = -0.06161499
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_c2lno")
+theme_override_font_sizes/font_size = 84
+text = "Loading..."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="player_count_interface" type="Panel" parent="." unique_id=1674541930]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.036000002
+anchor_top = 0.17400001
+anchor_right = 0.92100006
+anchor_bottom = 0.73800004
+offset_left = 1370.88
+offset_top = 641.07996
+offset_right = 98.67993
+offset_bottom = 250.95996
+theme_override_styles/panel = SubResource("StyleBoxFlat_ejbtt")
+
+[node name="title" type="Label" parent="player_count_interface" unique_id=1442201935]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.049000002
+anchor_right = 1.075
+anchor_bottom = 0.38200003
+offset_left = -5.0769997
+offset_top = -14.000008
+offset_right = -5.0250244
+offset_bottom = -12.002617
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_c2lno")
+theme_override_font_sizes/font_size = 48
+text = "player count"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="player_count" type="Label" parent="player_count_interface" unique_id=1367376376]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = -0.089
