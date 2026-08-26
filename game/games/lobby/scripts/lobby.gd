@@ -5,6 +5,10 @@ extends Control
 @onready var http_request: HTTPRequest = $HTTPRequest
 @onready var lobby_code_input: LineEdit = $lobby_interface/LineEdit
 @onready var message: Label = $message_interface/message
+@onready var debug_menu: Panel = $debug_menu
+@onready var username: Label = $debug_menu/username
+@onready var password: Label = $debug_menu/password
+@onready var email: Label = $debug_menu/email
 
 func _ready():
 	create_lobby_interface.visible = false
@@ -17,9 +21,14 @@ func _ready():
 	http_request.lobby_join_failed.connect(_on_lobby_join_failed)
 
 	http_request.login()
+	
+	
 
 func _on_login_success() -> void:
 	print("Logged in successfully.")
+	username.text = GameState.player_name
+	password.text = GameState.player_pass
+	email.text = GameState.player_email
 
 func _on_login_failed(message: String) -> void:
 	push_error("Login failed: " + message)

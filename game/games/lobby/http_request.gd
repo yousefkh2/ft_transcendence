@@ -10,7 +10,7 @@ signal lobby_join_failed(message: String)
 @onready var message: Label = $"../message_interface/message"
 
 # Fill these in with real credentials (or pass them in from elsewhere)
-var username: String = "gabrijel"
+var username: String = "daniel"
 var password: String = "secret123"
 var email: String = "test@test.com"
 
@@ -58,6 +58,9 @@ func _on_login_completed(result, response_code, headers, body):
 		return
 
 	GameState.auth_token = token
+	GameState.player_name = username
+	GameState.player_pass = password
+	GameState.player_email = email
 	login_success.emit()
 
 func create_lobby() -> void:

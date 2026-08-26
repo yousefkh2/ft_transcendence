@@ -7,6 +7,8 @@ var game_mode: String = ""
 var status: String = ""
 var player_count: int = 0
 var player_name: String = ""
+var player_pass: String = "" 
+var player_email: String = ""
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
