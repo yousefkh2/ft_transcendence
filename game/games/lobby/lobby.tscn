@@ -153,14 +153,14 @@ max_length = 4
 [node name="join" type="Button" parent="lobby_interface" unique_id=345272917]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.05
-anchor_top = 0.591
-anchor_right = 0.50600004
-anchor_bottom = 0.81100005
-offset_left = 254.0
-offset_top = -2.151001
-offset_right = 253.75998
-offset_bottom = 10.428986
+anchor_left = 0.52000004
+anchor_top = 0.578
+anchor_right = 0.9760001
+anchor_bottom = 0.87600005
+offset_left = 0.19998169
+offset_top = -0.057998657
+offset_right = -0.040039063
+offset_bottom = -0.036010742
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
@@ -342,6 +342,7 @@ text = "Create lobby"
 script = ExtResource("4_0vj6i")
 
 [connection signal="pressed" from="Background/lobby_button" to="." method="_on_lobby_button_pressed"]
+[connection signal="pressed" from="lobby_interface/join" to="." method="_on_join_pressed"]
 [connection signal="pressed" from="create_lobby_interface/create" to="." method="_on_create_pressed"]
 [connection signal="pressed" from="create_lobby_interface/create" to="create_lobby_interface/create" method="_on_pressed"]
 [connection signal="item_selected" from="create_lobby_interface/language_selecter" to="create_lobby_interface/language_selecter" method="_on_item_selected"]

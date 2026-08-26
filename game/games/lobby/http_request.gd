@@ -4,15 +4,15 @@ signal login_success
 signal login_failed(message: String)
 signal lobby_created(code: String)
 signal lobby_creation_failed(message: String)
-
-var auth_token: String = ""
+signal lobby_joined(lobby_data: Dictionary)
+signal lobby_join_failed(message: String)
 
 # Fill these in with real credentials (or pass them in from elsewhere)
 var username: String = "daniel"
 var password: String = "secret123"
 var email: String = "test@test.com"
 
-func login_and_create_lobby() -> void:
+func login() -> void:
 	request_completed.connect(_on_login_completed, CONNECT_ONE_SHOT)
 	var headers = ["Content-Type: application/json"]
 	var body = JSON.stringify({
@@ -42,22 +42,19 @@ func _on_login_completed(result, response_code, headers, body):
 		return
 
 	var response = json.get_data()
-	print(response) # check the actual field name here!
-
-	auth_token = response.get("token", "")
-	GameState.auth_token = auth_token
-	if auth_token == "":
+	var token = response.get("token", "")
+	if token == "":
 		login_failed.emit("No token in login response.")
 		return
 
+	GameState.auth_token = token
 	login_success.emit()
-	create_lobby() # chain straight into lobby creation
 
-func create_lobby():
+func create_lobby() -> void:
 	request_completed.connect(_on_create_lobby_completed, CONNECT_ONE_SHOT)
 	var headers = [
 		"Content-Type: application/json",
-		"Authorization: Bearer " + auth_token
+		"Authorization: Bearer " + GameState.auth_token
 	]
 	var error = request(
 		"http://localhost:8080/api/lobbies",
@@ -81,20 +78,46 @@ func _on_create_lobby_completed(result, response_code, headers, body):
 		return
 
 	var response = json.get_data()
-	print(response)
-
-	var lobby_code = response.get("code", "")
-	var player_name = username
-	var player_count = response.get("playerCount", "")
-	var status = response.get("status", "")
-	var game_mode = response.get("gameMode", "")
-	
-	GameState.lobby_code = lobby_code
-	GameState.player_name = player_name
-	GameState.player_count = player_count
-	GameState.status = status
-	GameState.game_mode = game_mode
-	
 	GameState.lobby_data = response
-	print("Lobby code: ", lobby_code)
-	lobby_created.emit(lobby_code)
+	GameState.lobby_code = response.get("code", "")
+	GameState.game_mode = response.get("gameMode", "")
+	GameState.status = response.get("status", "")
+	GameState.player_count = int(response.get("playerCount", 0))
+
+	lobby_created.emit(GameState.lobby_code)
+
+func join_lobby(code: String) -> void:
+	request_completed.connect(_on_join_lobby_completed, CONNECT_ONE_SHOT)
+	var headers = [
+		"Content-Type: application/json",
+		"Authorization: Bearer " + GameState.auth_token
+	]
+	var error = request(
+		"http://localhost:8080/api/lobbies/%s/join" % code,
+		headers,
+		HTTPClient.METHOD_POST,
+		""
+	)
+	if error != OK:
+		lobby_join_failed.emit("Request failed to send.")
+
+func _on_join_lobby_completed(result, response_code, headers, body):
+	if response_code != 200 and response_code != 201:
+		var msg = "Join lobby failed: %s" % body.get_string_from_utf8()
+		push_error(msg)
+		lobby_join_failed.emit(msg)
+		return
+
+	var json = JSON.new()
+	if json.parse(body.get_string_from_utf8()) != OK:
+		lobby_join_failed.emit("Failed to parse JSON response.")
+		return
+
+	var response = json.get_data()
+	GameState.lobby_data = response
+	GameState.lobby_code = response.get("code", "")
+	GameState.game_mode = response.get("gameMode", "")
+	GameState.status = response.get("status", "")
+	GameState.player_count = int(response.get("playerCount", 0))
+
+	lobby_joined.emit(response)
