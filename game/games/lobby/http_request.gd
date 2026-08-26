@@ -117,6 +117,13 @@ func _on_join_lobby_completed(result, response_code, headers, body):
 	if response_code != 200 and response_code != 201:
 		var msg = "Join lobby failed: %s" % body.get_string_from_utf8()
 		push_error(msg)
+		
+		var json = JSON.new()
+		if json.parse(body.get_string_from_utf8()) == OK:
+			var err_response = json.get_data()
+			message.text = err_response.get("message", "")
+		else:
+			message.text = "Login failed."
 		lobby_join_failed.emit(msg)
 		return
 

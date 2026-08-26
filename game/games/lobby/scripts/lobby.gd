@@ -4,6 +4,7 @@ extends Control
 @onready var lobby_interface: Panel = $lobby_interface
 @onready var http_request: HTTPRequest = $HTTPRequest
 @onready var lobby_code_input: LineEdit = $lobby_interface/LineEdit
+@onready var message: Label = $message_interface/message
 
 func _ready():
 	create_lobby_interface.visible = false
@@ -48,7 +49,7 @@ func _on_lobby_creation_failed(message: String) -> void:
 func _on_join_pressed() -> void:
 	var code = lobby_code_input.text.strip_edges()
 	if code == "":
-		push_error("Please enter a lobby code.")
+		message.text = "Please enter a lobby code."
 		return
 	http_request.join_lobby(code)
 

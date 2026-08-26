@@ -370,6 +370,7 @@ text = "Create lobby"
 script = ExtResource("4_0vj6i")
 
 [connection signal="pressed" from="Background/lobby_button" to="." method="_on_lobby_button_pressed"]
+[connection signal="pressed" from="lobby_interface/join" to="." method="_on_join_pressed"]
 [connection signal="pressed" from="create_lobby_interface/create" to="." method="_on_create_pressed"]
 [connection signal="pressed" from="create_lobby_interface/create" to="create_lobby_interface/create" method="_on_pressed"]
 [connection signal="item_selected" from="create_lobby_interface/language_selecter" to="create_lobby_interface/language_selecter" method="_on_item_selected"]
