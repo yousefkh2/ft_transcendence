@@ -3,6 +3,11 @@ extends Node
 var auth_token: String = ""
 var lobby_code: String = ""
 var lobby_data: Dictionary = {}
+var game_mode: String = ""
+var status: String = ""
+var player_count: String = ""
+var player_name: String = ""
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass # Replace with function body.

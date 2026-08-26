@@ -273,32 +273,36 @@ offset_right = -1274.3201
 offset_bottom = -58.04004
 theme_override_styles/panel = SubResource("StyleBoxFlat_ejbtt")
 
-[node name="create_lobby_title4" type="Label" parent="player_interface" unique_id=1506138218]
+[node name="create_lobby_title5" type="Label" parent="player_interface" unique_id=60784156]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.07494145
-anchor_top = 0.5159818
-anchor_right = 0.90398127
-anchor_bottom = 0.73515993
-grow_vertical = 2
-theme_override_fonts/font = ExtResource("3_c2lno")
-theme_override_font_sizes/font_size = 48
-text = "Waiting for player"
-horizontal_alignment = 1
-vertical_alignment = 1
-metadata/_edit_use_anchors_ = true
-
-[node name="create_lobby_title4" type="Label" parent="player_interface/create_lobby_title4" unique_id=60784156]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = -0.02259887
-anchor_top = -1.8333325
-anchor_right = 0.62429374
-anchor_bottom = -0.8333328
+anchor_left = 0.10538641
+anchor_top = 0.18313244
+anchor_right = 0.5249555
+anchor_bottom = 0.40213242
+offset_left = -8.0
+offset_top = -0.10600281
+offset_right = 0.06713867
+offset_bottom = -0.06700134
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_c2lno")
 theme_override_font_sizes/font_size = 48
 text = "Loading..."
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="create_lobby_title4" type="Label" parent="player_interface" unique_id=1506138218]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.091334894
+anchor_top = 0.5525115
+anchor_right = 0.9203747
+anchor_bottom = 0.77168965
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_c2lno")
+theme_override_font_sizes/font_size = 48
+text = "Waiting for player"
 horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true

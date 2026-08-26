@@ -84,7 +84,17 @@ func _on_create_lobby_completed(result, response_code, headers, body):
 	print(response)
 
 	var lobby_code = response.get("code", "")
+	var player_name = username
+	var player_count = response.get("playerCount", "")
+	var status = response.get("status", "")
+	var game_mode = response.get("gameMode", "")
+	
 	GameState.lobby_code = lobby_code
+	GameState.player_name = player_name
+	GameState.player_count = player_count
+	GameState.status = status
+	GameState.game_mode = game_mode
+	
 	GameState.lobby_data = response
 	print("Lobby code: ", lobby_code)
 	lobby_created.emit(lobby_code)
