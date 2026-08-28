@@ -10,9 +10,9 @@ signal lobby_join_failed(message: String)
 @onready var message: Label = $"../message_interface/message"
 
 # Fill these in with real credentials (or pass them in from elsewhere)
-var username: String = "daniel"
+var username: String = "gabrijel"
 var password: String = "secret123"
-var email: String = "test@test.com"
+var email: String = "hallo@hallo.com"
 
 func login() -> void:
 	request_completed.connect(_on_login_completed, CONNECT_ONE_SHOT)
