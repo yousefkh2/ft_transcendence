@@ -72,7 +72,7 @@ shadow_offset = Vector2(0, 3.41)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hjrbd"]
 
-[node name="lobby" type="Control" unique_id=1315476839]
+[node name="pregame_lobby" type="Control" unique_id=1315476839]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
