@@ -97,6 +97,7 @@ func _on_create_lobby_completed(result, response_code, headers, body):
 	GameState.game_mode = response.get("gameMode", "")
 	GameState.status = response.get("status", "")
 	GameState.player_count = int(response.get("playerCount", 0))
+	GameState.game_lang = response.get("currLang", "")
 
 
 	lobby_created.emit(GameState.lobby_code)

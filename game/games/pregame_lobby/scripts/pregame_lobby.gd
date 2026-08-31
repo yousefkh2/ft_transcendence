@@ -4,6 +4,7 @@ extends Control
 @onready var game_type: Label = $create_lobby_interface/game_type
 @onready var player_1_name: Label = $player_interface/player_1_name
 @onready var player_count: Label = $player_count_interface/player_count
+@onready var lobby_lang: Label = $create_lobby_interface/lobby_lang
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -12,7 +13,9 @@ func _ready() -> void:
 	print(GameState.player_name)
 	player_1_name.text = GameState.player_name
 	player_count.text = str(GameState.player_count)
-
+	print(GameState.lobby_data)
+	print(GameState.game_lang)
+	lobby_lang.text = GameState.game_lang
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
