@@ -1,0 +1,2 @@
+ALTER TABLE game_sessions
+    ADD COLUMN IF NOT EXISTS lang VARCHAR(5) NOT NULL DEFAULT 'en';
