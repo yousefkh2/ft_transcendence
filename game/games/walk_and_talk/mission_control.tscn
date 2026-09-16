@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://di0qdudb63uq3"]
+
+[ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="2_wfx1i"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d8eu6"]
+bg_color = Color(0.4440265, 0.65556115, 0.53884035, 1)
+
+[node name="MissionControl" type="Control" unique_id=421168578]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="." unique_id=1066130213]
+layout_mode = 0
+offset_right = 1926.0
+offset_bottom = 1084.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_d8eu6")
+
+[node name="living_room" type="Label" parent="Panel" unique_id=941806839]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.171
+offset_bottom = -0.11299896
+theme_override_fonts/font = ExtResource("2_wfx1i")
+theme_override_font_sizes/font_size = 64
+text = "walk_and_talk"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="living_room2" type="Label" parent="Panel" unique_id=917307671]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.171
+offset_left = -237.0
+offset_top = 68.0
+offset_right = 179.0
+offset_bottom = 131.99998
+theme_override_fonts/font = ExtResource("2_wfx1i")
+theme_override_font_sizes/font_size = 64
+text = "Mission_control"
+horizontal_alignment = 1
+vertical_alignment = 1

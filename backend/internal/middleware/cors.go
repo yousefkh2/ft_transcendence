@@ -9,5 +9,5 @@ import(
 var WithCors = echomw.CORSWithConfig(echomw.CORSConfig{
 	AllowOrigins: []string{"http://localhost:5173"},
 	AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodOptions},
-	AllowHeaders: []string{"Content-Type"},
+	AllowHeaders: []string{"Content-Type", "Authorization"},
 })

@@ -4,14 +4,15 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"errors"
 	"log"
 	"strings"
 	"sync"
 	"time"
 
+	"transcendence/backend/internal/auth"
 	"transcendence/backend/internal/db"
 	"transcendence/backend/internal/game"
-	"transcendence/backend/internal/auth"
 	"transcendence/backend/internal/model"
 
 	"github.com/coder/websocket"
@@ -19,6 +20,18 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 )
+
+type RoleResolver interface {
+	GetParticipantRole(ctx context.Context, code, userID string) (sessionID, role string, err error)
+}
+
+type pooledRoleResolver struct {
+	pool *pgxpool.Pool
+}
+
+func (r *pooledRoleResolver) GetParticipantRole(ctx context.Context, code, userID string) (string, string, error) {
+	return db.GetParticipantRole(ctx, r.pool, code, userID)
+}
 
 type Player struct {
 	id		string
@@ -32,7 +45,6 @@ type Room struct {
 	completedObjectives	map[string]bool
 	objectPositions		map[string]model.Position
 	roundDeadline		time.Time
-	userIDs				map[string]string
 	startedAt			time.Time
 }
 
@@ -42,20 +54,23 @@ type Hub struct {
 	rooms			map[string]*Room
 	allowedOrigins	[]string
 	db				*pgxpool.Pool
+	roles			RoleResolver
 }
 
-func NewHub(db *pgxpool.Pool) *Hub {
+func NewHub(pool *pgxpool.Pool) *Hub {
 	return &Hub{
 		rooms: make(map[string]*Room),
 		allowedOrigins: []string{"localhost:5173"},
-		db: db,
+		db: pool,
+		roles: &pooledRoleResolver{pool: pool},
 	}
 }
 
-func NewHubWithOrigins(origins []string) *Hub {
+func NewHubWithOrigins(origins []string, roles RoleResolver) *Hub {
 	return &Hub{
 		rooms: make(map[string]*Room),
 		allowedOrigins: origins,
+		roles: roles,
 	}
 }
 
@@ -149,38 +164,53 @@ func (h *Hub) handleRoomJoin(
 
 	roomCode := strings.ToUpper(strings.TrimSpace(message.RoomCode))
 
+	_, role, err := h.roles.GetParticipantRole(ctx, roomCode, userID)
+	if err != nil {
+		msg := "could not join room"
+		switch {
+		case errors.Is(err, db.ErrNotInLobby):
+			msg = "you have not joined this lobby via the API"
+		case errors.Is(err, db.ErrLobbyNotStarted):
+			msg = "lobby is not full yet"
+		}
+		_ = wsjson.Write(ctx, conn, model.ServerMessage{
+			Type:		"error",
+			Message:	msg,
+		})
+		return
+	}
+	if role != db.RoleMissionControl && role != db.RoleOnSite {
+		_ = wsjson.Write(ctx, conn, model.ServerMessage{
+			Type: "error",
+			Message: "invalid role assigned",
+		})
+		return
+	}
+
 	h.mu.Lock()
 
 	room, exists := h.rooms[roomCode]
 	if !exists {
 		room = &Room{
-			code:                roomCode,
-			players:             make(map[string]*Player),
-			completedObjectives: make(map[string]bool),
-			objectPositions:     game.InitialObjectPositions(),
-			userIDs: make(map[string]string),
+			code:					roomCode,
+			players:				make(map[string]*Player),
+			completedObjectives:	make(map[string]bool),
+			objectPositions:		game.InitialObjectPositions(),
 		}
 		h.rooms[roomCode] = room
 	}
 
-	role := ""
-
-	if room.players["mission_control"] == nil {
-		role = "mission_control"
-	} else if room.players["on_site"] == nil {
-		role = "on_site"
-	} else {
+	if room.players[role] != nil {
 		h.mu.Unlock()
 
 		_ = wsjson.Write(ctx, conn, model.ServerMessage{
-			Type:    "error",
-			Message: "room is full",
+			Type:		"error",
+			Message:	"this role is already connected",
 		})
 		return
 	}
 
 	room.players[role] = player
-	room.userIDs[role] = userID
 
 	if len(room.players) == 2 && room.roundDeadline.IsZero() {
 		room.roundDeadline = time.Now().Add(game.RoundDuration)
@@ -228,7 +258,7 @@ func (h *Hub) handleObjectMoved(
 		return
 	}
 
-	if joinedRole != "on_site" {
+	if joinedRole != db.RoleOnSite {
 		_ = player.send(ctx, model.ServerMessage{
 			Type:    "error",
 			Message: "only on_site can move objects",
@@ -254,7 +284,6 @@ func (h *Hub) handleObjectMoved(
 		objectPositions := game.CopyObjectPositions(room.objectPositions)
 		remaining := game.RemainingSeconds(room.roundDeadline)
 		startedAt := room.startedAt
-		userIDs := copyUserIDs(room.userIDs)
 
 		players := make([]*Player, 0, len(room.players))
 		for _, roomPlayer := range room.players {
@@ -264,14 +293,7 @@ func (h *Hub) handleObjectMoved(
 		h.mu.Unlock()
 
 		go func() {
-			result := db.MatchResult{
-				GameMode:		"apartment_setup",
-				StartedAt: 		startedAt,
-				EndedAt: 		time.Now(),
-				Won: 			false,
-				Participants: 	userIDs,
-			}
-			if err := db.SaveMatch(context.Background(), h.db, result); err != nil {
+			if err := db.FinishMatch(context.Background(), h.db, joinedRoom, startedAt, time.Now(), false); err != nil {
 				log.Printf("failed to save expired match for room %s: %v", joinedRoom, err)
 			}
 		}()
@@ -311,13 +333,11 @@ func (h *Hub) handleObjectMoved(
 	stateMessage := "object moved"
 
 	var startedAt time.Time
-	var userIDs map[string]string
 
 	if game.AllObjectivesCompleted(room.completedObjectives) {
 		messageType = "game.round_completed"
 		stateMessage = "round completed"
 		startedAt = room.startedAt
-		userIDs = copyUserIDs(room.userIDs)
 	}
 
 	players := make([]*Player, 0, len(room.players))
@@ -329,14 +349,7 @@ func (h *Hub) handleObjectMoved(
 
 	if messageType == "game.round_completed" {
 		go func() {
-			result := db.MatchResult{
-				GameMode:		"apartment_setup",
-				StartedAt:		startedAt,
-				EndedAt:		time.Now(),
-				Won:			true,
-				Participants:	userIDs,
-			}
-			if err := db.SaveMatch(context.Background(), h.db, result); err != nil {
+			if err := db.FinishMatch(context.Background(), h.db, joinedRoom, startedAt, time.Now(), true); err != nil {
 				log.Printf("failed to save completed match for room %s: %v", joinedRoom, err)
 			}
 		}()
@@ -461,12 +474,4 @@ func newPlayerID() (string, error) {
 	}
 
 	return "player_" + hex.EncodeToString(bytes), nil
-}
-
-func copyUserIDs(src map[string]string) map[string]string {
-	dst := make(map[string]string, len(src))
-	for k, v := range src {
-		dst[k] = v
-	}
-	return dst
 }

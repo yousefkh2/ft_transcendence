@@ -1,0 +1,190 @@
+[gd_scene format=3 uid="uid://bx8rer41jeowu"]
+
+[ext_resource type="Texture2D" uid="uid://b3gvrq4vjw3rn" path="res://games/livingroom/assets/mission_control_assets/mission_control_background.png" id="1_vytyf"]
+[ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="2_rvbt4"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_vytyf"]
+texture = ExtResource("1_vytyf")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_psslg"]
+bg_color = Color(1, 0.76862746, 0.20392157, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fq3g8"]
+bg_color = Color(0.79836667, 0.79836625, 0.7983663, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m01nn"]
+bg_color = Color(0.9079417, 0.9079417, 0.90794164, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_qrf2b"]
+
+[node name="MissionControllRefac" type="Control" unique_id=1149291135]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="Panel" parent="." unique_id=1866047462]
+modulate = Color(0.871141, 0.8711411, 0.8711411, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_vytyf")
+
+[node name="your_instructions" type="Label" parent="." unique_id=798597869]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -681.0
+offset_top = 237.0
+offset_right = 359.0
+offset_bottom = 365.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.7529412, 0.22745098, 0.2, 1)
+theme_override_colors/font_shadow_color = Color(0.07058824, 0.07058824, 0.07058824, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_fonts/font = ExtResource("2_rvbt4")
+theme_override_font_sizes/font_size = 108
+text = "your instructions"
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
+
+[node name="check_button" type="Button" parent="." unique_id=1874228516]
+layout_mode = 0
+offset_left = 1275.0
+offset_top = 270.0
+offset_right = 1525.0
+offset_bottom = 333.0
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_rvbt4")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_psslg")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_fq3g8")
+theme_override_styles/hover = SubResource("StyleBoxFlat_m01nn")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_qrf2b")
+text = "Check"
+
+[node name="first_instruction" type="Label" parent="." unique_id=1015388816]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -520.0
+offset_top = -168.0
+offset_right = 520.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.07058824, 0.07058824, 0.07058824, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_fonts/font = ExtResource("2_rvbt4")
+theme_override_font_sizes/font_size = 60
+text = "_LIVINGROOM_TEXT1_"
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
+
+[node name="second_instruction" type="Label" parent="." unique_id=1123974834]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -520.0
+offset_top = -64.0
+offset_right = 520.0
+offset_bottom = 64.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.07058824, 0.07058824, 0.07058824, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_fonts/font = ExtResource("2_rvbt4")
+theme_override_font_sizes/font_size = 60
+text = "_LIVINGROOM_TEXT2_"
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
+
+[node name="third_instruction" type="Label" parent="." unique_id=1546032899]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -520.0
+offset_top = 144.0
+offset_right = 520.0
+offset_bottom = 272.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.07058824, 0.07058824, 0.07058824, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_fonts/font = ExtResource("2_rvbt4")
+theme_override_font_sizes/font_size = 60
+text = "_LIVINGROOM_TEXT4_"
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
+
+[node name="fourth_instruction" type="Label" parent="." unique_id=1771223219]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -520.0
+offset_top = 39.0
+offset_right = 520.0
+offset_bottom = 167.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.07058824, 0.07058824, 0.07058824, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_fonts/font = ExtResource("2_rvbt4")
+theme_override_font_sizes/font_size = 60
+text = "_LIVINGROOM_TEXT3_"
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
+
+[connection signal="pressed" from="check_button" to="check_button" method="_on_pressed"]

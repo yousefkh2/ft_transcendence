@@ -1,0 +1,226 @@
+[gd_scene format=3 uid="uid://y7txpxu8meo6"]
+
+[ext_resource type="Script" uid="uid://ca07s5femgm8p" path="res://games/main_menu/scripts/menu.gd" id="1_8ef6c"]
+[ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="2_8ef6c"]
+[ext_resource type="Texture2D" uid="uid://chrfc7x8hkteh" path="res://games/main_menu/assets/main_menu.png" id="2_mg185"]
+[ext_resource type="Script" uid="uid://dmrdnt8ndxtfk" path="res://games/main_menu/scripts/language_selecter.gd" id="4_8ef6c"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mg185"]
+texture = ExtResource("2_mg185")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8ef6c"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e1b82"]
+bg_color = Color(0.79836667, 0.79836625, 0.7983663, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_txcq3"]
+bg_color = Color(0.9079417, 0.9079417, 0.90794164, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_kdacn"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mg185"]
+bg_color = Color(0.6666667, 0.5411765, 0.42352942, 1)
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 3
+
+[node name="MainMenu" type="Control" unique_id=1248428916]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_8ef6c")
+
+[node name="Background" type="Panel" parent="." unique_id=1552086906]
+modulate = Color(0.871141, 0.8711411, 0.8711411, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_mg185")
+
+[node name="title" type="Label" parent="." unique_id=1861832759]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -219.5
+offset_top = 209.0
+offset_right = 65.5
+offset_bottom = 297.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.07058824, 0.07058824, 0.07058824, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_fonts/font = ExtResource("2_8ef6c")
+theme_override_font_sizes/font_size = 236
+text = "lingo"
+horizontal_alignment = 1
+vertical_alignment = 2
+uppercase = true
+
+[node name="Menu" type="VBoxContainer" parent="." unique_id=889149050]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -189.0
+offset_top = -64.5
+offset_right = 34.0
+offset_bottom = 90.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="lobby_button" type="Button" parent="Menu" unique_id=1306803648]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_8ef6c")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_8ef6c")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_e1b82")
+theme_override_styles/hover = SubResource("StyleBoxFlat_txcq3")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_kdacn")
+text = "Lobby"
+
+[node name="settings_button" type="Button" parent="Menu" unique_id=903084614]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_8ef6c")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_8ef6c")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_e1b82")
+theme_override_styles/hover = SubResource("StyleBoxFlat_txcq3")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_kdacn")
+text = "MENU_OPTIONS"
+
+[node name="settings" type="Panel" parent="." unique_id=2042374073]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.536
+anchor_top = 0.377
+anchor_right = 0.94000006
+anchor_bottom = 0.93500006
+offset_left = 8.880005
+offset_top = -2.1600037
+offset_right = 8.199951
+offset_bottom = -1.8000488
+theme_override_styles/panel = SubResource("StyleBoxFlat_mg185")
+
+[node name="language" type="Label" parent="settings" unique_id=426331824]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.121290326
+anchor_top = 0.18656716
+anchor_right = 0.49806452
+anchor_bottom = 0.26616916
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("2_8ef6c")
+theme_override_font_sizes/font_size = 48
+text = "MENU_LABEL_LANGUAGE"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Menu_options" type="Label" parent="settings" unique_id=1765314395]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.171
+offset_bottom = -0.11299896
+theme_override_fonts/font = ExtResource("2_8ef6c")
+theme_override_font_sizes/font_size = 64
+text = "MENU_OPTIONS"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="back_button" type="Button" parent="settings" unique_id=1196654589]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.39900002
+anchor_top = 0.874
+anchor_right = 0.601
+anchor_bottom = 0.95400006
+offset_left = 0.2749939
+offset_top = -0.022033691
+offset_right = -0.2749939
+offset_bottom = -0.26202393
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_8ef6c")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_8ef6c")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_e1b82")
+theme_override_styles/hover = SubResource("StyleBoxFlat_txcq3")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_kdacn")
+text = "MENU_LABEL_BACK"
+
+[node name="language_selecter" type="OptionButton" parent="settings" unique_id=456487335]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.551
+anchor_top = 0.163
+anchor_right = 0.929
+anchor_bottom = 0.3
+offset_left = -8.024994
+offset_top = -0.28900146
+offset_right = 0.024963379
+offset_bottom = 0.099990845
+theme_override_fonts/font = ExtResource("2_8ef6c")
+theme_override_font_sizes/font_size = 48
+selected = 0
+item_count = 4
+popup/item_0/text = "English"
+popup/item_0/id = 0
+popup/item_1/text = "Deutsch"
+popup/item_1/id = 1
+popup/item_2/text = "Polski"
+popup/item_2/id = 2
+popup/item_3/text = "Turkish"
+popup/item_3/id = 3
+script = ExtResource("4_8ef6c")
+
+[connection signal="pressed" from="Menu/lobby_button" to="." method="_on_lobby_button_pressed"]
+[connection signal="pressed" from="Menu/lobby_button" to="Menu/lobby_button" method="_on_pressed"]
+[connection signal="pressed" from="Menu/settings_button" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="Menu/settings_button" to="Menu/settings_button" method="_on_pressed"]
+[connection signal="pressed" from="settings/back_button" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="settings/back_button" to="settings/back_button" method="_on_pressed"]
+[connection signal="item_selected" from="settings/language_selecter" to="settings/language_selecter" method="_on_item_selected"]
+[connection signal="ready" from="settings/language_selecter" to="settings/language_selecter" method="_on_ready"]

@@ -74,6 +74,36 @@ func (h *LobbyHandler) HandleJoinLobby(c echo.Context) error {
 	return c.JSON(http.StatusOK, lobby)
 }
 
+type updateLobbyLanguageRequest struct {
+	Lang string `json:"lang"`
+}
+
+func (h *LobbyHandler) HandleUpdateLobbyLanguage(c echo.Context) error {
+	userID := middleware.UserID(c)
+	code := c.Param("code")
+
+	var req updateLobbyLanguageRequest
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
+	}
+
+	lobby, err := db.UpdateLobbyLanguage(c.Request().Context(), h.DB, code, userID, req.Lang)
+	if err != nil {
+		switch {
+		case errors.Is(err, db.ErrLobbyNotFound):
+			return echo.NewHTTPError(http.StatusNotFound, "lobby not found")
+		case errors.Is(err, db.ErrNotHost):
+			return echo.NewHTTPError(http.StatusForbidden, "only the host can change the language")
+		case errors.Is(err, db.ErrUnsupportedLang):
+			return echo.NewHTTPError(http.StatusBadRequest, "unsupported language")
+		default:
+			return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+		}
+	}
+
+	return c.JSON(http.StatusOK, lobby)
+}
+
 func (h *LobbyHandler) HandleLeaveLobby(c echo.Context) error {
 	userID := middleware.UserID(c)
 	code := c.Param("code")

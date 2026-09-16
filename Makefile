@@ -4,6 +4,9 @@ COMPOSE=docker compose
 
 up:
 	$(COMPOSE) up -d --build
+	@echo "Waiting for DB to be ready..."
+	@until docker exec transcendence-db pg_isready -U $${POSTGRES_USER:-transcendence} -d $${POSTGRES_DB:-transcendence} > /dev/null 2>&1; do sleep 1; done
+	$(MAKE) migrate
 
 down:
 	$(COMPOSE) down

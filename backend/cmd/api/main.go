@@ -57,6 +57,7 @@ func main() {
 	lobbies.GET("", lobbyHandler.HandleListLobbies)
 	lobbies.POST("/:code/join", lobbyHandler.HandleJoinLobby)
 	lobbies.POST("/:code/leave", lobbyHandler.HandleLeaveLobby)
+	lobbies.PATCH("/:code/language", lobbyHandler.HandleUpdateLobbyLanguage)
 
 	port := handler.Getenv("PORT", "8080")
 	addr := ":" + port

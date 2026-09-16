@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://bwxhs1ovbcw13"]
+
+[ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="1_qtdnb"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nguxb"]
+bg_color = Color(0.4440265, 0.65556115, 0.53884035, 1)
+
+[node name="OnSite" type="Control" unique_id=669512083]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="." unique_id=794834181]
+layout_mode = 0
+offset_right = 1926.0
+offset_bottom = 1084.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_nguxb")
+
+[node name="living_room" type="Label" parent="Panel" unique_id=1843396120]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.171
+offset_bottom = -0.11299896
+theme_override_fonts/font = ExtResource("1_qtdnb")
+theme_override_font_sizes/font_size = 64
+text = "walk_and_talk"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="living_room2" type="Label" parent="Panel" unique_id=1965118743]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.171
+offset_left = -237.0
+offset_top = 68.0
+offset_right = 179.0
+offset_bottom = 131.99998
+theme_override_fonts/font = ExtResource("1_qtdnb")
+theme_override_font_sizes/font_size = 64
+text = "on_site"
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://bq87s7ie8s3na"]
+
+[ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="1_vvd7d"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i5ay2"]
+bg_color = Color(0.7099437, 0.5225368, 0.7402765, 1)
+
+[node name="MissionControl" type="Node2D" unique_id=1976364397]
+
+[node name="Panel" type="Panel" parent="." unique_id=1225610246]
+offset_right = 1926.0
+offset_bottom = 1084.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_i5ay2")
+
+[node name="living_room" type="Label" parent="Panel" unique_id=1762496726]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.171
+offset_bottom = -0.11299896
+theme_override_fonts/font = ExtResource("1_vvd7d")
+theme_override_font_sizes/font_size = 64
+text = "tag_the_price"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="living_room" type="Label" parent="." unique_id=2122167690]
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.171
+offset_left = 749.0
+offset_top = 134.0
+offset_right = 1165.0
+offset_bottom = 198.0
+theme_override_fonts/font = ExtResource("1_vvd7d")
+theme_override_font_sizes/font_size = 64
+text = "On_site"
+horizontal_alignment = 1
+vertical_alignment = 1
