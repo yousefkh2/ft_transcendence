@@ -12,21 +12,20 @@ import (
 	echomw "github.com/labstack/echo/v4/middleware"
 )
 
-
 func main() {
 	pool, err := db.Connect()
 	if err != nil {
 		log.Fatalf("database connection failed: %v", err)
 	}
 	defer pool.Close()
-	
+
 	hub := hub.NewHub(pool)
 
 	authHandler := &handler.AuthHandler{DB: pool}
 	profileHandler := &handler.ProfileHandler{DB: pool}
 	friendHandler := &handler.FriendHandler{DB: pool}
 	lobbyHandler := &handler.LobbyHandler{DB: pool}
-	
+
 	e := echo.New()
 	e.Use(echomw.Recover())
 	e.Use(middleware.WithCors)
