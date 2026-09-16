@@ -52,7 +52,10 @@
 									<span class="field-label">Password</span>
 									<input v-model="loginForm.password" type="password" required placeholder="••••••••" />
 								</label>
-								<a href="#" class="forgot-link">Forgot password?</a>
+								<a href="#" class="forgot-link" @click.prevent="showForgotNotice = true">Forgot password?</a>
+								<p v-if="showForgotNotice" class="form-notice">
+									Password reset isn't available yet - hang tight, it's coming soon.
+								</p>
 								<button type="submit" class="submit-btn" :disabled="loginLoading">
 									{{ loginLoading ? 'Logging in…' : 'Log In' }}
 								</button>
@@ -107,6 +110,7 @@ const open = defineModel<boolean>('open', { default: false });
 const tab = defineModel<'login' | 'register'>('tab', { default: 'login' });
 
 const direction = ref<'forward' | 'backward'>('forward');
+const showForgotNotice = ref(false);
 
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
@@ -124,11 +128,13 @@ function switchTab(next: 'login' | 'register') {
 	tab.value = next;
 	loginError.value = '';
 	registerError.value = '';
+	showForgotNotice.value = false;
 }
 
 function close() {
 	loginError.value = '';
 	registerError.value = '';
+	showForgotNotice.value = false;
 	open.value = false;
 }
 
@@ -371,6 +377,17 @@ async function handleRegister() {
 		background: rgba(209, 53, 43, 0.08);
 		color: #d1352b;
 		font-size: 13px;
+		font-weight: 600;
+		line-height: 1.4;
+	}
+
+	.form-notice {
+		margin: -6px 0 0;
+		padding: 10px 14px;
+		border-radius: 10px;
+		background: rgba(118, 117, 134, 0.1);
+		color: var(--color-on-surface-variant);
+		font-size: 12.5px;
 		font-weight: 600;
 		line-height: 1.4;
 	}
