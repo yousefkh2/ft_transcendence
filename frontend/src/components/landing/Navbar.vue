@@ -10,12 +10,17 @@
 			<a href="#game-modes">Games</a>
 		</nav>
 
-		<button class="btn-login">Login</button>
+		<div class="auth-buttons">
+			<button class="btn-ghost" type="button" @click="emit('open-auth', 'login')">Login</button>
+			<button class="btn-login" type="button" @click="emit('open-auth', 'register')">Sign Up</button>
+		</div>
 	</header>
 </template>
 
 <script setup lang="ts">
 import logo from "../../images/logo-transparent.png"
+
+const emit = defineEmits<{ 'open-auth': [tab: 'login' | 'register'] }>();
 </script>
 
 <style scoped>
@@ -89,6 +94,29 @@ import logo from "../../images/logo-transparent.png"
 
 	.nav-links a:hover::after {
 		width: 100%;
+	}
+
+	.auth-buttons {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.btn-ghost {
+		font-family: var(--font-display);
+		font-weight: 700;
+		font-size: 14px;
+		padding: 10px 18px;
+		border-radius: var(--radius-pill);
+		border: none;
+		background: transparent;
+		color: var(--color-on-surface);
+		cursor: pointer;
+		transition: background 0.15s ease;
+	}
+
+	.btn-ghost:hover {
+		background: rgba(17, 28, 45, 0.06);
 	}
 
 	.btn-login {
