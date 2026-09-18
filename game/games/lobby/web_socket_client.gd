@@ -23,6 +23,8 @@ func poll() -> void:
 	
 	while (socket.get_ready_state() == socket.STATE_OPEN and socket.get_available_packet_count()):
 		message_received.emit(get_message())
+	
+
 
 func get_message() -> Variant:
 	if (socket.get_available_packet_count() < 1):
@@ -34,20 +36,33 @@ func get_message() -> Variant:
 		
 	return (bytes_to_var(packet))
 	
+
+
 func send(message) -> int:
-	pass
+	if (typeof(message) == TYPE_STRING):
+		return (socket.send_text(message))
+		
+	return ( socket.send(var_to_bytes(message)))
 	
+
+
 func connect_to_url(url) -> int:
-	pass
+	var error = socket.connect_to_url(url)
+	if (error != OK):
+			return (error)
+	
+	last_state = socket.get_ready_state()
+	return (OK);
+	
+
 
 func close(code := 1000, reason := "") -> void:
-	pass
-
-func clear() -> void:
-	print("clear")
+	socket.close(code, reason)
+	last_state = socket.get_ready_state()
 	
+
 func get_socket() -> WebSocketPeer:
-	pass
+	return (socket)
 
 func _process(delta: float) -> void:
 	poll()
