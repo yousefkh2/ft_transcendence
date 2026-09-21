@@ -12,7 +12,7 @@ func _ready() -> void:
 	game_type.text = GameState.game_mode
 	print(GameState.player_name)
 	print(GameState.lobby_data)
-	print(GameState.lobby_lang)
+	#print(GameState.lobby_lang)
 	player_1_name.text = GameState.player_name
 	player_count.text = str(GameState.player_count)
 	print(GameState.lobby_data)

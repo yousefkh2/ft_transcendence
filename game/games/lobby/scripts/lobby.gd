@@ -10,6 +10,10 @@ extends Control
 @onready var password: Label = $debug_menu/password
 @onready var email: Label = $debug_menu/email
 
+var pre_game_lobby = "res://games/pregame_lobby/pregame_lobby.tscn"
+var main_menu = "res://games/main_menu/menu.tscn"
+var dev_game_select = "res://games/dev/dev_game_select.tscn"
+
 func _ready():
 	create_lobby_interface.visible = false
 
@@ -40,17 +44,17 @@ func _on_create_lobby_pressed() -> void:
 	create_lobby_interface.visible = true
 
 func _on_lobby_button_pressed() -> void:
-	get_tree().change_scene_to_file("res://games/main_menu/menu.tscn")
+	get_tree().change_scene_to_file(main_menu)
 
 func _on_select_dev_game_button_pressed() -> void:
-	get_tree().change_scene_to_file("res://games/dev/dev_game_select.tscn")
+	get_tree().change_scene_to_file(dev_game_select)
 
 func _on_create_pressed() -> void:
 	http_request.create_lobby()
 
 func _on_lobby_created(code: String) -> void:
 	print("Lobby created with code: ", code)
-	get_tree().change_scene_to_file("res://games/pregame_lobby/pregame_lobby.tscn")
+	get_tree().change_scene_to_file(pre_game_lobby)
 
 func _on_lobby_creation_failed(message: String) -> void:
 	push_error("Could not create lobby: " + message)
@@ -64,7 +68,7 @@ func _on_join_pressed() -> void:
 
 func _on_lobby_joined(lobby_data: Dictionary) -> void:
 	print("Joined lobby: ", lobby_data)
-	get_tree().change_scene_to_file("res://games/pregame_lobby/pregame_lobby.tscn")
+	get_tree().change_scene_to_file(pre_game_lobby)
 
 func _on_lobby_join_failed(message: String) -> void:
 	push_error("Could not join lobby: " + message)
