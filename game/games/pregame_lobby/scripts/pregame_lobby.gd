@@ -6,6 +6,9 @@ extends Control
 @onready var player_count: Label = $player_count_interface/player_count
 @onready var lobby_lang: Label = $create_lobby_interface/lobby_lang
 
+var websocket_url = "test"
+var message_to_send = "test123"
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	lobby_code.text = GameState.lobby_code
@@ -19,7 +22,7 @@ func _ready() -> void:
 	print(GameState.game_lang)
 	lobby_lang.text = GameState.game_lang
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
+# Called every frame. 'delta' is the elapsed time since the previous frame. 
 func _process(delta: float) -> void:
 	pass
 

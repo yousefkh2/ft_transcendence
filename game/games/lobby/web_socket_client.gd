@@ -1,4 +1,5 @@
 extends Node
+class_name web_socket_client
 
 var socket = WebSocketPeer.new()
 var last_state = WebSocketPeer.STATE_CLOSED
