@@ -39,7 +39,7 @@ func _on_websocket_client_connection_close():
 	print("Client disconnected with code %s, reason: %s" % [ws.get_close_code(), ws.get_close_reason()])
 
 func _on_websocket_client_connected_to_server():
-	print("Client connected to server ...")
+	print("Client connected to server")
 	
 
 func _on_lobby_button_pressed() -> void:
@@ -48,3 +48,10 @@ func _on_lobby_button_pressed() -> void:
 
 func _process(delta: float) -> void:
 	pass
+
+
+func _on_send_websocket_message_pressed() -> void:
+	print("send out message from client to server")
+	_client.send("from cleint to server")
+	
+	
