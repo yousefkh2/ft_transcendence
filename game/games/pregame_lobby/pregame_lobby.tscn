@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dtp1bwkmhb4rh"]
 
 [ext_resource type="Script" uid="uid://y3ld3svhqr4r" path="res://games/pregame_lobby/scripts/pregame_lobby.gd" id="1_ejbtt"]
+[ext_resource type="Script" uid="uid://dhvuvvuncr8hv" path="res://games/lobby/web_socket_client.gd" id="2_c2lno"]
 [ext_resource type="Texture2D" uid="uid://fwhexpq4k8r3" path="res://games/pregame_lobby/assets/pregame_lobby_background.png" id="2_ly2t8"]
 [ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="3_c2lno"]
 
@@ -80,6 +81,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ejbtt")
+
+[node name="web_socket_client" type="Node" parent="." unique_id=1841629484]
+script = ExtResource("2_c2lno")
 
 [node name="Background" type="Panel" parent="." unique_id=651566331]
 layout_mode = 1
@@ -407,4 +411,7 @@ text = "Loading..."
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[connection signal="connected_to_server" from="web_socket_client" to="." method="_on_websocket_client_connected_to_server"]
+[connection signal="connection_closed" from="web_socket_client" to="." method="_on_websocket_client_connection_close"]
+[connection signal="message_received" from="web_socket_client" to="." method="_on_websocket_message_recieved"]
 [connection signal="pressed" from="Background/lobby_button" to="." method="_on_lobby_button_pressed"]

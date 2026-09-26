@@ -36,7 +36,6 @@ func get_message() -> Variant:
 		return (packet.get_string_from_utf8())
 		
 	return (bytes_to_var(packet))
-	
 
 
 func send(message) -> int:
