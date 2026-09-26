@@ -52,6 +52,10 @@ func _process(delta: float) -> void:
 
 func _on_send_websocket_message_pressed() -> void:
 	print("send out message from client to server")
-	_client.send("from cleint to server")
-	
+	var message = {
+		"type": "",
+		"roomCode": GameState.lobby_code,
+	}
+	var error = _client.send_json(message)
+	print(error)
 	

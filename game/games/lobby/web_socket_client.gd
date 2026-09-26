@@ -64,5 +64,8 @@ func close(code := 1000, reason := "") -> void:
 func get_socket() -> WebSocketPeer:
 	return (socket)
 
+func send_json(message: Dictionary) -> int:
+	return socket.send_text(JSON.stringify(message))
+
 func _process(delta: float) -> void:
 	poll()
