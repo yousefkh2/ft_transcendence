@@ -1,7 +1,7 @@
 import { createApp, h, ref } from "vue";
 import "./style.css";
 import LandingPage from "./components/LandingPage.vue"
-import DashboardPlaceholder from "./components/DashboardPlaceholder.vue"
+import Dashboard from "./components/dashboard/Dashboard.vue"
 
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
 type Position = {
@@ -468,7 +468,7 @@ const App = {
 if (window.location.pathname == "/landingpage") {
 	createApp(LandingPage).mount('#app');
 } else if (window.location.pathname == "/dashboard") {
-	createApp(DashboardPlaceholder).mount('#app');
+	createApp(Dashboard).mount('#app');
 } else {
 	createApp(App).mount('#app');
 }
