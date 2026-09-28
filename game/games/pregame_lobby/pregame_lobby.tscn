@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://dhvuvvuncr8hv" path="res://games/lobby/web_socket_client.gd" id="2_c2lno"]
 [ext_resource type="Texture2D" uid="uid://fwhexpq4k8r3" path="res://games/pregame_lobby/assets/pregame_lobby_background.png" id="2_ly2t8"]
 [ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="3_c2lno"]
+[ext_resource type="Texture2D" uid="uid://cmsunywnrf3cr" path="res://icon.svg" id="5_c2lno"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_d3fr7"]
 texture = ExtResource("2_ly2t8")
@@ -73,6 +74,15 @@ shadow_offset = Vector2(0, 3.41)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hjrbd"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hjrbd"]
+bg_color = Color(0.6666667, 0.5411765, 0.42352942, 1)
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 3
+
 [node name="pregame_lobby" type="Control" unique_id=1315476839]
 layout_mode = 3
 anchors_preset = 15
@@ -90,10 +100,10 @@ layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 1.001
-offset_left = -0.5
-offset_top = -0.75
-offset_right = 0.5
-offset_bottom = -0.33007813
+offset_left = 34.0
+offset_top = -1.0
+offset_right = 35.0
+offset_bottom = -0.5800781
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_d3fr7")
@@ -136,65 +146,17 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
 text = "MENU_LABEL_BACK"
 
-[node name="player_count_interface" type="Panel" parent="Background" unique_id=1826396638]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.036000002
-anchor_top = 0.17400001
-anchor_right = 0.92100006
-anchor_bottom = 0.73800004
-offset_left = 1370.88
-offset_top = 641.07996
-offset_right = 98.67993
-offset_bottom = 250.95996
-theme_override_styles/panel = SubResource("StyleBoxFlat_ejbtt")
-
-[node name="title" type="Label" parent="Background/player_count_interface" unique_id=646924966]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = -0.049000002
-anchor_right = 1.075
-anchor_bottom = 0.38200003
-offset_left = -5.0769997
-offset_top = -14.000008
-offset_right = -5.0250244
-offset_bottom = -12.002617
-grow_vertical = 2
-theme_override_fonts/font = ExtResource("3_c2lno")
-theme_override_font_sizes/font_size = 48
-text = "player count"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="player_count" type="Label" parent="Background/player_count_interface" unique_id=365443432]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = -0.089
-anchor_top = 0.35200003
-anchor_right = 1.0350001
-anchor_bottom = 0.74300003
-offset_left = 0.0030021667
-offset_top = -0.088012695
-offset_right = 0.05496216
-offset_bottom = -0.06161499
-grow_vertical = 2
-theme_override_fonts/font = ExtResource("3_c2lno")
-theme_override_font_sizes/font_size = 84
-text = "Loading..."
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="send_websocket_message" type="Button" parent="Background" unique_id=1812252986]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.716
-anchor_top = 0.056
-anchor_right = 0.97200006
-anchor_bottom = 0.117000006
-offset_left = 0.063964844
-offset_top = 0.18599701
-offset_right = -0.7121582
-offset_bottom = 0.2144928
+anchor_left = 0.31100002
+anchor_top = 0.052
+anchor_right = 0.56600004
+anchor_bottom = 0.113000005
+offset_left = -0.43103027
+offset_top = -0.23800278
+offset_right = 0.7138672
+offset_bottom = -0.20950317
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
@@ -267,21 +229,6 @@ grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_c2lno")
 theme_override_font_sizes/font_size = 48
 text = "Game type"
-horizontal_alignment = 1
-vertical_alignment = 1
-metadata/_edit_use_anchors_ = true
-
-[node name="create_lobby_title3" type="Label" parent="create_lobby_interface" unique_id=776103542]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = -0.37776354
-anchor_top = 0.5513065
-anchor_right = -0.13962688
-anchor_bottom = 0.6946631
-grow_vertical = 2
-theme_override_fonts/font = ExtResource("3_c2lno")
-theme_override_font_sizes/font_size = 48
-text = "Lobby"
 horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
@@ -433,20 +380,80 @@ text = "Loading..."
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="player_count_interface" type="Panel" parent="." unique_id=1674541930]
+[node name="player_data" type="Panel" parent="." unique_id=609793046]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.63500005
+anchor_top = 0.017
+anchor_right = 0.99100006
+anchor_bottom = 0.17400001
+offset_left = 0.79992676
+offset_top = -0.3600006
+offset_right = -0.0020751953
+offset_bottom = -3.218521
+theme_override_styles/panel = SubResource("StyleBoxFlat_hjrbd")
+
+[node name="User_name" type="Label" parent="player_data" unique_id=1398392566]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.25800002
+anchor_top = 0.072000004
+anchor_right = 0.763
+anchor_bottom = 0.46600002
+offset_left = 7.8587036
+offset_top = 6.997492
+offset_right = 8.086121
+offset_bottom = 6.9944687
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_c2lno")
+theme_override_font_sizes/font_size = 48
+text = " Name Loading..."
+vertical_alignment = 1
+
+[node name="User_pfp" type="TextureRect" parent="player_data" unique_id=910323121]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.040000003
+anchor_top = 0.132
+anchor_right = 0.21000001
+anchor_bottom = 0.79800004
+offset_left = -9.308723
+offset_top = -3.0045967
+offset_right = 5.6292114
+offset_bottom = 3.9721985
+texture = ExtResource("5_c2lno")
+
+[node name="User_rank" type="Label" parent="player_data" unique_id=1362128213]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.25500003
+anchor_top = 0.45600003
+anchor_right = 0.76000005
+anchor_bottom = 0.85
+offset_left = 18.90686
+offset_top = 4.9841156
+offset_right = 19.134277
+offset_bottom = 4.9810944
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_c2lno")
+theme_override_font_sizes/font_size = 48
+text = "Rank Loading...."
+vertical_alignment = 1
+
+[node name="player_count_interface" type="Panel" parent="." unique_id=1826396638]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.036000002
 anchor_top = 0.17400001
 anchor_right = 0.92100006
 anchor_bottom = 0.73800004
-offset_left = 1370.88
-offset_top = 641.07996
-offset_right = 98.67993
-offset_bottom = 250.95996
+offset_left = 1404.916
+offset_top = 640.34094
+offset_right = 132.71594
+offset_bottom = 250.22095
 theme_override_styles/panel = SubResource("StyleBoxFlat_ejbtt")
 
-[node name="title" type="Label" parent="player_count_interface" unique_id=1442201935]
+[node name="title" type="Label" parent="player_count_interface" unique_id=646924966]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = -0.049000002
@@ -463,7 +470,7 @@ text = "player count"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="player_count" type="Label" parent="player_count_interface" unique_id=1367376376]
+[node name="player_count" type="Label" parent="player_count_interface" unique_id=365443432]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = -0.089

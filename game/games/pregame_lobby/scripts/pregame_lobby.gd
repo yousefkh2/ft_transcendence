@@ -5,6 +5,7 @@ extends Control
 @onready var player_1_name: Label = $player_interface/player_1_name
 @onready var player_count: Label = $player_count_interface/player_count
 @onready var lobby_lang: Label = $create_lobby_interface/lobby_lang
+@onready var user_name: Label = $player_data/User_name
 
 var websocket_url = "ws://localhost:8080/ws"
 var message_to_send = "TEST TEST TEST"
@@ -16,8 +17,9 @@ func _ready() -> void:
 	game_type.text = GameState.game_mode
 	print(GameState.player_name)
 	print(GameState.lobby_data)
-	#print(GameState.lobby_lang)
+	user_name.text = GameState.player_name
 	player_1_name.text = GameState.player_name
+	#print(GameState.player_count)
 	player_count.text = str(GameState.player_count)
 	print(GameState.lobby_data)
 	print(GameState.game_lang)
