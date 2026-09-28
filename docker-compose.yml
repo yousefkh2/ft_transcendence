@@ -28,7 +28,7 @@ services:
       dockerfile: Dockerfile
     container_name: transcendence-frontend
     environment:
-      VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
+      VITE_API_URL: ${VITE_API_URL:-http://localhost}
     ports:
       - "${FRONTEND_PORT:-5173}:5173"
     volumes:
@@ -55,6 +55,20 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+    restart: unless-stopped
+  
+  nginx:
+    image: nginx:alpine
+    container_name: transcendence-nginx
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - backend
+      - frontend
     restart: unless-stopped
 
 volumes:
