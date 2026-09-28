@@ -11,6 +11,8 @@ type ClientMessage struct {
 	Text		string `json:"text,omitempty"`
 	IsFinal		bool   `json:"isFinal,omitempty"`
 	Token		string `json:"token,omitempty"`
+	SDP			string `json:"sdp,omitempty"`
+	Candidate	string `json:"candidate,omitempty"`
 }
 
 type ServerMessage struct {
@@ -24,6 +26,9 @@ type ServerMessage struct {
 	RemainingSeconds	int					`json:"remainingSeconds,omitempty"`
 	Text				string				`json:"text,omitempty"`
 	IsFinal				bool				`json:"isFinal,omitempty"`
+	SDP					string				`json:"sdp,omitempty"`
+	Candidate			string				`json:"candidate,omitempty"`
+	FromRole			string				`json:"fromRole,omitempty"`
 }
 
 type Objective struct {
