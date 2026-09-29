@@ -8,6 +8,8 @@ extends Control
 var websocket_url = "ws://localhost:8080/ws"
 var message_to_send = "TEST TEST TEST"
 
+const REQUEST_MATCH = "REQUEST_MATCH"
+
 @onready var _client : web_socket_client = $web_socket_client
 
 func _ready() -> void:
@@ -23,6 +25,10 @@ func _ready() -> void:
 	_connect_to_matchmaking_server()
 	
 
+func _send_message(message_to_send):
+	var json_message = JSON.stringify(message_to_send)
+	_client.send(json_message)
+
 func _connect_to_matchmaking_server():
 	var error = _client.connect_to_url(websocket_url)
 	if (error != OK):
@@ -37,6 +43,12 @@ func _on_websocket_client_connection_close():
 
 func _on_websocket_client_connected_to_server():
 	print("Client connected to server")
+	
+	var request_match = {
+		"op": REQUEST_MATCH
+	}
+	
+	
 	
 
 func _on_lobby_button_pressed() -> void:
