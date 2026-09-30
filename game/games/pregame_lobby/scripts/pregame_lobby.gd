@@ -147,3 +147,15 @@ func _on_send_websocket_message_pressed() -> void:
 	var error = _client.send_json(message)
 	print(error)
 	
+
+
+func _on_join_no_role_button_pressed() -> void:
+	pass # Replace with function body.
+
+
+func _on_join_on_site_button_pressed() -> void:
+	pass # Replace with function body.
+
+
+func _on_join_mission_control_button_pressed() -> void:
+	pass # Replace with function body.

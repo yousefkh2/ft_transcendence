@@ -298,10 +298,10 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_ejbtt")
 
 [node name="on_site_label" type="RichTextLabel" parent="Lobby_state" unique_id=980968100]
 layout_mode = 0
-offset_left = 480.0
-offset_top = 17.0
-offset_right = 635.0
-offset_bottom = 92.0
+offset_left = 418.0
+offset_top = 19.0
+offset_right = 573.0
+offset_bottom = 94.0
 theme_override_fonts/normal_font = ExtResource("3_c2lno")
 theme_override_font_sizes/normal_font_size = 48
 text = "ON SITE"
@@ -314,29 +314,29 @@ anchor_left = 0.32900003
 anchor_top = 0.14500001
 anchor_right = 0.518
 anchor_bottom = 0.90500003
-offset_left = -43.475037
+offset_left = -23.475037
 offset_top = 6.0099945
-offset_right = 46.549988
+offset_right = 53.549988
 offset_bottom = 32.889984
 tooltip_text = "asdffasdfasdf
 "
 
 [node name="controll_label" type="RichTextLabel" parent="Lobby_state" unique_id=487594040]
 layout_mode = 0
-offset_left = 847.0
-offset_top = 18.0
-offset_right = 1205.0
-offset_bottom = 69.0
+offset_left = 754.0
+offset_top = 21.0
+offset_right = 1112.0
+offset_bottom = 72.0
 theme_override_fonts/normal_font = ExtResource("3_c2lno")
 theme_override_font_sizes/normal_font_size = 48
 text = "MISSION CONTROL"
 
 [node name="controll_player" type="VBoxContainer" parent="Lobby_state" unique_id=112170739]
 layout_mode = 0
-offset_left = 801.0
-offset_top = 73.0
-offset_right = 1252.0
-offset_bottom = 444.0
+offset_left = 748.0
+offset_top = 68.0
+offset_right = 1234.0
+offset_bottom = 439.0
 tooltip_text = "asdffasdfasdf
 "
 
@@ -369,6 +369,72 @@ offset_right = 0.375
 offset_bottom = -0.21002197
 tooltip_text = "
 "
+
+[node name="join_no_role_button" type="Button" parent="Lobby_state" unique_id=1674210768]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.878
+anchor_top = 0.041
+anchor_right = 0.975
+anchor_bottom = 0.14500001
+offset_left = 0.54992676
+offset_top = 0.057998657
+offset_right = -0.125
+offset_bottom = 0.009994507
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_c2lno")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_ly2t8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_c2lno")
+theme_override_styles/hover = SubResource("StyleBoxFlat_dpwjk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_hjrbd")
+text = "Join"
+
+[node name="join_on_site_button" type="Button" parent="Lobby_state" unique_id=1155248209]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.455
+anchor_top = 0.043
+anchor_right = 0.554
+anchor_bottom = 0.147
+offset_left = -0.125
+offset_top = 0.13399887
+offset_right = 8.1466675
+offset_bottom = 0.2097168
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_c2lno")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_ly2t8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_c2lno")
+theme_override_styles/hover = SubResource("StyleBoxFlat_dpwjk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_hjrbd")
+text = "Join"
+
+[node name="join_mission_control_button" type="Button" parent="Lobby_state" unique_id=1827278461]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.179
+anchor_top = 0.039
+anchor_right = 0.26500002
+anchor_bottom = 0.15400001
+offset_left = -0.2250061
+offset_top = -0.017999649
+offset_right = 0.12496948
+offset_bottom = -0.14801025
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_c2lno")
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_ly2t8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_c2lno")
+theme_override_styles/hover = SubResource("StyleBoxFlat_dpwjk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_hjrbd")
+text = "Join"
 
 [node name="player_data" type="Panel" parent="." unique_id=609793046]
 layout_mode = 1
@@ -483,3 +549,6 @@ vertical_alignment = 1
 [connection signal="message_received" from="web_socket_client" to="." method="_on_websocket_message_recieved"]
 [connection signal="pressed" from="Background/lobby_button" to="." method="_on_lobby_button_pressed"]
 [connection signal="pressed" from="Background/send_websocket_message" to="." method="_on_send_websocket_message_pressed"]
+[connection signal="pressed" from="Lobby_state/join_no_role_button" to="." method="_on_join_no_role_button_pressed"]
+[connection signal="pressed" from="Lobby_state/join_on_site_button" to="." method="_on_join_on_site_button_pressed"]
+[connection signal="pressed" from="Lobby_state/join_mission_control_button" to="." method="_on_join_mission_control_button_pressed"]
