@@ -25,6 +25,7 @@ func main() {
 	profileHandler := &handler.ProfileHandler{DB: pool}
 	friendHandler := &handler.FriendHandler{DB: pool}
 	lobbyHandler := &handler.LobbyHandler{DB: pool}
+	realtimeLobbyHandler := &handler.RealtimeLobbyHandler{DB: pool, Hub: hub}
 
 	e := echo.New()
 	e.Use(echomw.Recover())
@@ -34,11 +35,13 @@ func main() {
 	e.GET("/health/db", handler.HandleDatabaseHealth)
 	e.GET("/health/openai", handler.HandleOpenAIHealth)
 	e.GET("/ws", hub.HandleWebSocket)
+	e.GET("/ws/lobby", hub.HandleLobbyWebSocket)
 	e.Any("/transcriptions", handler.HandleTranscription)
 	e.Any("/realtime/transcription-session", handler.HandleRealtimeTranscriptionSession)
 
 	e.POST("/api/auth/register", authHandler.HandleRegister)
 	e.POST("/api/auth/login", authHandler.HandleLogin)
+	e.POST("/api/v2/auth/login", authHandler.HandleRealtimeLogin)
 
 	users := e.Group("/api/users", middleware.EchoWithAuth)
 	users.GET("/me", profileHandler.HandleMe, middleware.EchoWithAuth)
@@ -57,6 +60,10 @@ func main() {
 	lobbies.POST("/:code/join", lobbyHandler.HandleJoinLobby)
 	lobbies.POST("/:code/leave", lobbyHandler.HandleLeaveLobby)
 	lobbies.PATCH("/:code/language", lobbyHandler.HandleUpdateLobbyLanguage)
+
+	realtimeLobbies := e.Group("/api/v2/lobbies", middleware.EchoWithAuth)
+	realtimeLobbies.POST("", realtimeLobbyHandler.HandleCreateLobby)
+	realtimeLobbies.POST("/:code/join", realtimeLobbyHandler.HandleJoinLobby)
 
 	port := handler.Getenv("PORT", "8080")
 	addr := ":" + port

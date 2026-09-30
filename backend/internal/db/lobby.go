@@ -10,13 +10,18 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+type LobbyPlayer struct {
+	UserID   string
+	Username string
+}
+
 const LobbyCapacity = 2
 
 const lobbyCodeAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 
 const (
 	RoleMissionControl = "mission_control"
-	RoleOnSite = "on_site"
+	RoleOnSite         = "on_site"
 )
 
 const DefaultLobbyLang = "en"
@@ -29,24 +34,24 @@ var SupportedLobbyLangs = map[string]bool{
 }
 
 var (
-	ErrLobbyNotFound	= errors.New("lobby not found")
-	ErrLobbyNotJoinable	= errors.New("lobby is not joinable")
-	ErrLobbyFull		= errors.New("lobby is full")
-	ErrAlreadyJoined	= errors.New("already joined this lobby")
-	ErrNotInLobby		= errors.New("user is not part of this lobby")
-	ErrLobbyNotStarted	= errors.New("lobby has not started yet")
-	ErrNotHost			= errors.New("only the host can do this")
-	ErrUnsupportedLang	= errors.New("unsupported language")
+	ErrLobbyNotFound    = errors.New("lobby not found")
+	ErrLobbyNotJoinable = errors.New("lobby is not joinable")
+	ErrLobbyFull        = errors.New("lobby is full")
+	ErrAlreadyJoined    = errors.New("already joined this lobby")
+	ErrNotInLobby       = errors.New("user is not part of this lobby")
+	ErrLobbyNotStarted  = errors.New("lobby has not started yet")
+	ErrNotHost          = errors.New("only the host can do this")
+	ErrUnsupportedLang  = errors.New("unsupported language")
 )
 
 type Lobby struct {
-	ID			string	`json:"id"`
-	Code		string	`json:"code"`
-	GameMode	string	`json:"gameMode"`
-	Status		string	`json:"status"`
-	HostUserID	string	`json:"hostUserID"`
-	PlayerCount	int		`json:"playerCount"`
-	CurrLang	string	`json:"currLang"`
+	ID          string `json:"id"`
+	Code        string `json:"code"`
+	GameMode    string `json:"gameMode"`
+	Status      string `json:"status"`
+	HostUserID  string `json:"hostUserID"`
+	PlayerCount int    `json:"playerCount"`
+	CurrLang    string `json:"currLang"`
 }
 
 func generateLobbyCode() (string, error) {
@@ -85,7 +90,7 @@ func CreateLobby(ctx context.Context, pool *pgxpool.Pool, hostUserID, gameMode s
 		return Lobby{}, err
 	}
 
-	if _,err := tx.Exec(ctx,
+	if _, err := tx.Exec(ctx,
 		`INSERT INTO session_participants (session_id, user_id) VALUES ($1, $2)`,
 		sessionID, hostUserID,
 	); err != nil {
@@ -97,13 +102,13 @@ func CreateLobby(ctx context.Context, pool *pgxpool.Pool, hostUserID, gameMode s
 	}
 
 	return Lobby{
-		ID: sessionID,
-		Code: code,
-		GameMode: gameMode,
-		Status: "waiting",
-		HostUserID: hostUserID,
+		ID:          sessionID,
+		Code:        code,
+		GameMode:    gameMode,
+		Status:      "waiting",
+		HostUserID:  hostUserID,
 		PlayerCount: 1,
-		CurrLang: DefaultLobbyLang,
+		CurrLang:    DefaultLobbyLang,
 	}, nil
 }
 
@@ -136,6 +141,36 @@ func ListOpenLobbies(ctx context.Context, pool *pgxpool.Pool) ([]Lobby, error) {
 	}
 
 	return lobbies, nil
+}
+
+func ListLobbyPlayers(ctx context.Context, pool *pgxpool.Pool, code string) ([]LobbyPlayer, error) {
+	rows, err := pool.Query(ctx,
+		`SELECT u.id, u.username
+		 FROM game_sessions gs
+		 JOIN session_participants sp ON sp.session_id = gs.id
+		 JOIN users u ON u.id = sp.user_id
+		 WHERE gs.code = $1
+		 ORDER BY sp.id`,
+		code,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	players := make([]LobbyPlayer, 0)
+	for rows.Next() {
+		var player LobbyPlayer
+		if err := rows.Scan(&player.UserID, &player.Username); err != nil {
+			return nil, err
+		}
+		players = append(players, player)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return players, nil
 }
 
 func JoinLobby(ctx context.Context, pool *pgxpool.Pool, code, userID string) (Lobby, error) {
@@ -209,13 +244,13 @@ func JoinLobby(ctx context.Context, pool *pgxpool.Pool, code, userID string) (Lo
 	}
 
 	return Lobby{
-		ID:				sessionID,
-		Code:			code,
-		GameMode:		gameMode,
-		Status:			status,
-		HostUserID:		hostUserID,
-		PlayerCount:	newPlayerCount,
-		CurrLang:		lang,
+		ID:          sessionID,
+		Code:        code,
+		GameMode:    gameMode,
+		Status:      status,
+		HostUserID:  hostUserID,
+		PlayerCount: newPlayerCount,
+		CurrLang:    lang,
 	}, nil
 }
 
@@ -266,13 +301,13 @@ func UpdateLobbyLanguage(ctx context.Context, pool *pgxpool.Pool, code, userID, 
 	}
 
 	return Lobby{
-		ID:				sessionID,
-		Code:			code,
-		GameMode:		gameMode,
-		Status:			status,
-		HostUserID:		hostUserID,
-		PlayerCount:	playerCount,
-		CurrLang:		lang,
+		ID:          sessionID,
+		Code:        code,
+		GameMode:    gameMode,
+		Status:      status,
+		HostUserID:  hostUserID,
+		PlayerCount: playerCount,
+		CurrLang:    lang,
 	}, nil
 }
 
@@ -307,7 +342,7 @@ func LeaveLobby(ctx context.Context, pool *pgxpool.Pool, code, userID string) er
 			return err
 		}
 	}
-	
+
 	return tx.Commit(ctx)
 }
 
