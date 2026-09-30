@@ -144,6 +144,8 @@ func (h *Hub) handleWebSocket(c echo.Context, lobbyOnly bool) error {
 			h.handleObjectMoved(ctx, player, message, joinedRoom, joinedRole)
 		case "voice.transcript":
 			h.handleVoiceTranscript(ctx, player, message, joinedRoom, joinedRole)
+		case "webrtc.offer", "webrtc.answer", "webrtc.ice_candidate":
+				h.handleWebRTCSignal(ctx, player, message, joinedRoom, joinedRole)
 		default:
 			_ = wsjson.Write(ctx, conn, model.ServerMessage{
 				Type:    "error",
@@ -542,6 +544,49 @@ func (h *Hub) handleVoiceTranscript(
 		if err := roomPlayer.send(ctx, transcriptMessage); err != nil {
 			log.Printf("transcript broadcast failed for player %s: %v", roomPlayer.id, err)
 		}
+	}
+}
+
+func (h *Hub) handleWebRTCSignal(ctx context.Context, player *Player, message model.ClientMessage, joinedRoom, joinedRole string) {
+	if joinedRoom == "" {
+		_ = player.send(ctx, model.ServerMessage{
+			Type: "error",
+			Message: "join a room before starting voice signaling",
+		})
+		return
+	}
+
+	h.mu.Lock()
+
+	room := h.rooms[joinedRoom]
+	if room == nil {
+		h.mu.Unlock()
+		_ = player.send(ctx, model.ServerMessage{
+			Type: "error",
+			Message: "room no longer exists",
+		})
+		return
+	}
+
+	targetRole := db.RoleOnSite
+	if joinedRole == db.RoleMissionControl {
+		targetRole = db.RoleMissionControl
+	}
+	target := room.players[targetRole]
+
+	h.mu.Unlock()
+
+	if target == nil {
+		return
+	}
+
+	if err := target.send(ctx, model.ServerMessage{
+		Type: message.Type,
+		SDP: message.SDP,
+		Candidate: message.Candidate,
+		FromRole: joinedRole,
+	}); err != nil {
+		log.Printf("webrtc singal realy failed for player %s: %v", target.id, err)
 	}
 }
 
