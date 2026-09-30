@@ -1,16 +1,18 @@
 package model
 
 type ClientMessage struct {
-	Type     string `json:"type"`
-	RoomCode string `json:"roomCode,omitempty"`
-	ObjectID string `json:"objectId,omitempty"`
-	Relation string `json:"relation,omitempty"`
-	TargetID string `json:"targetId,omitempty"`
-	X        int    `json:"x,omitempty"`
-	Y        int    `json:"y,omitempty"`
-	Text     string `json:"text,omitempty"`
-	IsFinal  bool   `json:"isFinal,omitempty"`
-	Token    string `json:"token,omitempty"`
+	Type      string `json:"type"`
+	RoomCode  string `json:"roomCode,omitempty"`
+	ObjectID  string `json:"objectId,omitempty"`
+	Relation  string `json:"relation,omitempty"`
+	TargetID  string `json:"targetId,omitempty"`
+	X         int    `json:"x,omitempty"`
+	Y         int    `json:"y,omitempty"`
+	Text      string `json:"text,omitempty"`
+	IsFinal   bool   `json:"isFinal,omitempty"`
+	Token     string `json:"token,omitempty"`
+	SDP       string `json:"sdp,omitempty"`
+	Candidate string `json:"candidate,omitempty"`
 }
 
 type ServerMessage struct {
@@ -25,6 +27,9 @@ type ServerMessage struct {
 	RemainingSeconds    int                 `json:"remainingSeconds,omitempty"`
 	Text                string              `json:"text,omitempty"`
 	IsFinal             bool                `json:"isFinal,omitempty"`
+	SDP                 string              `json:"sdp,omitempty"`
+	Candidate           string              `json:"candidate,omitempty"`
+	FromRole            string              `json:"fromRole,omitempty"`
 }
 
 type LobbyPlayer struct {
