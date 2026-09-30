@@ -5,7 +5,7 @@ extends Control
 @onready var lobby_lang: Label = $create_lobby_interface/lobby_lang
 @onready var user_name: Label = $player_data/User_name
 
-var websocket_url = "ws://localhost:8080/ws"
+var websocket_url = "ws://localhost:8080/ws/lobby"
 var message_to_send = "TEST TEST TEST"
 
 const REQUEST_MATCH = "REQUEST_MATCH"
@@ -100,7 +100,10 @@ func _build_player_lobby_list(match_players):
 	
 	for player in match_players:
 		var player_label := Label.new()
-		player_label.text = str(player)
+		if player is Dictionary:
+			player_label.text = str(player.get("username", player.get("userId", "Unknown player")))
+		else:
+			player_label.text = str(player)
 		player_label.custom_minimum_size = Vector2(260.0, 60.0)
 		player_label.add_theme_font_override("font", preload("res://game_files/fonts/GrapeSoda.ttf"))
 		player_label.add_theme_font_size_override("font_size", 48)
@@ -118,6 +121,12 @@ func _on_websocket_client_connection_close():
 
 func _on_websocket_client_connected_to_server():
 	print("Client connected to server")
+
+	_send_message({
+		"type": "lobby.subscribe",
+		"roomCode": GameState.lobby_code,
+		"token": GameState.auth_token,
+	})
 	
 
 func _on_lobby_button_pressed() -> void:
@@ -131,8 +140,9 @@ func _process(delta: float) -> void:
 func _on_send_websocket_message_pressed() -> void:
 	print("send out message from client to server")
 	var message = {
-		"type": "",
+		"type": "lobby.subscribe",
 		"roomCode": GameState.lobby_code,
+		"token": GameState.auth_token,
 	}
 	var error = _client.send_json(message)
 	print(error)

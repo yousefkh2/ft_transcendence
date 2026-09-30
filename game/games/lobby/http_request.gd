@@ -23,7 +23,7 @@ func login() -> void:
 		"email": email
 	})
 	var error = request(
-		"http://localhost:8080/api/auth/login",
+		"http://localhost:8080/api/v2/auth/login",
 		headers,
 		HTTPClient.METHOD_POST,
 		body
@@ -56,9 +56,13 @@ func _on_login_completed(result, response_code, headers, body):
 	if token == "":
 		login_failed.emit("No token in login response.")
 		return
+	var logged_in_username = response.get("username", "")
+	if logged_in_username == "":
+		login_failed.emit("No username in login response.")
+		return
 
 	GameState.auth_token = token
-	GameState.player_name = username
+	GameState.player_name = logged_in_username
 	GameState.player_pass = password
 	GameState.player_email = email
 	login_success.emit()
@@ -70,7 +74,7 @@ func create_lobby() -> void:
 		"Authorization: Bearer " + GameState.auth_token
 	]
 	var error = request(
-		"http://localhost:8080/api/lobbies",
+		"http://localhost:8080/api/v2/lobbies",
 		headers,
 		HTTPClient.METHOD_POST,
 		""
@@ -91,7 +95,6 @@ func _on_create_lobby_completed(result, response_code, headers, body):
 		return
 
 	var response = json.get_data()
-	GameState.player_name = username
 	GameState.lobby_data = response
 	GameState.lobby_code = response.get("code", "")
 	GameState.game_mode = response.get("gameMode", "")
@@ -109,7 +112,7 @@ func join_lobby(code: String) -> void:
 		"Authorization: Bearer " + GameState.auth_token
 	]
 	var error = request(
-		"http://localhost:8080/api/lobbies/%s/join" % code,
+		"http://localhost:8080/api/v2/lobbies/%s/join" % code,
 		headers,
 		HTTPClient.METHOD_POST,
 		""
@@ -142,6 +145,5 @@ func _on_join_lobby_completed(result, response_code, headers, body):
 	GameState.game_mode = response.get("gameMode", "")
 	GameState.status = response.get("status", "")
 	GameState.player_count = int(response.get("playerCount", 0))
-	GameState.player_name = username
 
 	lobby_joined.emit(response)

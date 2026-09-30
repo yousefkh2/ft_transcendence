@@ -343,13 +343,14 @@ tooltip_text = "asdffasdfasdf
 [node name="no_role_label" type="RichTextLabel" parent="Lobby_state" unique_id=1884748662]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.080000006
-anchor_top = 0.054
-anchor_right = 0.317
-anchor_bottom = 0.19000001
-offset_top = 0.052000046
-offset_right = -0.1749878
-offset_bottom = 0.21999359
+anchor_left = 0.023000002
+anchor_top = 0.037
+anchor_right = 0.171
+anchor_bottom = 0.17300001
+offset_left = 24.674997
+offset_top = -0.09399986
+offset_right = -0.025009155
+offset_bottom = -6.9260025
 theme_override_fonts/normal_font = ExtResource("3_c2lno")
 theme_override_font_sizes/normal_font_size = 48
 text = "NO ROLE"
@@ -358,15 +359,15 @@ text = "NO ROLE"
 modulate = Color(0.9227558, 0.17413196, 0.4708618, 1)
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.155
-anchor_top = 0.21400002
-anchor_right = 0.186
-anchor_bottom = 0.30100003
-offset_left = -163.625
-offset_top = -22.868004
-offset_right = 133.84999
-offset_bottom = 306.938
-tooltip_text = "asdffasdfasdf
+anchor_left = 0.019000001
+anchor_top = 0.15400001
+anchor_right = 0.275
+anchor_bottom = 0.95500004
+offset_left = -10.225002
+offset_top = -0.14801025
+offset_right = 0.375
+offset_bottom = -0.21002197
+tooltip_text = "
 "
 
 [node name="player_data" type="Panel" parent="." unique_id=609793046]
