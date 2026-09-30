@@ -9,7 +9,8 @@ var player_count: int = 0
 var player_name: String = ""  
 var player_pass: String = "" 
 var player_email: String = ""
-var lobby_lang: String = ""
+var game_lang: String = ""
+var player_role: int = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

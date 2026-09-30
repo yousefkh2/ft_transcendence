@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"transcendence/backend/internal/db"
+	"transcendence/backend/internal/hub"
 	"transcendence/backend/internal/middleware"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -15,8 +16,13 @@ type LobbyHandler struct {
 	DB *pgxpool.Pool
 }
 
+type RealtimeLobbyHandler struct {
+	DB  *pgxpool.Pool
+	Hub *hub.Hub
+}
+
 type createLobbyRequest struct {
-	GameMode	string `json:"gameMode"`
+	GameMode string `json:"gameMode"`
 }
 
 const defaultGameMode = "apartment_setup"
@@ -54,7 +60,6 @@ func (h *LobbyHandler) HandleJoinLobby(c echo.Context) error {
 	userID := middleware.UserID(c)
 	code := c.Param("code")
 
-
 	lobby, err := db.JoinLobby(c.Request().Context(), h.DB, code, userID)
 	if err != nil {
 		switch {
@@ -70,7 +75,45 @@ func (h *LobbyHandler) HandleJoinLobby(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 		}
 	}
-	
+	return c.JSON(http.StatusOK, lobby)
+}
+
+func (h *RealtimeLobbyHandler) HandleCreateLobby(c echo.Context) error {
+	userID := middleware.UserID(c)
+	var req createLobbyRequest
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
+	}
+	if req.GameMode == "" {
+		req.GameMode = defaultGameMode
+	}
+	lobby, err := db.CreateLobby(c.Request().Context(), h.DB, userID, req.GameMode)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	return c.JSON(http.StatusCreated, lobby)
+}
+
+func (h *RealtimeLobbyHandler) HandleJoinLobby(c echo.Context) error {
+	userID := middleware.UserID(c)
+	lobby, err := db.JoinLobby(c.Request().Context(), h.DB, c.Param("code"), userID)
+	if err != nil {
+		switch {
+		case errors.Is(err, db.ErrLobbyNotFound):
+			return echo.NewHTTPError(http.StatusNotFound, "lobby not found")
+		case errors.Is(err, db.ErrLobbyNotJoinable):
+			return echo.NewHTTPError(http.StatusConflict, "lobby is not joinable")
+		case errors.Is(err, db.ErrLobbyFull):
+			return echo.NewHTTPError(http.StatusConflict, "lobby is full")
+		case errors.Is(err, db.ErrAlreadyJoined):
+			return echo.NewHTTPError(http.StatusConflict, "already joined this lobby")
+		default:
+			return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+		}
+	}
+	if h.Hub != nil {
+		h.Hub.PublishLobbyUpdate(c.Request().Context(), lobby.Code)
+	}
 	return c.JSON(http.StatusOK, lobby)
 }
 
@@ -114,6 +157,6 @@ func (h *LobbyHandler) HandleLeaveLobby(c echo.Context) error {
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 	}
-	
+
 	return c.NoContent(http.StatusNoContent)
 }
