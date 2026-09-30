@@ -25,6 +25,7 @@ func main() {
 	profileHandler := &handler.ProfileHandler{DB: pool}
 	friendHandler := &handler.FriendHandler{DB: pool}
 	lobbyHandler := &handler.LobbyHandler{DB: pool}
+	realtimeLobbyHandler := &handler.RealtimeLobbyHandler{DB: pool, Hub: hub}
 
 	e := echo.New()
 	e.Use(echomw.Recover())
