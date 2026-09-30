@@ -34,47 +34,64 @@ func (r *pooledRoleResolver) GetParticipantRole(ctx context.Context, code, userI
 }
 
 type Player struct {
-	id		string
-	conn	*websocket.Conn
-	writeMu	sync.Mutex
+	id      string
+	conn    *websocket.Conn
+	writeMu sync.Mutex
 }
 
 type Room struct {
-	code				string
-	players				map[string]*Player
-	completedObjectives	map[string]bool
-	objectPositions		map[string]model.Position
-	roundDeadline		time.Time
-	startedAt			time.Time
+	code                string
+	players             map[string]*Player
+	completedObjectives map[string]bool
+	objectPositions     map[string]model.Position
+	roundDeadline       time.Time
+	startedAt           time.Time
+}
+
+type LobbyWatcher struct {
+	id      string
+	conn    *websocket.Conn
+	writeMu sync.Mutex
 }
 
 // Hub  = owner of all live rooms.
 type Hub struct {
-	mu				sync.Mutex
-	rooms			map[string]*Room
-	allowedOrigins	[]string
-	db				*pgxpool.Pool
-	roles			RoleResolver
+	mu             sync.Mutex
+	rooms          map[string]*Room
+	allowedOrigins []string
+	db             *pgxpool.Pool
+	roles          RoleResolver
+	lobbyWatchers  map[string]map[string]*LobbyWatcher
 }
 
 func NewHub(pool *pgxpool.Pool) *Hub {
 	return &Hub{
-		rooms: make(map[string]*Room),
+		rooms:          make(map[string]*Room),
 		allowedOrigins: []string{"localhost:5173"},
-		db: pool,
-		roles: &pooledRoleResolver{pool: pool},
+		db:             pool,
+		roles:          &pooledRoleResolver{pool: pool},
+		lobbyWatchers:  make(map[string]map[string]*LobbyWatcher),
 	}
 }
 
 func NewHubWithOrigins(origins []string, roles RoleResolver) *Hub {
 	return &Hub{
-		rooms: make(map[string]*Room),
+		rooms:          make(map[string]*Room),
 		allowedOrigins: origins,
-		roles: roles,
+		roles:          roles,
+		lobbyWatchers:  make(map[string]map[string]*LobbyWatcher),
 	}
 }
 
 func (h *Hub) HandleWebSocket(c echo.Context) error {
+	return h.handleWebSocket(c, false)
+}
+
+func (h *Hub) HandleLobbyWebSocket(c echo.Context) error {
+	return h.handleWebSocket(c, true)
+}
+
+func (h *Hub) handleWebSocket(c echo.Context, lobbyOnly bool) error {
 	conn, err := websocket.Accept(c.Response().Writer, c.Request(), &websocket.AcceptOptions{OriginPatterns: h.allowedOrigins})
 	if err != nil {
 		log.Printf("websocket upgrade failed: %v", err)
@@ -99,9 +116,11 @@ func (h *Hub) HandleWebSocket(c echo.Context) error {
 
 	joinedRoom := ""
 	joinedRole := ""
+	subscribedLobby := ""
 
 	defer func() {
 		h.leaveRoom(joinedRoom, joinedRole, playerID)
+		h.leaveLobby(subscribedLobby, playerID)
 	}()
 
 	for {
@@ -113,6 +132,12 @@ func (h *Hub) HandleWebSocket(c echo.Context) error {
 		}
 
 		switch message.Type {
+		case "lobby.subscribe":
+			if !lobbyOnly {
+				_ = wsjson.Write(ctx, conn, model.ServerMessage{Type: "error", Message: "unknown message type"})
+				continue
+			}
+			h.handleLobbySubscribe(ctx, conn, message, playerID, &subscribedLobby)
 		case "room.join":
 			h.handleRoomJoin(ctx, conn, player, message, &joinedRoom, &joinedRole)
 		case "game.object_moved":
@@ -131,6 +156,96 @@ func (h *Hub) HandleWebSocket(c echo.Context) error {
 	}
 }
 
+func (h *Hub) handleLobbySubscribe(ctx context.Context, conn *websocket.Conn, message model.ClientMessage, watcherID string, subscribedLobby *string) {
+	userID, err := auth.ParseJWT(message.Token)
+	if err != nil {
+		_ = wsjson.Write(ctx, conn, model.ServerMessage{Type: "error", Message: "invalid or missing token"})
+		return
+	}
+
+	code := strings.ToUpper(strings.TrimSpace(message.RoomCode))
+	if code == "" {
+		_ = wsjson.Write(ctx, conn, model.ServerMessage{Type: "error", Message: "lobby.subscribe requires roomCode"})
+		return
+	}
+
+	players, err := db.ListLobbyPlayers(ctx, h.db, code)
+	if err != nil {
+		_ = wsjson.Write(ctx, conn, model.ServerMessage{Type: "error", Message: "could not load lobby"})
+		return
+	}
+	member := false
+	for _, lobbyPlayer := range players {
+		if lobbyPlayer.UserID == userID {
+			member = true
+			break
+		}
+	}
+	if !member {
+		_ = wsjson.Write(ctx, conn, model.ServerMessage{Type: "error", Message: "you have not joined this lobby via the API"})
+		return
+	}
+
+	h.mu.Lock()
+	if *subscribedLobby != "" && *subscribedLobby != code {
+		h.removeLobbyWatcherLocked(*subscribedLobby, watcherID)
+	}
+	if h.lobbyWatchers[code] == nil {
+		h.lobbyWatchers[code] = make(map[string]*LobbyWatcher)
+	}
+	h.lobbyWatchers[code][watcherID] = &LobbyWatcher{id: watcherID, conn: conn}
+	*subscribedLobby = code
+	h.mu.Unlock()
+
+	h.sendLobbyUpdate(ctx, code, []*websocket.Conn{conn})
+}
+
+func (h *Hub) PublishLobbyUpdate(ctx context.Context, code string) {
+	h.mu.Lock()
+	watchers := h.lobbyWatchers[code]
+	connections := make([]*websocket.Conn, 0, len(watchers))
+	for _, watcher := range watchers {
+		connections = append(connections, watcher.conn)
+	}
+	h.mu.Unlock()
+	h.sendLobbyUpdate(ctx, strings.ToUpper(strings.TrimSpace(code)), connections)
+}
+
+func (h *Hub) sendLobbyUpdate(ctx context.Context, code string, connections []*websocket.Conn) {
+	players, err := db.ListLobbyPlayers(ctx, h.db, code)
+	if err != nil {
+		log.Printf("failed to load lobby players for %s: %v", code, err)
+		return
+	}
+	messagePlayers := make([]model.LobbyPlayer, 0, len(players))
+	for _, player := range players {
+		messagePlayers = append(messagePlayers, model.LobbyPlayer{UserID: player.UserID, Username: player.Username})
+	}
+	message := model.ServerMessage{Type: "lobby.updated", RoomCode: code, Players: messagePlayers, Message: "lobby updated"}
+	for _, conn := range connections {
+		if err := wsjson.Write(ctx, conn, message); err != nil {
+			log.Printf("lobby update failed for %s: %v", code, err)
+		}
+	}
+}
+
+func (h *Hub) leaveLobby(code, watcherID string) {
+	if code == "" {
+		return
+	}
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	h.removeLobbyWatcherLocked(code, watcherID)
+}
+
+func (h *Hub) removeLobbyWatcherLocked(code, watcherID string) {
+	watchers := h.lobbyWatchers[code]
+	delete(watchers, watcherID)
+	if len(watchers) == 0 {
+		delete(h.lobbyWatchers, code)
+	}
+}
+
 func (h *Hub) handleRoomJoin(
 	ctx context.Context,
 	conn *websocket.Conn,
@@ -142,7 +257,7 @@ func (h *Hub) handleRoomJoin(
 	userID, err := auth.ParseJWT(message.Token)
 	if err != nil {
 		_ = wsjson.Write(ctx, conn, model.ServerMessage{
-			Type: "error",
+			Type:    "error",
 			Message: "invalid or missing token",
 		})
 		return
@@ -176,14 +291,14 @@ func (h *Hub) handleRoomJoin(
 			msg = "lobby is not full yet"
 		}
 		_ = wsjson.Write(ctx, conn, model.ServerMessage{
-			Type:		"error",
-			Message:	msg,
+			Type:    "error",
+			Message: msg,
 		})
 		return
 	}
 	if role != db.RoleMissionControl && role != db.RoleOnSite {
 		_ = wsjson.Write(ctx, conn, model.ServerMessage{
-			Type: "error",
+			Type:    "error",
 			Message: "invalid role assigned",
 		})
 		return
@@ -194,10 +309,10 @@ func (h *Hub) handleRoomJoin(
 	room, exists := h.rooms[roomCode]
 	if !exists {
 		room = &Room{
-			code:					roomCode,
-			players:				make(map[string]*Player),
-			completedObjectives:	make(map[string]bool),
-			objectPositions:		game.InitialObjectPositions(),
+			code:                roomCode,
+			players:             make(map[string]*Player),
+			completedObjectives: make(map[string]bool),
+			objectPositions:     game.InitialObjectPositions(),
 		}
 		h.rooms[roomCode] = room
 	}
@@ -206,8 +321,8 @@ func (h *Hub) handleRoomJoin(
 		h.mu.Unlock()
 
 		_ = wsjson.Write(ctx, conn, model.ServerMessage{
-			Type:		"error",
-			Message:	"this role is already connected",
+			Type:    "error",
+			Message: "this role is already connected",
 		})
 		return
 	}
@@ -299,7 +414,7 @@ func (h *Hub) handleObjectMoved(
 				log.Printf("failed to save expired match for room %s: %v", joinedRoom, err)
 			}
 		}()
-		
+
 		expiredMessage := model.ServerMessage{
 			Type:                "game.round_expired",
 			RoomCode:            joinedRoom,
@@ -356,7 +471,7 @@ func (h *Hub) handleObjectMoved(
 			}
 		}()
 	}
-	
+
 	log.Printf("object moved in room %s: %s to (%d,%d)", joinedRoom,
 		message.ObjectID, message.X, message.Y)
 
