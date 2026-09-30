@@ -283,7 +283,7 @@ text = "Loading..."
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
 
-[node name="Lobby state" type="Panel" parent="." unique_id=1931072111]
+[node name="Lobby_state" type="Panel" parent="." unique_id=1931072111]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.28300002
@@ -296,7 +296,7 @@ offset_right = 0.76000977
 offset_bottom = -0.3600464
 theme_override_styles/panel = SubResource("StyleBoxFlat_ejbtt")
 
-[node name="on_site_label" type="RichTextLabel" parent="Lobby state" unique_id=980968100]
+[node name="on_site_label" type="RichTextLabel" parent="Lobby_state" unique_id=980968100]
 layout_mode = 0
 offset_left = 480.0
 offset_top = 17.0
@@ -306,21 +306,22 @@ theme_override_fonts/normal_font = ExtResource("3_c2lno")
 theme_override_font_sizes/normal_font_size = 48
 text = "ON SITE"
 
-[node name="on_site_player" type="VBoxContainer" parent="Lobby state" unique_id=798680646]
+[node name="on_site_player" type="VBoxContainer" parent="Lobby_state" unique_id=798680646]
+show_behind_parent = true
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.32900003
 anchor_top = 0.14500001
 anchor_right = 0.518
 anchor_bottom = 0.90500003
-offset_left = -0.47503662
-offset_top = 7.0099945
-offset_right = -0.4500122
-offset_bottom = -0.11001587
+offset_left = -43.475037
+offset_top = 6.0099945
+offset_right = 46.549988
+offset_bottom = 32.889984
 tooltip_text = "asdffasdfasdf
 "
 
-[node name="controll_label" type="RichTextLabel" parent="Lobby state" unique_id=487594040]
+[node name="controll_label" type="RichTextLabel" parent="Lobby_state" unique_id=487594040]
 layout_mode = 0
 offset_left = 847.0
 offset_top = 18.0
@@ -330,16 +331,16 @@ theme_override_fonts/normal_font = ExtResource("3_c2lno")
 theme_override_font_sizes/normal_font_size = 48
 text = "MISSION CONTROL"
 
-[node name="controll_player" type="VBoxContainer" parent="Lobby state" unique_id=112170739]
+[node name="controll_player" type="VBoxContainer" parent="Lobby_state" unique_id=112170739]
 layout_mode = 0
-offset_left = 846.0
-offset_top = 69.0
-offset_right = 1189.0
-offset_bottom = 411.0
+offset_left = 801.0
+offset_top = 73.0
+offset_right = 1252.0
+offset_bottom = 444.0
 tooltip_text = "asdffasdfasdf
 "
 
-[node name="no_role_label" type="RichTextLabel" parent="Lobby state" unique_id=1884748662]
+[node name="no_role_label" type="RichTextLabel" parent="Lobby_state" unique_id=1884748662]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.080000006
@@ -353,17 +354,18 @@ theme_override_fonts/normal_font = ExtResource("3_c2lno")
 theme_override_font_sizes/normal_font_size = 48
 text = "NO ROLE"
 
-[node name="no_role_player" type="VBoxContainer" parent="Lobby state" unique_id=2112902069]
+[node name="no_role_player" type="VBoxContainer" parent="Lobby_state" unique_id=2112902069]
+modulate = Color(0.9227558, 0.17413196, 0.4708618, 1)
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.155
 anchor_top = 0.21400002
 anchor_right = 0.186
 anchor_bottom = 0.30100003
-offset_left = -0.625
-offset_top = 0.13199615
-offset_right = -0.15000916
-offset_bottom = -0.06201172
+offset_left = -163.625
+offset_top = -22.868004
+offset_right = 133.84999
+offset_bottom = 306.938
 tooltip_text = "asdffasdfasdf
 "
 

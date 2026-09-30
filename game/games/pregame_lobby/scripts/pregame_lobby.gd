@@ -9,6 +9,19 @@ var websocket_url = "ws://localhost:8080/ws"
 var message_to_send = "TEST TEST TEST"
 
 const REQUEST_MATCH = "REQUEST_MATCH"
+const JOIN_MATCH = "JOIN_MATCH"
+const MATCH_PLAYERS = "MATCH_PLAYERS"
+const PLAYER_LEFT = "PLAYER_LEFT"
+const PLAYER_JOINED = "PLAYER_JOINED"
+const START_MATCH = "START_MATCH"
+const MATCH_READY = "MATCH_READY"
+const NO_ROLE_ASSIGN = "NO_ROLE_ASSIGN"
+const MISSION_CONTROL_ASSIGN = "MISSION_CONTROL_ASSIGN"
+const ON_SITE_ASSIGN = "ON_SITE_ASSIGN"
+
+const NO_ROLE_PLAYER = 0
+const ON_SITE_PLAYER = 1
+const MISSION_CONTROL_PLAYER = 2
 
 @onready var _client : web_socket_client = $web_socket_client
 
@@ -21,7 +34,9 @@ func _ready() -> void:
 	print(GameState.lobby_data)
 	print(GameState.game_lang)
 	lobby_lang.text = GameState.game_lang
+	_build_player_lobby_list([GameState.player_name])
 	print("Attemting to connect to server...")
+	
 	_connect_to_matchmaking_server()
 	
 
@@ -34,21 +49,75 @@ func _connect_to_matchmaking_server():
 	if (error != OK):
 		print("Error connecting to websocket: %s " % [websocket_url])
 
+func _process_received_message(message):
+	if typeof(message) != TYPE_STRING:
+		print("Ignoring non-text WebSocket message")
+		return
+
+	var response_msg = JSON.parse_string(message)
+	if typeof(response_msg) != TYPE_DICTIONARY:
+		print("Invalid JSON message from server: %s" % message)
+		return
+
+	var message_type = response_msg.get("type", "")
+	print("Process message type: %s" % message_type)
+
+	match message_type:
+		"error":
+			print("Server error: %s" % response_msg.get("message", "unknown error"))
+		"room.joined":
+			print("Joined room %s as %s" % [
+				response_msg.get("roomCode", ""),
+				response_msg.get("role", "")
+			])
+		"lobby.updated":
+			_update_lobby_state(response_msg)
+		_:
+			print("Unhandled server message: %s" % message_type)
+
+
+func _update_lobby_state(response_msg: Dictionary) -> void:
+	var players = response_msg.get("players", [])
+	if players is Array:
+		_build_player_lobby_list(players)
+				
+
+func _enter_match_lobby(match_with_players):
+	print("enter match")
+	print(match_with_players)
+	
+	_build_player_lobby_list(match_with_players.users)
+
+func _build_player_lobby_list(match_players):
+	for team_child in $Lobby_state/on_site_player.get_children():
+		team_child.queue_free()
+		
+	for team_child in $Lobby_state/controll_player.get_children():
+		team_child.queue_free()
+		
+	for team_child in $Lobby_state/no_role_player.get_children():
+		team_child.queue_free()
+	
+	for player in match_players:
+		var player_label := Label.new()
+		player_label.text = str(player)
+		player_label.custom_minimum_size = Vector2(260.0, 60.0)
+		player_label.add_theme_font_override("font", preload("res://game_files/fonts/GrapeSoda.ttf"))
+		player_label.add_theme_font_size_override("font_size", 48)
+		player_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		$Lobby_state/no_role_player.add_child(player_label)
+		
+	
 func _on_websocket_message_recieved(message):
 	print("Message received: %s " % message)
-
+	_process_received_message(message)
+	
 func _on_websocket_client_connection_close():
 	var ws = _client.get_socket()
 	print("Client disconnected with code %s, reason: %s" % [ws.get_close_code(), ws.get_close_reason()])
 
 func _on_websocket_client_connected_to_server():
 	print("Client connected to server")
-	
-	var request_match = {
-		"op": REQUEST_MATCH
-	}
-	
-	
 	
 
 func _on_lobby_button_pressed() -> void:
