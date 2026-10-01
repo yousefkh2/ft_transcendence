@@ -18,6 +18,7 @@ const MATCH_READY = "MATCH_READY"
 const NO_ROLE_ASSIGN = "NO_ROLE_ASSIGN"
 const MISSION_CONTROL_ASSIGN = "MISSION_CONTROL_ASSIGN"
 const ON_SITE_ASSIGN = "ON_SITE_ASSIGN"
+const CHECK_MATCH_READY = "CHECK_MATCH_READY"
 
 const NO_ROLE_PLAYER = 0
 const ON_SITE_PLAYER = 1
@@ -38,6 +39,7 @@ func _ready() -> void:
 	print("Attemting to connect to server...")
 	
 	_connect_to_matchmaking_server()
+
 	
 
 func _send_message(message_to_send):
@@ -50,43 +52,53 @@ func _connect_to_matchmaking_server():
 		print("Error connecting to websocket: %s " % [websocket_url])
 
 func _process_received_message(message):
-	if typeof(message) != TYPE_STRING:
-		print("Ignoring non-text WebSocket message")
-		return
+	if typeof(message) == TYPE_STRING:
+		var response_msg = str_to_var(message)
+		
+		if(response_msg.op):
+			print("Process message op: %s" % response_msg.op)
+			
+			if(response_msg.op == REQUEST_MATCH):
+				print("REQUEST_MATCH")
+		
+		elif(response_msg.op == MATCH_PLAYERS):
+			print("MATCH_PLAYERS")
+			_enter_match_lobby(response_msg.response)
+			
+		elif(response_msg.op == PLAYER_JOINED):
+			print("Player joined")
+			var match_with_players = response_msg.response
+			_build_player_lobby_list(match_with_players.users)
+			
+		elif(response_msg.op == PLAYER_LEFT):
+			print("PLayer left")
+			var match_with_players = response_msg.response
+			print
+			_build_player_lobby_list(match_with_players.users)
+			
+			
+			
 
-	var response_msg = JSON.parse_string(message)
-	if typeof(response_msg) != TYPE_DICTIONARY:
-		print("Invalid JSON message from server: %s" % message)
-		return
-
-	var message_type = response_msg.get("type", "")
-	print("Process message type: %s" % message_type)
-
-	match message_type:
-		"error":
-			print("Server error: %s" % response_msg.get("message", "unknown error"))
-		"room.joined":
-			print("Joined room %s as %s" % [
-				response_msg.get("roomCode", ""),
-				response_msg.get("role", "")
-			])
-		"lobby.updated":
-			_update_lobby_state(response_msg)
-		_:
-			print("Unhandled server message: %s" % message_type)
-
-
+func _enter_match_lobby(match_with_players):
+	print("enter match lobby")
+	print(match_with_players)
+	
+	_build_player_lobby_list(match_with_players.user)
+	
+	var match_id = match_with_players.matchInfo.matchId
+	var check_match_ready = {
+		"op": CHECK_MATCH_READY,
+		"matchID": match_id
+	}
+	
+	_send_message(check_match_ready)
+	
+	
 func _update_lobby_state(response_msg: Dictionary) -> void:
 	var players = response_msg.get("players", [])
 	if players is Array:
 		_build_player_lobby_list(players)
 				
-
-func _enter_match_lobby(match_with_players):
-	print("enter match")
-	print(match_with_players)
-	
-	_build_player_lobby_list(match_with_players.users)
 
 func _build_player_lobby_list(match_players):
 	for team_child in $Lobby_state/on_site_player.get_children():
@@ -108,7 +120,15 @@ func _build_player_lobby_list(match_players):
 		player_label.add_theme_font_override("font", preload("res://game_files/fonts/GrapeSoda.ttf"))
 		player_label.add_theme_font_size_override("font_size", 48)
 		player_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		$Lobby_state/no_role_player.add_child(player_label)
+		
+		if(player.role == NO_ROLE_ASSIGN):
+			$Lobby_state/no_role_player.add_child(player_label)
+		elif(player.role == ON_SITE_ASSIGN):
+			$Lobby_state/on_site_player.add_child(player_label)
+		elif(player.role == MISSION_CONTROL_ASSIGN):
+			$Lobby_state/controll_layer.add_child(player_label)
+		else:
+			print("player has not been assinged to a role!")
 		
 	
 func _on_websocket_message_recieved(message):
