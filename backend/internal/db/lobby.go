@@ -13,6 +13,7 @@ import (
 type LobbyPlayer struct {
 	UserID   string
 	Username string
+	Role     string
 }
 
 const LobbyCapacity = 2
@@ -42,6 +43,8 @@ var (
 	ErrLobbyNotStarted  = errors.New("lobby has not started yet")
 	ErrNotHost          = errors.New("only the host can do this")
 	ErrUnsupportedLang  = errors.New("unsupported language")
+	ErrInvalidRole      = errors.New("invalid role")
+	ErrRoleTaken        = errors.New("role is already taken")
 )
 
 type Lobby struct {
@@ -145,7 +148,7 @@ func ListOpenLobbies(ctx context.Context, pool *pgxpool.Pool) ([]Lobby, error) {
 
 func ListLobbyPlayers(ctx context.Context, pool *pgxpool.Pool, code string) ([]LobbyPlayer, error) {
 	rows, err := pool.Query(ctx,
-		`SELECT u.id, u.username
+		`SELECT u.id, u.username, sp.role
 		 FROM game_sessions gs
 		 JOIN session_participants sp ON sp.session_id = gs.id
 		 JOIN users u ON u.id = sp.user_id
@@ -161,8 +164,12 @@ func ListLobbyPlayers(ctx context.Context, pool *pgxpool.Pool, code string) ([]L
 	players := make([]LobbyPlayer, 0)
 	for rows.Next() {
 		var player LobbyPlayer
-		if err := rows.Scan(&player.UserID, &player.Username); err != nil {
+		var role *string
+		if err := rows.Scan(&player.UserID, &player.Username, &role); err != nil {
 			return nil, err
+		}
+		if role != nil {
+			player.Role = *role
 		}
 		players = append(players, player)
 	}
@@ -222,15 +229,6 @@ func JoinLobby(ctx context.Context, pool *pgxpool.Pool, code, userID string) (Lo
 
 	if newPlayerCount == LobbyCapacity {
 		if _, err := tx.Exec(ctx,
-			`UPDATE session_participants
-			SET role = CASE WHEN user_id = $1 THEN $2 ELSE $3 END
-			WHERE session_id = $4`,
-			hostUserID, RoleMissionControl, RoleOnSite, sessionID,
-		); err != nil {
-			return Lobby{}, err
-		}
-
-		if _, err := tx.Exec(ctx,
 			`UPDATE game_sessions SET status = 'active' WHERE id = $1`,
 			sessionID,
 		); err != nil {
@@ -252,6 +250,59 @@ func JoinLobby(ctx context.Context, pool *pgxpool.Pool, code, userID string) (Lo
 		PlayerCount: newPlayerCount,
 		CurrLang:    lang,
 	}, nil
+}
+
+func SelectLobbyRole(ctx context.Context, pool *pgxpool.Pool, code, userID, role string) error {
+	if role != "" && role != RoleMissionControl && role != RoleOnSite {
+		return ErrInvalidRole
+	}
+
+	tx, err := pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	var sessionID, participantID string
+	if err := tx.QueryRow(ctx,
+		`SELECT gs.id, sp.id
+		 FROM game_sessions gs
+		 JOIN session_participants sp ON sp.session_id = gs.id
+		 WHERE gs.code = $1 AND sp.user_id = $2
+		 FOR UPDATE OF gs`,
+		code, userID,
+	).Scan(&sessionID, &participantID); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrNotInLobby
+		}
+		return err
+	}
+
+	if role != "" {
+		var roleOwner string
+		err = tx.QueryRow(ctx,
+			`SELECT user_id FROM session_participants
+			 WHERE session_id = $1 AND role = $2 AND user_id <> $3`,
+			sessionID, role, userID,
+		).Scan(&roleOwner)
+		if err == nil {
+			return ErrRoleTaken
+		}
+		if !errors.Is(err, pgx.ErrNoRows) {
+			return err
+		}
+	}
+
+	if role == "" {
+		_, err = tx.Exec(ctx, `UPDATE session_participants SET role = NULL WHERE id = $1`, participantID)
+	} else {
+		_, err = tx.Exec(ctx, `UPDATE session_participants SET role = $1 WHERE id = $2`, role, participantID)
+	}
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
 }
 
 func UpdateLobbyLanguage(ctx context.Context, pool *pgxpool.Pool, code, userID, lang string) (Lobby, error) {
