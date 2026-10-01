@@ -4,6 +4,7 @@ extends Control
 @onready var game_type: Label = $create_lobby_interface/game_type
 @onready var lobby_lang: Label = $create_lobby_interface/lobby_lang
 @onready var user_name: Label = $player_data/User_name
+@onready var message: Label = $messages_terminal/message
 
 var websocket_url = "ws://localhost:8080/ws/lobby"
 var message_to_send = "TEST TEST TEST"
@@ -27,7 +28,7 @@ const MISSION_CONTROL_PLAYER = 2
 @onready var _client : web_socket_client = $web_socket_client
 
 func _ready() -> void:
-	lobby_code.text = GameState.lobby_code
+	#lobby_code.text = GameState.lobby_code
 	game_type.text = GameState.game_mode
 	print(GameState.player_name)
 	print(GameState.lobby_data)
@@ -64,7 +65,10 @@ func _process_received_message(message):
 		"lobby.updated":
 			_update_lobby_state(response_msg)
 		"error":
-			print("Server error: %s" % response_msg.get("message", "unknown error"))
+			var server_message = str(response_msg.get("message", "unknown error"))
+			print("Lobby message: %s" % server_message)
+			if server_message == "that role is already taken":
+				$messages_terminal/message.text = "Role selection failed: this role is already taken by another player."
 		_:
 			print("Unhandled server message: %s" % response_msg.get("type", ""))
 

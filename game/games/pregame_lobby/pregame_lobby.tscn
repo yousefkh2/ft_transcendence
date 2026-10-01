@@ -168,6 +168,54 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
 text = "send websocket message"
 
+[node name="lobby_code_interface" type="Panel" parent="Background" unique_id=90953669]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.036000002
+anchor_top = 0.17400001
+anchor_right = 0.92100006
+anchor_bottom = 0.73800004
+offset_left = -7.5479965
+offset_top = 77.85199
+offset_right = -1279.748
+offset_bottom = -401.77902
+theme_override_styles/panel = SubResource("StyleBoxFlat_ejbtt")
+
+[node name="title" type="Label" parent="Background/lobby_code_interface" unique_id=1168262542]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.049000002
+anchor_right = 1.075
+anchor_bottom = 0.38200003
+offset_left = -5.0769997
+offset_top = -3.0000076
+offset_right = -5.0250244
+offset_bottom = -1.0026169
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_c2lno")
+theme_override_font_sizes/font_size = 48
+text = "Lobby code"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="lobby_code" type="Label" parent="Background/lobby_code_interface" unique_id=106328883]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.089
+anchor_top = 0.35200003
+anchor_right = 1.0350001
+anchor_bottom = 0.74300003
+offset_left = -0.99699783
+offset_top = -12.759708
+offset_right = -0.94503784
+offset_bottom = 20.610085
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_c2lno")
+theme_override_font_sizes/font_size = 84
+text = "Loading..."
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="create_lobby_interface" type="Panel" parent="." unique_id=1568635243]
 layout_mode = 1
 anchors_preset = -1
@@ -287,13 +335,13 @@ metadata/_edit_use_anchors_ = true
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.28300002
-anchor_top = 0.38900003
+anchor_top = 0.24900001
 anchor_right = 0.947
-anchor_bottom = 0.81700003
+anchor_bottom = 0.67700005
 offset_left = 0.6399536
-offset_top = -0.120025635
+offset_top = 0.07998657
 offset_right = 0.76000977
-offset_bottom = -0.3600464
+offset_bottom = -0.16003418
 theme_override_styles/panel = SubResource("StyleBoxFlat_ejbtt")
 
 [node name="on_site_label" type="RichTextLabel" parent="Lobby_state" unique_id=980968100]
@@ -494,52 +542,34 @@ theme_override_font_sizes/font_size = 48
 text = "Rank Loading...."
 vertical_alignment = 1
 
-[node name="lobby_code_interface" type="Panel" parent="." unique_id=1031473276]
+[node name="messages_terminal" type="Panel" parent="." unique_id=1031473276]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.036000002
 anchor_top = 0.17400001
 anchor_right = 0.92100006
 anchor_bottom = 0.73800004
-offset_left = -7.5479965
-offset_top = 77.85199
-offset_right = -1279.748
-offset_bottom = -401.77902
+offset_left = 473.88
+offset_top = 573.07996
+offset_right = 52.67993
+offset_bottom = 93.448975
 theme_override_styles/panel = SubResource("StyleBoxFlat_ejbtt")
 
-[node name="title" type="Label" parent="lobby_code_interface" unique_id=1877574414]
+[node name="message" type="Label" parent="messages_terminal" unique_id=767148870]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = -0.049000002
-anchor_right = 1.075
-anchor_bottom = 0.38200003
-offset_left = -5.0769997
-offset_top = -3.0000076
-offset_right = -5.0250244
-offset_bottom = -1.0026169
+anchor_left = 0.010000001
+anchor_top = 0.178
+anchor_right = 0.99500006
+anchor_bottom = 0.82600003
+offset_left = 0.22001457
+offset_top = -0.049053192
+offset_right = -15.610107
+offset_bottom = 0.042060852
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_c2lno")
-theme_override_font_sizes/font_size = 48
-text = "Lobby code"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="lobby_code" type="Label" parent="lobby_code_interface" unique_id=767148870]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = -0.089
-anchor_top = 0.35200003
-anchor_right = 1.0350001
-anchor_bottom = 0.74300003
-offset_left = -0.99699783
-offset_top = -12.759708
-offset_right = -0.94503784
-offset_bottom = 20.610085
-grow_vertical = 2
-theme_override_fonts/font = ExtResource("3_c2lno")
-theme_override_font_sizes/font_size = 84
-text = "Loading..."
-horizontal_alignment = 1
+theme_override_font_sizes/font_size = 60
+text = "Please select a Role"
 vertical_alignment = 1
 
 [connection signal="connected_to_server" from="web_socket_client" to="." method="_on_websocket_client_connected_to_server"]
