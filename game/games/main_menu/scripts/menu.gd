@@ -5,7 +5,7 @@ extends Control
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	TranslationServer.set_locale("ENGLISH")
+	TranslationServer.set_locale(GameState.selected_locale)
 	settings.visible = false
 	
 	
