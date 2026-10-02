@@ -270,8 +270,23 @@ func (h *Hub) leaveLobby(code, watcherID string) {
 		return
 	}
 	h.mu.Lock()
-	defer h.mu.Unlock()
 	h.removeLobbyWatcherLocked(code, watcherID)
+	watchers := h.lobbyWatchers[code]
+	connections := make([]*websocket.Conn, 0, len(watchers))
+	for _, watcher := range watchers {
+		connections = append(connections, watcher.conn)
+	}
+	h.mu.Unlock()
+
+	message := model.ServerMessage{
+		Type:    "player.disconnected",
+		Message: "A player disconnected from the lobby",
+	}
+	for _, connection := range connections {
+		if err := wsjson.Write(context.Background(), connection, message); err != nil {
+			log.Printf("disconnect notification failed for lobby %s: %v", code, err)
+		}
+	}
 }
 
 func (h *Hub) removeLobbyWatcherLocked(code, watcherID string) {

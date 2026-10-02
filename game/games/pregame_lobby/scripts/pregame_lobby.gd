@@ -64,11 +64,15 @@ func _process_received_message(message):
 	match response_msg.get("type", ""):
 		"lobby.updated":
 			_update_lobby_state(response_msg)
+		"player.disconnected":
+			var disconnect_message = str(response_msg.get("message", "A player disconnected from the lobby"))
+			print("Lobby message: %s" % disconnect_message)
+			$messages_terminal/message.text = disconnect_message
 		"error":
 			var server_message = str(response_msg.get("message", "unknown error"))
 			print("Lobby message: %s" % server_message)
 			if server_message == "that role is already taken":
-				$messages_terminal/message.text = "Role selection failed: this role is already taken by another player."
+				$messages_terminal/message.text = "This role is already taken by another player"
 		_:
 			print("Unhandled server message: %s" % response_msg.get("type", ""))
 
@@ -166,13 +170,18 @@ func _on_send_websocket_message_pressed() -> void:
 
 func _on_join_no_role_button_pressed() -> void:
 	_select_role("")
+	$messages_terminal/message.text = "Selected No Role"
+
 
 func _on_join_on_site_button_pressed() -> void:
 	_select_role("on_site")
+	$messages_terminal/message.text = "Selected On Site"
+
 
 
 func _on_join_mission_control_button_pressed() -> void:
 	_select_role("mission_control")
+	$messages_terminal/message.text = "Selected Mission Control"
 
 
 func _select_role(role: String) -> void:
