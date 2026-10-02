@@ -146,28 +146,6 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
 text = "MENU_LABEL_BACK"
 
-[node name="send_websocket_message" type="Button" parent="Background" unique_id=1812252986]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.31100002
-anchor_top = 0.052
-anchor_right = 0.56600004
-anchor_bottom = 0.113000005
-offset_left = -0.43103027
-offset_top = -0.23800278
-offset_right = 0.7138672
-offset_bottom = -0.20950317
-size_flags_vertical = 3
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("3_c2lno")
-theme_override_font_sizes/font_size = 48
-theme_override_styles/normal = SubResource("StyleBoxFlat_a01gq")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_rdij3")
-theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
-text = "send websocket message"
-
 [node name="create_lobby_interface" type="Panel" parent="." unique_id=1568635243]
 layout_mode = 1
 anchors_preset = -1
@@ -576,7 +554,6 @@ vertical_alignment = 1
 [connection signal="connection_closed" from="web_socket_client" to="." method="_on_websocket_client_connection_close"]
 [connection signal="message_received" from="web_socket_client" to="." method="_on_websocket_message_recieved"]
 [connection signal="pressed" from="Background/lobby_button" to="." method="_on_lobby_button_pressed"]
-[connection signal="pressed" from="Background/send_websocket_message" to="." method="_on_send_websocket_message_pressed"]
 [connection signal="pressed" from="Lobby_state/join_mission_control_button" to="." method="_on_join_mission_control_button_pressed"]
 [connection signal="pressed" from="Lobby_state/join_on_site_button" to="." method="_on_join_on_site_button_pressed"]
 [connection signal="pressed" from="Lobby_state/join_no_role_button" to="." method="_on_join_no_role_button_pressed"]

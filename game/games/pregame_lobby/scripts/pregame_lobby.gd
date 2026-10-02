@@ -28,19 +28,38 @@ const MISSION_CONTROL_PLAYER = 2
 @onready var _client : web_socket_client = $web_socket_client
 
 func _ready() -> void:
-	lobby_code.text = GameState.lobby_code
-	game_type.text = GameState.game_mode
 	print(GameState.player_name)
 	print(GameState.lobby_data)
-	user_name.text = GameState.player_name
 	print(GameState.lobby_data)
 	print(GameState.game_lang)
-	lobby_lang.text = GameState.game_lang
-	_build_player_lobby_list([GameState.player_name])
-	print("Attemting to connect to server...")
 	
+	
+	lobby_code.text = GameState.lobby_code
+	user_name.text = GameState.player_name
+	_select_lobby_game_type()
+	_select_lobby_language()
+	
+	
+	_build_player_lobby_list([GameState.player_name])
+	
+	print("Attemting to connect to server...")
 	_connect_to_matchmaking_server()
 
+func _select_lobby_game_type():
+	var gt = GameState.game_mode
+	match gt:
+		"apartment_setup":
+			game_type.text = "Living Room"
+		_:
+			game_type.text = "game type not found"
+
+func _select_lobby_language():
+	var lang = GameState.game_lang
+	match lang:
+		"en":
+			lobby_lang.text = "English"
+		_:
+			lobby_lang.text = "Language not found"
 	
 
 func _send_message(message_to_send):
