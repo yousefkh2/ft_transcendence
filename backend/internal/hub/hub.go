@@ -117,10 +117,11 @@ func (h *Hub) handleWebSocket(c echo.Context, lobbyOnly bool) error {
 	joinedRoom := ""
 	joinedRole := ""
 	subscribedLobby := ""
+	subscribedUserID := ""
 
 	defer func() {
 		h.leaveRoom(joinedRoom, joinedRole, playerID)
-		h.leaveLobby(subscribedLobby, playerID)
+		h.leaveLobby(subscribedLobby, subscribedUserID, playerID)
 	}()
 
 	for {
@@ -137,7 +138,7 @@ func (h *Hub) handleWebSocket(c echo.Context, lobbyOnly bool) error {
 				_ = wsjson.Write(ctx, conn, model.ServerMessage{Type: "error", Message: "unknown message type"})
 				continue
 			}
-			h.handleLobbySubscribe(ctx, conn, message, playerID, &subscribedLobby)
+			h.handleLobbySubscribe(ctx, conn, message, playerID, &subscribedLobby, &subscribedUserID)
 		case "lobby.role":
 			if !lobbyOnly {
 				_ = wsjson.Write(ctx, conn, model.ServerMessage{Type: "error", Message: "unknown message type"})
@@ -192,7 +193,7 @@ func (h *Hub) handleLobbyRole(ctx context.Context, conn *websocket.Conn, message
 	h.PublishLobbyUpdate(ctx, code)
 }
 
-func (h *Hub) handleLobbySubscribe(ctx context.Context, conn *websocket.Conn, message model.ClientMessage, watcherID string, subscribedLobby *string) {
+func (h *Hub) handleLobbySubscribe(ctx context.Context, conn *websocket.Conn, message model.ClientMessage, watcherID string, subscribedLobby, subscribedUserID *string) {
 	userID, err := auth.ParseJWT(message.Token)
 	if err != nil {
 		_ = wsjson.Write(ctx, conn, model.ServerMessage{Type: "error", Message: "invalid or missing token"})
@@ -231,6 +232,7 @@ func (h *Hub) handleLobbySubscribe(ctx context.Context, conn *websocket.Conn, me
 	}
 	h.lobbyWatchers[code][watcherID] = &LobbyWatcher{id: watcherID, conn: conn}
 	*subscribedLobby = code
+	*subscribedUserID = userID
 	h.mu.Unlock()
 
 	h.sendLobbyUpdate(ctx, code, []*websocket.Conn{conn})
@@ -265,10 +267,15 @@ func (h *Hub) sendLobbyUpdate(ctx context.Context, code string, connections []*w
 	}
 }
 
-func (h *Hub) leaveLobby(code, watcherID string) {
-	if code == "" {
+func (h *Hub) leaveLobby(code, userID, watcherID string) {
+	if code == "" || userID == "" {
 		return
 	}
+	if err := db.RemoveDisconnectedParticipant(context.Background(), h.db, code, userID); err != nil {
+		log.Printf("failed to remove disconnected lobby participant: %v", err)
+		return
+	}
+
 	h.mu.Lock()
 	h.removeLobbyWatcherLocked(code, watcherID)
 	watchers := h.lobbyWatchers[code]
@@ -287,6 +294,7 @@ func (h *Hub) leaveLobby(code, watcherID string) {
 			log.Printf("disconnect notification failed for lobby %s: %v", code, err)
 		}
 	}
+	h.sendLobbyUpdate(context.Background(), code, connections)
 }
 
 func (h *Hub) removeLobbyWatcherLocked(code, watcherID string) {

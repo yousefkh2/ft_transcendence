@@ -397,6 +397,70 @@ func LeaveLobby(ctx context.Context, pool *pgxpool.Pool, code, userID string) er
 	return tx.Commit(ctx)
 }
 
+func RemoveDisconnectedParticipant(ctx context.Context, pool *pgxpool.Pool, code, userID string) error {
+	tx, err := pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	var sessionID, hostUserID string
+	if err := tx.QueryRow(ctx,
+		`SELECT id, host_user_id FROM game_sessions WHERE code = $1 FOR UPDATE`,
+		code,
+	).Scan(&sessionID, &hostUserID); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrLobbyNotFound
+		}
+		return err
+	}
+
+	result, err := tx.Exec(ctx,
+		`DELETE FROM session_participants WHERE session_id = $1 AND user_id = $2`,
+		sessionID, userID,
+	)
+	if err != nil {
+		return err
+	}
+	if result.RowsAffected() == 0 {
+		return ErrNotInLobby
+	}
+
+	var playerCount int
+	if err := tx.QueryRow(ctx,
+		`SELECT COUNT(*) FROM session_participants WHERE session_id = $1`,
+		sessionID,
+	).Scan(&playerCount); err != nil {
+		return err
+	}
+
+	if playerCount == 0 {
+		if _, err := tx.Exec(ctx, `DELETE FROM game_sessions WHERE id = $1`, sessionID); err != nil {
+			return err
+		}
+	} else {
+		if _, err := tx.Exec(ctx,
+			`UPDATE game_sessions SET status = 'waiting' WHERE id = $1`,
+			sessionID,
+		); err != nil {
+			return err
+		}
+
+		if hostUserID == userID {
+			if _, err := tx.Exec(ctx,
+				`UPDATE game_sessions
+				 SET host_user_id = (SELECT user_id FROM session_participants WHERE session_id = $1 LIMIT 1)
+				 WHERE id = $1`,
+				sessionID,
+			); err != nil {
+				return err
+			}
+		}
+	}
+
+	return tx.Commit(ctx)
+}
+
 func GetParticipantRole(ctx context.Context, pool *pgxpool.Pool, code, userID string) (sessionID, role string, err error) {
 	var roleNullable *string
 	err = pool.QueryRow(ctx,
