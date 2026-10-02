@@ -28,7 +28,7 @@ const MISSION_CONTROL_PLAYER = 2
 @onready var _client : web_socket_client = $web_socket_client
 
 func _ready() -> void:
-	#lobby_code.text = GameState.lobby_code
+	lobby_code.text = GameState.lobby_code
 	game_type.text = GameState.game_mode
 	print(GameState.player_name)
 	print(GameState.lobby_data)
