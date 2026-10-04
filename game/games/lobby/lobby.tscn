@@ -5,6 +5,7 @@
 [ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="3_rdij3"]
 [ext_resource type="Script" uid="uid://y5xwf3ydu2b1" path="res://games/lobby/http_request.gd" id="4_0vj6i"]
 [ext_resource type="Texture2D" uid="uid://cmsunywnrf3cr" path="res://icon.svg" id="4_xhq3h"]
+[ext_resource type="Script" uid="uid://x2ts7ut081k6" path="res://games/lobby/language_selecter.gd" id="5_kx7c3"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_d3fr7"]
 texture = ExtResource("2_a01gq")
@@ -346,6 +347,7 @@ popup/item_2/text = "Polski"
 popup/item_2/id = 2
 popup/item_3/text = "Turkish"
 popup/item_3/id = 3
+script = ExtResource("5_kx7c3")
 
 [node name="create_lobby_title" type="Label" parent="create_lobby_interface" unique_id=17610366]
 layout_mode = 1
