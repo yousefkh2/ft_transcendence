@@ -57,7 +57,7 @@ func _on_lobby_creation_failed(message: String) -> void:
 func _on_join_pressed() -> void:
 	var code = lobby_code_input.text.strip_edges()
 	if code == "":
-		message.text = "Please enter a lobby code."
+		message.text = tr("_LOBBY_PLEASE_ENTER_CODE_")
 		return
 	http_request.join_lobby(code)
 

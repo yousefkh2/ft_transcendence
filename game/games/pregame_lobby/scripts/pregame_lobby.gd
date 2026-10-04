@@ -6,6 +6,7 @@ extends Control
 @onready var user_name: Label = $player_data/User_name
 @onready var message: Label = $messages_terminal/message
 
+
 var websocket_url = "ws://localhost:8080/ws/lobby"
 var message_to_send = "TEST TEST TEST"
 
@@ -44,6 +45,13 @@ func _ready() -> void:
 	
 	print("Attemting to connect to server...")
 	_connect_to_matchmaking_server()
+
+func _translate_error(error_message: String) -> String:
+	match error_message:
+		"that role is already taken":
+			return tr("_PRE_ERR_ROLE_TAKEN_")
+		_:
+			return error_message
 
 func _select_lobby_game_type():
 	var gt = GameState.game_mode
@@ -86,12 +94,11 @@ func _process_received_message(message):
 		"player.disconnected":
 			var disconnect_message = str(response_msg.get("message", "A player disconnected from the lobby"))
 			print("Lobby message: %s" % disconnect_message)
-			$messages_terminal/message.text = "ERROR_NETWORK_DISCONNECTED_YOUR_PLAYER"
+			message.text = disconnect_message
 		"error":
 			var server_message = str(response_msg.get("message", "unknown error"))
 			print("Lobby message: %s" % server_message)
-			if server_message == "that role is already taken":
-				$messages_terminal/message.text = "_PRE_ERR_ROLE_TAKEN_"
+			message.text = _translate_error(server_message)
 		_:
 			print("Unhandled server message: %s" % response_msg.get("type", ""))
 

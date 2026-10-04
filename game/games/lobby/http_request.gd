@@ -9,6 +9,15 @@ signal lobby_join_failed(message: String)
 
 @onready var message: Label = $"../message_interface/message"
 
+func _translate_error(error_message: String) -> String:
+	match error_message:
+		"lobby not found":
+			return tr("_LOBBY_NOT_FOUND_")
+		"invalid credentials":
+			return tr("_LOBBY_LOGIN_FAILED_")
+		_:
+			return error_message
+
 # Fill these in with real credentials (or pass them in from elsewhere)
 var username: String = "daniel"
 var password: String = "secret123"
@@ -39,9 +48,9 @@ func _on_login_completed(result, response_code, headers, body):
 		var json = JSON.new()
 		if json.parse(body.get_string_from_utf8()) == OK:
 			var err_response = json.get_data()
-			message.text = err_response.get("message", "")
+			message.text = _translate_error(str(err_response.get("message", "")))
 		else:
-			message.text = "Login failed."
+			message.text = tr("_LOBBY_LOGIN_FAILED_")
 
 		login_failed.emit(msg)
 		return
@@ -128,9 +137,9 @@ func _on_join_lobby_completed(result, response_code, headers, body):
 		var json = JSON.new()
 		if json.parse(body.get_string_from_utf8()) == OK:
 			var err_response = json.get_data()
-			message.text = err_response.get("message", "")
+			message.text = _translate_error(str(err_response.get("message", "")))
 		else:
-			message.text = "_LOBBY_LOGIN_FAILED_"
+			message.text = tr("_LOBBY_LOGIN_FAILED_")
 		lobby_join_failed.emit(msg)
 		return
 
