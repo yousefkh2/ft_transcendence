@@ -144,7 +144,7 @@ offset_bottom = 6.9944687
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_rdij3")
 theme_override_font_sizes/font_size = 48
-text = " Name Loading..."
+text = "_PROFILE_NAME_LOADING_"
 vertical_alignment = 1
 
 [node name="User_pfp" type="TextureRect" parent="Background/player_data" unique_id=1110534271]
@@ -174,7 +174,7 @@ offset_bottom = 4.9810944
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_rdij3")
 theme_override_font_sizes/font_size = 48
-text = "Rank Loading...."
+text = "_PROFILE_RANK_LOADING_"
 vertical_alignment = 1
 
 [node name="lobby_interface" type="Panel" parent="." unique_id=86127360]
@@ -240,7 +240,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_a01gq")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_rdij3")
 theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
-text = "JOIN"
+text = "_LOBBY_JOIN_"
 
 [node name="message_interface" type="Panel" parent="." unique_id=1896010627]
 layout_mode = 1
@@ -265,7 +265,7 @@ anchor_bottom = 0.913243
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_rdij3")
 theme_override_font_sizes/font_size = 48
-text = "enter lobby code"
+text = "_LOBBY_PLEASE_ENTER_CODE_"
 horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
@@ -303,7 +303,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_a01gq")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_rdij3")
 theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
-text = "Create lobby"
+text = "_LOBBY_CREATE_LOBBY_"
 
 [node name="language" type="Label" parent="create_lobby_interface" unique_id=826454020]
 layout_mode = 1
@@ -357,7 +357,7 @@ anchor_bottom = 0.15034965
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_rdij3")
 theme_override_font_sizes/font_size = 48
-text = "Create lobby"
+text = "_LOBBY_CREATE_LOBBY_"
 horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
@@ -410,21 +410,21 @@ anchor_right = 0.31800002
 anchor_bottom = 0.31800002
 offset_left = 2.880005
 offset_top = 431.08
-offset_right = -225.56006
+offset_right = 1.4399414
 offset_bottom = 377.55997
 theme_override_styles/panel = SubResource("StyleBoxFlat_h1tpx")
 
 [node name="create_lobby" type="Button" parent="create lobby" unique_id=2007405290]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.05
-anchor_top = 0.591
-anchor_right = 0.50600004
-anchor_bottom = 0.81100005
-offset_left = 1.3499994
-offset_top = -32.282
-offset_right = 137.74199
-offset_bottom = -6.7220078
+anchor_left = 0.069000006
+anchor_top = 0.245
+anchor_right = 0.94600004
+anchor_bottom = 0.716
+offset_left = -0.26000977
+offset_top = 0.010000229
+offset_right = 0.15997314
+offset_bottom = -0.03200531
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
@@ -434,7 +434,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_a01gq")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_rdij3")
 theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
-text = "Create lobby"
+text = "_LOBBY_CREATE_LOBBY_"
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=1953318191]
 script = ExtResource("4_0vj6i")

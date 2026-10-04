@@ -130,7 +130,7 @@ func _on_join_lobby_completed(result, response_code, headers, body):
 			var err_response = json.get_data()
 			message.text = err_response.get("message", "")
 		else:
-			message.text = "Login failed."
+			message.text = "_LOBBY_LOGIN_FAILED_"
 		lobby_join_failed.emit(msg)
 		return
 

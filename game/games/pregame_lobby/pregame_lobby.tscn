@@ -191,7 +191,7 @@ anchor_bottom = 0.15034965
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_c2lno")
 theme_override_font_sizes/font_size = 48
-text = "LOBBY SETTINGS"
+text = "_PRE_LOBBY_SETTINGS_"
 horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
@@ -206,7 +206,7 @@ anchor_bottom = 0.56257063
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_c2lno")
 theme_override_font_sizes/font_size = 48
-text = "Game type"
+text = "_PRE_GAME_TYPE_"
 horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
@@ -238,7 +238,7 @@ anchor_bottom = 0.69794166
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_c2lno")
 theme_override_font_sizes/font_size = 48
-text = "Loading..."
+text = "MENU_IO_LOADING ..."
 horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
@@ -257,7 +257,7 @@ offset_bottom = -0.086013794
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_c2lno")
 theme_override_font_sizes/font_size = 48
-text = "Loading..."
+text = "MENU_IO_LOADING ..."
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
 
@@ -366,7 +366,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_ly2t8")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_c2lno")
 theme_override_styles/hover = SubResource("StyleBoxFlat_dpwjk")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_hjrbd")
-text = "Join"
+text = "_LOBBY_JOIN_"
 
 [node name="join_on_site_button" type="Button" parent="Lobby_state" unique_id=1155248209]
 layout_mode = 1
@@ -388,7 +388,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_ly2t8")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_c2lno")
 theme_override_styles/hover = SubResource("StyleBoxFlat_dpwjk")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_hjrbd")
-text = "Join"
+text = "_LOBBY_JOIN_"
 
 [node name="join_no_role_button" type="Button" parent="Lobby_state" unique_id=1827278461]
 layout_mode = 1
@@ -410,7 +410,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_ly2t8")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_c2lno")
 theme_override_styles/hover = SubResource("StyleBoxFlat_dpwjk")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_hjrbd")
-text = "Join"
+text = "_LOBBY_JOIN_"
 
 [node name="player_data" type="Panel" parent="." unique_id=609793046]
 layout_mode = 1
@@ -439,7 +439,7 @@ offset_bottom = 6.9944687
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_c2lno")
 theme_override_font_sizes/font_size = 48
-text = " Name Loading..."
+text = "_PROFILE_NAME_LOADING_"
 vertical_alignment = 1
 
 [node name="User_pfp" type="TextureRect" parent="player_data" unique_id=910323121]
@@ -469,7 +469,7 @@ offset_bottom = 4.9810944
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_c2lno")
 theme_override_font_sizes/font_size = 48
-text = "Rank Loading...."
+text = "_PROFILE_RANK_LOADING_"
 vertical_alignment = 1
 
 [node name="messages_terminal" type="Panel" parent="." unique_id=1031473276]
@@ -499,7 +499,7 @@ offset_bottom = 0.042060852
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_c2lno")
 theme_override_font_sizes/font_size = 60
-text = "Please select a Role"
+text = "_PRE_SEL_PLEASE_"
 vertical_alignment = 1
 
 [node name="lobby_code_interface" type="Panel" parent="." unique_id=90953669]
@@ -546,7 +546,7 @@ offset_bottom = 20.610085
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_c2lno")
 theme_override_font_sizes/font_size = 84
-text = "Loading..."
+text = "MENU_IO_LOADING ..."
 horizontal_alignment = 1
 vertical_alignment = 1
 
