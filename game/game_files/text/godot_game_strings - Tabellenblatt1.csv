@@ -4,20 +4,20 @@ _LIVINGROOM_TEXT2_,PLANT IS THE THIRD SPOT,LA PLANTA ESTÁ EN EL TERCER LUGAR,RO
 _LIVINGROOM_TEXT3_,LAMP IS THE FIRST,LA LÁMPARA ES LA PRIMERA,LAMPA JEST PIERWSZA,LAMPA BİRİNCİDİR,DIE LAMPE IST AN ERSTER STELLE
 _LIVINGROOM_TEXT4_,TABLE IS THE LAST,LA MESA ES LA ÚLTIMA,STÓŁ JEST OSTATNI,MASA SONUNCUDUR,DER TISCH IST AN LETZTER STELLE
 ,,,,,
-_LOBBY_CREATE_LOBBY_,Create lobby,,,,Lobby erstellen
-_LOBBY_JOIN_,Join,,,,Beitreten
-_LOBBY_LOGIN_FAILED_,Login Failed,,,,Anmeldung fehlgeschlagen
-_LOBBY_PLEASE_ENTER_CODE_,Please enter a lobby code,,,,Bitte gib einen Lobby Code ein
-_LOBBY_NOT_FOUND_,Lobby not found,,,,Lobby nicht gefunden
+_LOBBY_CREATE_LOBBY_,Create lobby,Crear sala,Utwórz lobby,Lobi oluştur,Lobby erstellen
+_LOBBY_JOIN_,Join,Unirse,Dołącz,Katıl,Beitreten
+_LOBBY_LOGIN_FAILED_,Login Failed,Error de inicio de sesión,Logowanie nie powiodło się,Giriş başarısız,Anmeldung fehlgeschlagen
+_LOBBY_PLEASE_ENTER_CODE_,Please enter a lobby code,Introduce un código de sala,Wprowadź kod lobby,Lütfen bir lobi kodu girin,Bitte gib einen Lobby Code ein
+_LOBBY_NOT_FOUND_,Lobby not found,Sala no encontrada,Nie znaleziono lobby,Lobi bulunamadı,Lobby nicht gefunden
 ,,,,,
-_PROFILE_NAME_LOADING_,Name Loading...,,,,Name wird geladen...
-_PROFILE_RANK_LOADING_,Rank Loading...,,,,Rang wird geladen...
+_PROFILE_NAME_LOADING_,Name Loading...,Cargando nombre...,Ładowanie nazwy...,İsim yükleniyor...,Name wird geladen...
+_PROFILE_RANK_LOADING_,Rank Loading...,Cargando rango...,Ładowanie rangi...,Rütbe yükleniyor...,Rang wird geladen...
 ,,,,,
-_PRE_LOBBY_SETTINGS_,Lobby settings,,,,Lobby Einstellungen
-_PRE_GAME_TYPE_,Game type,,,,Spieltyp
-_PRE_LIVING_ROOM_,Living Room,,,,Wohnzimmer
-_PRE_SEL_NO_ROLE_,Selected no Role,,,,Keiner Rolle ausgewählt
-_PRE_SEL_MIS_CON_,Selected mission Control,,,,Mission control ausgewählt
-_PRE_SEL_ON_SITE_,Selected on site,,,,On Site ausgewählt
-_PRE_SEL_PLEASE_,Please select a Role,,,,Bitte wähle eine Rolle aus
-_PRE_ERR_ROLE_TAKEN_,This role is already taken by another player,,,,Diese Rolle wird bereits von einem anderen Spieler verwendet
+_PRE_LOBBY_SETTINGS_,Lobby settings,Configuración de la sala,Ustawienia lobby,Lobi ayarları,Lobby Einstellungen
+_PRE_GAME_TYPE_,Game type,Tipo de juego,Typ gry,Oyun türü,Spieltyp
+_PRE_LIVING_ROOM_,Living Room,Sala de estar,Salon,Oturma odası,Wohnzimmer
+_PRE_SEL_NO_ROLE_,Selected no Role,Ningún rol seleccionado,Nie wybrano roli,Rol seçilmedi,Keine Rolle ausgewählt
+_PRE_SEL_MIS_CON_,Selected mission Control,Mission Control seleccionado,Wybrano Mission Control,Mission Control seçildi,Mission control ausgewählt
+_PRE_SEL_ON_SITE_,Selected on site,On Site seleccionado,Wybrano On Site,On Site seçildi,On Site ausgewählt
+_PRE_SEL_PLEASE_,Please select a Role,Selecciona un rol,Wybierz rol,Lütfen bir rol seçin,Bitte wähle eine Rolle aus
+_PRE_ERR_ROLE_TAKEN_,This role is already taken by another player,Este rol ya está ocupado por otro jugador,Ta rola jest już zajęta przez innego gracza,Bu rol zaten başka bir oyuncu tarafından alındı,Diese Rolle wird bereits von einem anderen Spieler verwendet
