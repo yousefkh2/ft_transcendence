@@ -13,6 +13,7 @@ type ClientMessage struct {
 	Token     string `json:"token,omitempty"`
 	SDP       string `json:"sdp,omitempty"`
 	Candidate string `json:"candidate,omitempty"`
+	Role      string `json:"role,omitempty"`
 }
 
 type ServerMessage struct {
@@ -35,6 +36,7 @@ type ServerMessage struct {
 type LobbyPlayer struct {
 	UserID   string `json:"userId"`
 	Username string `json:"username"`
+	Role     string `json:"role"`
 }
 
 type Objective struct {

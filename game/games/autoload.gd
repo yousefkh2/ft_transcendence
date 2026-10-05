@@ -10,6 +10,7 @@ var player_name: String = ""
 var player_pass: String = "" 
 var player_email: String = ""
 var game_lang: String = ""
+var selected_locale: String = "ENGLISH"
 var player_role: int = 0
 
 # Called when the node enters the scene tree for the first time.

@@ -5,9 +5,6 @@ extends Control
 @onready var http_request: HTTPRequest = $HTTPRequest
 @onready var lobby_code_input: LineEdit = $lobby_interface/LineEdit
 @onready var message: Label = $message_interface/message
-@onready var debug_menu: Panel = $debug_menu
-@onready var password: Label = $debug_menu/password
-@onready var email: Label = $debug_menu/email
 @onready var user_name: Label = $Background/player_data/User_name
 
 var pre_game_lobby = "res://games/pregame_lobby/pregame_lobby.tscn"
@@ -60,7 +57,7 @@ func _on_lobby_creation_failed(message: String) -> void:
 func _on_join_pressed() -> void:
 	var code = lobby_code_input.text.strip_edges()
 	if code == "":
-		message.text = "Please enter a lobby code."
+		message.text = tr("_LOBBY_PLEASE_ENTER_CODE_")
 		return
 	http_request.join_lobby(code)
 

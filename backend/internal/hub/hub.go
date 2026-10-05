@@ -117,10 +117,11 @@ func (h *Hub) handleWebSocket(c echo.Context, lobbyOnly bool) error {
 	joinedRoom := ""
 	joinedRole := ""
 	subscribedLobby := ""
+	subscribedUserID := ""
 
 	defer func() {
 		h.leaveRoom(joinedRoom, joinedRole, playerID)
-		h.leaveLobby(subscribedLobby, playerID)
+		h.leaveLobby(subscribedLobby, subscribedUserID, playerID)
 	}()
 
 	for {
@@ -137,7 +138,13 @@ func (h *Hub) handleWebSocket(c echo.Context, lobbyOnly bool) error {
 				_ = wsjson.Write(ctx, conn, model.ServerMessage{Type: "error", Message: "unknown message type"})
 				continue
 			}
-			h.handleLobbySubscribe(ctx, conn, message, playerID, &subscribedLobby)
+			h.handleLobbySubscribe(ctx, conn, message, playerID, &subscribedLobby, &subscribedUserID)
+		case "lobby.role":
+			if !lobbyOnly {
+				_ = wsjson.Write(ctx, conn, model.ServerMessage{Type: "error", Message: "unknown message type"})
+				continue
+			}
+			h.handleLobbyRole(ctx, conn, message, subscribedLobby)
 		case "room.join":
 			h.handleRoomJoin(ctx, conn, player, message, &joinedRoom, &joinedRole)
 		case "game.object_moved":
@@ -145,7 +152,7 @@ func (h *Hub) handleWebSocket(c echo.Context, lobbyOnly bool) error {
 		case "voice.transcript":
 			h.handleVoiceTranscript(ctx, player, message, joinedRoom, joinedRole)
 		case "webrtc.offer", "webrtc.answer", "webrtc.ice_candidate":
-				h.handleWebRTCSignal(ctx, player, message, joinedRoom, joinedRole)
+			h.handleWebRTCSignal(ctx, player, message, joinedRoom, joinedRole)
 		default:
 			_ = wsjson.Write(ctx, conn, model.ServerMessage{
 				Type:    "error",
@@ -156,7 +163,37 @@ func (h *Hub) handleWebSocket(c echo.Context, lobbyOnly bool) error {
 	}
 }
 
-func (h *Hub) handleLobbySubscribe(ctx context.Context, conn *websocket.Conn, message model.ClientMessage, watcherID string, subscribedLobby *string) {
+func (h *Hub) handleLobbyRole(ctx context.Context, conn *websocket.Conn, message model.ClientMessage, subscribedLobby string) {
+	userID, err := auth.ParseJWT(message.Token)
+	if err != nil {
+		_ = wsjson.Write(ctx, conn, model.ServerMessage{Type: "error", Message: "invalid or missing token"})
+		return
+	}
+
+	code := strings.ToUpper(strings.TrimSpace(message.RoomCode))
+	if code == "" || code != subscribedLobby {
+		_ = wsjson.Write(ctx, conn, model.ServerMessage{Type: "error", Message: "subscribe to this lobby before selecting a role"})
+		return
+	}
+
+	if err := db.SelectLobbyRole(ctx, h.db, code, userID, message.Role); err != nil {
+		messageText := "could not select role"
+		switch {
+		case errors.Is(err, db.ErrNotInLobby):
+			messageText = "you have not joined this lobby"
+		case errors.Is(err, db.ErrInvalidRole):
+			messageText = "invalid role"
+		case errors.Is(err, db.ErrRoleTaken):
+			messageText = "that role is already taken"
+		}
+		_ = wsjson.Write(ctx, conn, model.ServerMessage{Type: "error", Message: messageText})
+		return
+	}
+
+	h.PublishLobbyUpdate(ctx, code)
+}
+
+func (h *Hub) handleLobbySubscribe(ctx context.Context, conn *websocket.Conn, message model.ClientMessage, watcherID string, subscribedLobby, subscribedUserID *string) {
 	userID, err := auth.ParseJWT(message.Token)
 	if err != nil {
 		_ = wsjson.Write(ctx, conn, model.ServerMessage{Type: "error", Message: "invalid or missing token"})
@@ -195,6 +232,7 @@ func (h *Hub) handleLobbySubscribe(ctx context.Context, conn *websocket.Conn, me
 	}
 	h.lobbyWatchers[code][watcherID] = &LobbyWatcher{id: watcherID, conn: conn}
 	*subscribedLobby = code
+	*subscribedUserID = userID
 	h.mu.Unlock()
 
 	h.sendLobbyUpdate(ctx, code, []*websocket.Conn{conn})
@@ -219,7 +257,7 @@ func (h *Hub) sendLobbyUpdate(ctx context.Context, code string, connections []*w
 	}
 	messagePlayers := make([]model.LobbyPlayer, 0, len(players))
 	for _, player := range players {
-		messagePlayers = append(messagePlayers, model.LobbyPlayer{UserID: player.UserID, Username: player.Username})
+		messagePlayers = append(messagePlayers, model.LobbyPlayer{UserID: player.UserID, Username: player.Username, Role: player.Role})
 	}
 	message := model.ServerMessage{Type: "lobby.updated", RoomCode: code, Players: messagePlayers, Message: "lobby updated"}
 	for _, conn := range connections {
@@ -229,13 +267,34 @@ func (h *Hub) sendLobbyUpdate(ctx context.Context, code string, connections []*w
 	}
 }
 
-func (h *Hub) leaveLobby(code, watcherID string) {
-	if code == "" {
+func (h *Hub) leaveLobby(code, userID, watcherID string) {
+	if code == "" || userID == "" {
 		return
 	}
+	if err := db.RemoveDisconnectedParticipant(context.Background(), h.db, code, userID); err != nil {
+		log.Printf("failed to remove disconnected lobby participant: %v", err)
+		return
+	}
+
 	h.mu.Lock()
-	defer h.mu.Unlock()
 	h.removeLobbyWatcherLocked(code, watcherID)
+	watchers := h.lobbyWatchers[code]
+	connections := make([]*websocket.Conn, 0, len(watchers))
+	for _, watcher := range watchers {
+		connections = append(connections, watcher.conn)
+	}
+	h.mu.Unlock()
+
+	message := model.ServerMessage{
+		Type:    "player.disconnected",
+		Message: "A player disconnected from the lobby",
+	}
+	for _, connection := range connections {
+		if err := wsjson.Write(context.Background(), connection, message); err != nil {
+			log.Printf("disconnect notification failed for lobby %s: %v", code, err)
+		}
+	}
+	h.sendLobbyUpdate(context.Background(), code, connections)
 }
 
 func (h *Hub) removeLobbyWatcherLocked(code, watcherID string) {
@@ -550,7 +609,7 @@ func (h *Hub) handleVoiceTranscript(
 func (h *Hub) handleWebRTCSignal(ctx context.Context, player *Player, message model.ClientMessage, joinedRoom, joinedRole string) {
 	if joinedRoom == "" {
 		_ = player.send(ctx, model.ServerMessage{
-			Type: "error",
+			Type:    "error",
 			Message: "join a room before starting voice signaling",
 		})
 		return
@@ -562,7 +621,7 @@ func (h *Hub) handleWebRTCSignal(ctx context.Context, player *Player, message mo
 	if room == nil {
 		h.mu.Unlock()
 		_ = player.send(ctx, model.ServerMessage{
-			Type: "error",
+			Type:    "error",
 			Message: "room no longer exists",
 		})
 		return
@@ -581,10 +640,10 @@ func (h *Hub) handleWebRTCSignal(ctx context.Context, player *Player, message mo
 	}
 
 	if err := target.send(ctx, model.ServerMessage{
-		Type: message.Type,
-		SDP: message.SDP,
+		Type:      message.Type,
+		SDP:       message.SDP,
 		Candidate: message.Candidate,
-		FromRole: joinedRole,
+		FromRole:  joinedRole,
 	}); err != nil {
 		log.Printf("webrtc singal realy failed for player %s: %v", target.id, err)
 	}
