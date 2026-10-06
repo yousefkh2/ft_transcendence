@@ -79,13 +79,13 @@ func _connect_to_matchmaking_server():
 	if (error != OK):
 		print("Error connecting to websocket: %s " % [websocket_url])
 
-func _process_received_message(message):
-	if typeof(message) != TYPE_STRING:
+func _process_received_message(raw_message):
+	if typeof(raw_message) != TYPE_STRING:
 		return
 
-	var response_msg = JSON.parse_string(message)
+	var response_msg = JSON.parse_string(raw_message)
 	if typeof(response_msg) != TYPE_DICTIONARY:
-		print("Invalid WebSocket message: %s" % message)
+		print("Invalid WebSocket message: %s" % raw_message)
 		return
 
 	match response_msg.get("type", ""):
