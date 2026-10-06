@@ -13,6 +13,7 @@ var dev_game_select = "res://games/dev/dev_game_select.tscn"
 
 func _ready():
 	create_lobby_interface.visible = false
+	lobby_code_input.text_changed.connect(_on_lobby_code_text_changed)
 
 	http_request.login_success.connect(_on_login_success)
 	http_request.login_failed.connect(_on_login_failed)
@@ -60,6 +61,12 @@ func _on_join_pressed() -> void:
 		message.text = tr("_LOBBY_PLEASE_ENTER_CODE_")
 		return
 	http_request.join_lobby(code)
+
+func _on_lobby_code_text_changed(new_text: String) -> void:
+	var uppercase_text = new_text.to_upper()
+	if new_text != uppercase_text:
+		lobby_code_input.text = uppercase_text
+		lobby_code_input.caret_column = uppercase_text.length()
 
 func _on_lobby_joined(lobby_data: Dictionary) -> void:
 	print("Joined lobby: ", lobby_data)
