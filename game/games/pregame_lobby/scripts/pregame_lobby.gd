@@ -4,7 +4,7 @@ extends Control
 @onready var game_type: Label = $create_lobby_interface/game_type
 @onready var lobby_lang: Label = $create_lobby_interface/lobby_lang
 @onready var user_name: Label = $player_data/User_name
-@onready var message: Label = $messages_terminal/message
+@onready var message: RichTextLabel = $message_interface/message
 
 
 var websocket_url = "ws://localhost:8080/ws/lobby"

@@ -256,20 +256,17 @@ offset_right = 4.4399414
 offset_bottom = 189.15997
 theme_override_styles/panel = SubResource("StyleBoxFlat_h1tpx")
 
-[node name="message" type="Label" parent="message_interface" unique_id=1980547430]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.018518504
-anchor_top = -0.043478332
-anchor_right = 1.1074075
-anchor_bottom = 0.95652145
-grow_vertical = 2
-theme_override_fonts/font = ExtResource("3_rdij3")
-theme_override_font_sizes/font_size = 48
+[node name="message" type="RichTextLabel" parent="message_interface" unique_id=154650302]
+layout_mode = 0
+offset_left = 19.999992
+offset_top = 11.0
+offset_right = 505.0
+offset_bottom = 147.0
+theme_override_fonts/normal_font = ExtResource("3_rdij3")
+theme_override_font_sizes/normal_font_size = 48
 text = "_LOBBY_PLEASE_ENTER_CODE_"
 horizontal_alignment = 1
 vertical_alignment = 1
-metadata/_edit_use_anchors_ = true
 
 [node name="create_lobby_interface" type="Panel" parent="." unique_id=38428379]
 layout_mode = 1

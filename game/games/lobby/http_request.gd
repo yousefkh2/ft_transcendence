@@ -7,7 +7,7 @@ signal lobby_creation_failed(message: String)
 signal lobby_joined(lobby_data: Dictionary)
 signal lobby_join_failed(message: String)
 
-@onready var message: Label = $"../message_interface/message"
+@onready var message: RichTextLabel = $"../message_interface/message"
 
 func _translate_error(error_message: String) -> String:
 	match error_message:
