@@ -13,6 +13,8 @@ func _translate_error(error_message: String) -> String:
 	match error_message:
 		"lobby not found":
 			return tr("_LOBBY_NOT_FOUND_")
+		"already joined this lobby":
+			return tr("_LOBBY_ALREADY_JOINED_")
 		"invalid credentials":
 			return tr("_LOBBY_LOGIN_FAILED_")
 		_:

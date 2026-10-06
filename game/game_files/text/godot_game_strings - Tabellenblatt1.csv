@@ -9,6 +9,7 @@ _LOBBY_JOIN_,Join,Unirse,Dołącz,Katıl,Beitreten
 _LOBBY_LOGIN_FAILED_,Login Failed,Error de inicio de sesión,Logowanie nie powiodło się,Giriş başarısız,Anmeldung fehlgeschlagen
 _LOBBY_PLEASE_ENTER_CODE_,Please enter a lobby code,Introduce un código de sala,Wprowadź kod lobby,Lütfen bir lobi kodu girin,Bitte gib einen Lobby Code ein
 _LOBBY_NOT_FOUND_,Lobby not found,Sala no encontrada,Nie znaleziono lobby,Lobi bulunamadı,Lobby nicht gefunden
+_LOBBY_ALREADY_JOINED_,You already joined this lobby,Ya te has unido a esta sala,Dołączyłeś już do tego lobby,Bu lobiye zaten katıldın,Du bist dieser Lobby bereits beigetreten
 ,,,,,
 _PROFILE_NAME_LOADING_,Name Loading...,Cargando nombre...,Ładowanie nazwy...,İsim yükleniyor...,Name wird geladen...
 _PROFILE_RANK_LOADING_,Rank Loading...,Cargando rango...,Ładowanie rangi...,Rütbe yükleniyor...,Rang wird geladen...
