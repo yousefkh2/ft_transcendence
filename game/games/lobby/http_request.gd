@@ -17,8 +17,21 @@ func _translate_error(error_message: String) -> String:
 			return tr("_LOBBY_ALREADY_JOINED_")
 		"invalid credentials":
 			return tr("_LOBBY_LOGIN_FAILED_")
+		"lobby language does not match your current language":
+			return tr("_LOBBY_LANGUAGE_MISMATCH_")
 		_:
 			return error_message
+
+func _get_active_language_code() -> String:
+	match GameState.selected_locale:
+		"GERMAN":
+			return "de"
+		"POLISH":
+			return "pl"
+		"TURKISH":
+			return "tr"
+		_:
+			return "en"
 
 # Fill these in with real credentials (or pass them in from elsewhere)
 var username: String = "daniel"
@@ -126,11 +139,14 @@ func join_lobby(code: String) -> void:
 		"Content-Type: application/json",
 		"Authorization: Bearer " + GameState.auth_token
 	]
+	var body = JSON.stringify({
+		"lang": _get_active_language_code()
+	})
 	var error = request(
 		"http://localhost:8080/api/v2/lobbies/%s/join" % code,
 		headers,
 		HTTPClient.METHOD_POST,
-		""
+		body
 	)
 	if error != OK:
 		lobby_join_failed.emit("Request failed to send.")

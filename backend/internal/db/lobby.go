@@ -35,16 +35,17 @@ var SupportedLobbyLangs = map[string]bool{
 }
 
 var (
-	ErrLobbyNotFound    = errors.New("lobby not found")
-	ErrLobbyNotJoinable = errors.New("lobby is not joinable")
-	ErrLobbyFull        = errors.New("lobby is full")
-	ErrAlreadyJoined    = errors.New("already joined this lobby")
-	ErrNotInLobby       = errors.New("user is not part of this lobby")
-	ErrLobbyNotStarted  = errors.New("lobby has not started yet")
-	ErrNotHost          = errors.New("only the host can do this")
-	ErrUnsupportedLang  = errors.New("unsupported language")
-	ErrInvalidRole      = errors.New("invalid role")
-	ErrRoleTaken        = errors.New("role is already taken")
+	ErrLobbyNotFound         = errors.New("lobby not found")
+	ErrLobbyNotJoinable      = errors.New("lobby is not joinable")
+	ErrLobbyFull             = errors.New("lobby is full")
+	ErrAlreadyJoined         = errors.New("already joined this lobby")
+	ErrNotInLobby            = errors.New("user is not part of this lobby")
+	ErrLobbyNotStarted       = errors.New("lobby has not started yet")
+	ErrNotHost               = errors.New("only the host can do this")
+	ErrUnsupportedLang       = errors.New("unsupported language")
+	ErrLobbyLanguageMismatch = errors.New("lobby language does not match your current language")
+	ErrInvalidRole           = errors.New("invalid role")
+	ErrRoleTaken             = errors.New("role is already taken")
 )
 
 type Lobby struct {
@@ -187,7 +188,7 @@ func ListLobbyPlayers(ctx context.Context, pool *pgxpool.Pool, code string) ([]L
 	return players, nil
 }
 
-func JoinLobby(ctx context.Context, pool *pgxpool.Pool, code, userID string) (Lobby, error) {
+func JoinLobby(ctx context.Context, pool *pgxpool.Pool, code, userID, requestedLang string) (Lobby, error) {
 	tx, err := pool.Begin(ctx)
 	if err != nil {
 		return Lobby{}, err
@@ -208,6 +209,14 @@ func JoinLobby(ctx context.Context, pool *pgxpool.Pool, code, userID string) (Lo
 	}
 	if status != "waiting" {
 		return Lobby{}, ErrLobbyNotJoinable
+	}
+	if requestedLang != "" {
+		if !SupportedLobbyLangs[requestedLang] {
+			return Lobby{}, ErrUnsupportedLang
+		}
+		if requestedLang != lang {
+			return Lobby{}, ErrLobbyLanguageMismatch
+		}
 	}
 
 	var playerCount int
