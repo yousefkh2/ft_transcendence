@@ -70,7 +70,14 @@ func generateLobbyCode() (string, error) {
 	return string(code), nil
 }
 
-func CreateLobby(ctx context.Context, pool *pgxpool.Pool, hostUserID, gameMode string) (Lobby, error) {
+func CreateLobby(ctx context.Context, pool *pgxpool.Pool, hostUserID, gameMode, lang string) (Lobby, error) {
+	if lang == "" {
+		lang = DefaultLobbyLang
+	}
+	if !SupportedLobbyLangs[lang] {
+		return Lobby{}, ErrUnsupportedLang
+	}
+
 	code, err := generateLobbyCode()
 	if err != nil {
 		return Lobby{}, err
@@ -87,7 +94,7 @@ func CreateLobby(ctx context.Context, pool *pgxpool.Pool, hostUserID, gameMode s
 		`INSERT INTO game_sessions (game_mode, status, code, host_user_id, lang)
 		VALUES ($1, 'waiting', $2, $3, $4)
 		RETURNING id`,
-		gameMode, code, hostUserID, DefaultLobbyLang,
+		gameMode, code, hostUserID, lang,
 	).Scan(&sessionID)
 	if err != nil {
 		return Lobby{}, err
@@ -111,7 +118,7 @@ func CreateLobby(ctx context.Context, pool *pgxpool.Pool, hostUserID, gameMode s
 		Status:      "waiting",
 		HostUserID:  hostUserID,
 		PlayerCount: 1,
-		CurrLang:    DefaultLobbyLang,
+		CurrLang:    lang,
 	}, nil
 }
 

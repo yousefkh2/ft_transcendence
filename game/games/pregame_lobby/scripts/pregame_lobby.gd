@@ -66,6 +66,12 @@ func _select_lobby_language():
 	match lang:
 		"en":
 			lobby_lang.text = "English"
+		"tr":
+			lobby_lang.text = "Turkish"
+		"de":
+			lobby_lang.text = "German"
+		"pl":
+			lobby_lang.text = "Polish"
 		_:
 			lobby_lang.text = "Language not found"
 	

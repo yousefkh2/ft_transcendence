@@ -84,11 +84,15 @@ func create_lobby() -> void:
 		"Content-Type: application/json",
 		"Authorization: Bearer " + GameState.auth_token
 	]
+	var body = JSON.stringify({
+		"gameMode": "apartment_setup",
+		"lang": GameState.selected_locale
+	})
 	var error = request(
 		"http://localhost:8080/api/v2/lobbies",
 		headers,
 		HTTPClient.METHOD_POST,
-		""
+		body
 	)
 	if error != OK:
 		lobby_creation_failed.emit("Request failed to send.")
