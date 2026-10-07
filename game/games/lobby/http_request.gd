@@ -86,7 +86,7 @@ func create_lobby() -> void:
 	]
 	var body = JSON.stringify({
 		"gameMode": "apartment_setup",
-		"lang": GameState.selected_locale
+		"lang": GameState.lobby_locale
 	})
 	var error = request(
 		"http://localhost:8080/api/v2/lobbies",

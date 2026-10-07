@@ -46,13 +46,29 @@ func _on_select_dev_game_button_pressed() -> void:
 	get_tree().change_scene_to_file(dev_game_select)
 
 func _on_create_pressed() -> void:
+	if GameState.lobby_locale != _get_active_language_code():
+		message.text = tr("_LOBBY_LANGUAGE_MISMATCH_")
+		return
+
 	http_request.create_lobby()
+
+func _get_active_language_code() -> String:
+	match GameState.selected_locale:
+		"GERMAN":
+			return "de"
+		"POLISH":
+			return "pl"
+		"TURKISH":
+			return "tr"
+		_:
+			return "en"
 
 func _on_lobby_created(code: String) -> void:
 	print("Lobby created with code: ", code)
 	get_tree().change_scene_to_file(pre_game_lobby)
 
 func _on_lobby_creation_failed(message: String) -> void:
+	self.message.text = message
 	push_error("Could not create lobby: " + message)
 
 func _on_join_pressed() -> void:

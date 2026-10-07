@@ -10,6 +10,7 @@ _LOBBY_LOGIN_FAILED_,Login Failed,Error de inicio de sesión,Logowanie nie powio
 _LOBBY_PLEASE_ENTER_CODE_,Please enter a lobby code,Introduce un código de sala,Wprowadź kod lobby,Lütfen bir lobi kodu girin,Bitte gib einen Lobby Code ein
 _LOBBY_NOT_FOUND_,Lobby not found,Sala no encontrada,Nie znaleziono lobby,Lobi bulunamadı,Lobby nicht gefunden
 _LOBBY_ALREADY_JOINED_,You already joined this lobby,Ya te has unido a esta sala,Dołączyłeś już do tego lobby,Bu lobiye zaten katıldın,Du bist dieser Lobby bereits beigetreten
+_LOBBY_LANGUAGE_MISMATCH_,The lobby language must match your current language,El idioma de la sala debe coincidir con tu idioma actual,Język lobby musi być taki sam jak bieżący język,Lobi dili mevcut dilinizle aynı olmalıdır,Die Lobby-Sprache muss deiner aktuellen Sprache entsprechen
 ,,,,,
 _PROFILE_NAME_LOADING_,Name Loading...,Cargando nombre...,Ładowanie nazwy...,İsim yükleniyor...,Name wird geladen...
 _PROFILE_RANK_LOADING_,Rank Loading...,Cargando rango...,Ładowanie rangi...,Rütbe yükleniyor...,Rang wird geladen...
