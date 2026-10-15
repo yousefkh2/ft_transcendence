@@ -36,7 +36,7 @@
 		</header>
 
 		<main class="dashboard-main">
-			<p v-if="error" class="load-error">{{ error }}</p>
+			<BaseAlert v-if="error" size="md">{{ error }}</BaseAlert>
 			<OverviewTab v-else-if="tab === 'overview'" :profile="profile" @switch-tab="tab = $event" />
 			<FriendsTab v-else-if="tab === 'friends'" />
 		</main>
@@ -47,6 +47,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { fetchProfile, type Profile } from '../../api/users';
 import { logout } from '../../auth/logout';
+import BaseAlert from '../base/BaseAlert.vue';
 import OverviewTab from './OverviewTab.vue';
 import FriendsTab from './FriendsTab.vue';
 
@@ -196,14 +197,5 @@ onMounted(async () => {
 		max-width: 1180px;
 		margin: 0 auto;
 		padding: 32px;
-	}
-
-	.load-error {
-		padding: 16px 20px;
-		border-radius: 12px;
-		background: rgba(209, 53, 43, 0.08);
-		color: var(--color-error);
-		font-weight: 600;
-		font-size: 14px;
 	}
 </style>

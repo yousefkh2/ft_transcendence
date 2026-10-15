@@ -11,9 +11,9 @@
 			</form>
 		</div>
 
-		<p v-if="addError" class="form-error">{{ addError }}</p>
-		<p v-if="addNotice" class="form-notice">{{ addNotice }}</p>
-		<p v-if="loadError" class="load-error">{{ loadError }}</p>
+		<BaseAlert v-if="addError">{{ addError }}</BaseAlert>
+		<BaseAlert v-if="addNotice" variant="success">{{ addNotice }}</BaseAlert>
+		<BaseAlert v-if="loadError">{{ loadError }}</BaseAlert>
 
 		<section v-if="requests.length" class="panel">
 			<h2>Pending requests</h2>
@@ -59,6 +59,7 @@ import {
 	type Friend,
 	type FriendRequest,
 } from '../../api/friends';
+import BaseAlert from '../base/BaseAlert.vue';
 
 const friends = ref<Friend[]>([]);
 const requests = ref<FriendRequest[]>([]);
@@ -177,27 +178,6 @@ onMounted(loadFriendsAndRequests);
 	.add-form button:disabled {
 		opacity: 0.6;
 		cursor: not-allowed;
-	}
-
-	.form-error,
-	.load-error {
-		margin: 0;
-		padding: 10px 14px;
-		border-radius: 10px;
-		background: rgba(209, 53, 43, 0.08);
-		color: var(--color-error);
-		font-size: 13px;
-		font-weight: 600;
-	}
-
-	.form-notice {
-		margin: 0;
-		padding: 10px 14px;
-		border-radius: 10px;
-		background: rgba(34, 197, 94, 0.1);
-		color: var(--color-on-success-container);
-		font-size: 13px;
-		font-weight: 600;
 	}
 
 	.panel {

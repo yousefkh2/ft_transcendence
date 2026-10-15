@@ -10,7 +10,7 @@
 			</div>
 		</section>
 
-		<p v-if="error" class="load-error">{{ error }}</p>
+		<BaseAlert v-if="error" size="md">{{ error }}</BaseAlert>
 
 		<section v-else class="stat-grid">
 			<div class="stat-card">
@@ -64,6 +64,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { fetchFriends, type Friend } from '../../api/friends';
 import { fetchMatchHistory, type MatchHistoryEntry, type Profile } from '../../api/users';
+import BaseAlert from '../base/BaseAlert.vue';
 
 const props = defineProps<{ profile: Profile | null }>();
 const emit = defineEmits<{ (e: 'switch-tab', tab: 'friends'): void }>();
@@ -340,14 +341,5 @@ onMounted(async () => {
 		margin: 0;
 		font-size: 13px;
 		color: var(--color-outline);
-	}
-
-	.load-error {
-		padding: 16px 20px;
-		border-radius: 12px;
-		background: rgba(209, 53, 43, 0.08);
-		color: var(--color-error);
-		font-weight: 600;
-		font-size: 14px;
 	}
 </style>

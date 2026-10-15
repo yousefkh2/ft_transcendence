@@ -43,7 +43,7 @@
 					<div class="form-area">
 						<Transition :name="direction === 'forward' ? 'slide-fwd' : 'slide-back'">
 							<form v-if="tab === 'login'" key="login" class="auth-form" @submit.prevent="handleLogin">
-								<p v-if="loginError" class="form-error">{{ loginError }}</p>
+								<BaseAlert v-if="loginError">{{ loginError }}</BaseAlert>
 								<label class="field">
 									<span class="field-label">Email</span>
 									<input v-model="loginForm.email" type="email" required placeholder="you@example.com" />
@@ -53,9 +53,9 @@
 									<input v-model="loginForm.password" type="password" required placeholder="••••••••" />
 								</label>
 								<a href="#" class="forgot-link" @click.prevent="showForgotNotice = true">Forgot password?</a>
-								<p v-if="showForgotNotice" class="form-notice">
+								<BaseAlert v-if="showForgotNotice" variant="info" class="forgot-notice">
 									Password reset isn't available yet - hang tight, it's coming soon.
-								</p>
+								</BaseAlert>
 								<button type="submit" class="submit-btn" :disabled="loginLoading">
 									{{ loginLoading ? 'Logging in…' : 'Log In' }}
 								</button>
@@ -65,7 +65,7 @@
 								</p>
 							</form>
 							<form v-else key="register" class="auth-form" @submit.prevent="handleRegister">
-								<p v-if="registerError" class="form-error">{{ registerError }}</p>
+								<BaseAlert v-if="registerError">{{ registerError }}</BaseAlert>
 								<label class="field">
 									<span class="field-label">Username</span>
 									<input v-model="registerForm.username" type="text" required placeholder="yourname" />
@@ -107,6 +107,7 @@
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { login, register } from '../../api/auth';
+import BaseAlert from '../base/BaseAlert.vue';
 
 const router = useRouter();
 
@@ -341,26 +342,8 @@ async function handleRegister() {
 		gap: 14px;
 	}
 
-	.form-error {
-		margin: 0;
-		padding: 10px 14px;
-		border-radius: 10px;
-		background: rgba(209, 53, 43, 0.08);
-		color: var(--color-error);
-		font-size: 13px;
-		font-weight: 600;
-		line-height: 1.4;
-	}
-
-	.form-notice {
-		margin: -6px 0 0;
-		padding: 10px 14px;
-		border-radius: 10px;
-		background: rgba(118, 117, 134, 0.1);
-		color: var(--color-on-surface-variant);
-		font-size: 12.5px;
-		font-weight: 600;
-		line-height: 1.4;
+	.forgot-notice {
+		margin-top: -6px;
 	}
 
 	.field {
