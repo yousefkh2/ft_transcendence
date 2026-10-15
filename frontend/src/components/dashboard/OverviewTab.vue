@@ -62,7 +62,8 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { fetchMatchHistory, fetchFriends, type MatchHistoryEntry, type Friend, type Profile } from '../../api/dashboard';
+import { fetchFriends, type Friend } from '../../api/friends';
+import { fetchMatchHistory, type MatchHistoryEntry, type Profile } from '../../api/users';
 
 const props = defineProps<{ profile: Profile | null }>();
 const emit = defineEmits<{ (e: 'switch-tab', tab: 'friends'): void }>();

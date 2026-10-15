@@ -45,8 +45,8 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { fetchProfile, type Profile } from '../../api/dashboard';
+import { fetchProfile, type Profile } from '../../api/users';
+import { logout } from '../../auth/logout';
 import OverviewTab from './OverviewTab.vue';
 import FriendsTab from './FriendsTab.vue';
 
@@ -56,13 +56,6 @@ const error = ref('');
 
 const xpLabel = computed(() => (profile.value ? `${profile.value.xp.toLocaleString()} XP` : '… XP'));
 const avatarInitial = computed(() => profile.value?.username?.[0]?.toUpperCase() ?? '?');
-
-const router = useRouter();
-
-function logout() {
-	localStorage.removeItem('lingodash_token');
-	router.push('/');
-}
 
 onMounted(async () => {
 	try {
