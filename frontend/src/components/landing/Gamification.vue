@@ -80,6 +80,7 @@ const friends = [
 
 	.eyebrow {
 		display: inline-block;
+		margin: 0 0 10px;
 		font-family: var(--font-mono);
 		font-weight: 700;
 		font-size: 13px;
@@ -103,7 +104,7 @@ const friends = [
 	}
 
 	.card {
-		background: #ffffff;
+		background: var(--color-surface-raised);
 		border: 1px solid rgba(118, 117, 134, 0.18);
 		border-radius: 16px;
 		padding: 28px;
@@ -174,7 +175,7 @@ const friends = [
 		font-size: 14px;
 		color: var(--color-on-surface-variant);
 		text-decoration: line-through;
-		text-decoration-color: #d1352b;
+		text-decoration-color: var(--color-error);
 	}
 
 	.flashcard-correct {

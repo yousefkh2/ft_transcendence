@@ -265,7 +265,7 @@ async function handleRegister() {
 		width: 30px;
 		height: 48px;
 		margin: 0 auto 16px;
-		background: linear-gradient(160deg, #fea619 0%, #ff5d8f 45%, #6063ee 100%);
+		background: linear-gradient(160deg, var(--color-secondary-container) 0%, var(--color-tertiary) 45%, var(--color-primary-container) 100%);
 		clip-path: polygon(55% 0%, 25% 55%, 45% 55%, 35% 100%, 80% 40%, 55% 40%, 70% 0%);
 		filter: drop-shadow(0 8px 14px rgba(70, 72, 212, 0.35));
 	}
@@ -299,7 +299,7 @@ async function handleRegister() {
 		width: calc(50% - 4px);
 		height: calc(100% - 8px);
 		border-radius: 10px;
-		background: #ffffff;
+		background: var(--color-surface-raised);
 		box-shadow: 0 1px 3px rgba(17, 28, 45, 0.12);
 		transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);
 	}
@@ -346,7 +346,7 @@ async function handleRegister() {
 		padding: 10px 14px;
 		border-radius: 10px;
 		background: rgba(209, 53, 43, 0.08);
-		color: #d1352b;
+		color: var(--color-error);
 		font-size: 13px;
 		font-weight: 600;
 		line-height: 1.4;
@@ -412,8 +412,8 @@ async function handleRegister() {
 		margin-top: 4px;
 		border: none;
 		border-radius: 12px;
-		background: linear-gradient(135deg, #3739b8 0%, #4648d4 55%, #6063ee 100%);
-		color: #ffffff;
+		background: linear-gradient(135deg, #3739b8 0%, var(--color-primary) 55%, var(--color-primary-container) 100%);
+		color: var(--color-on-primary);
 		font-family: var(--font-display);
 		font-weight: 700;
 		font-size: 15px;

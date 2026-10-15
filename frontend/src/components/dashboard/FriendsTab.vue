@@ -131,6 +131,7 @@ onMounted(loadFriendsAndRequests);
 
 	.friends-toolbar h1 {
 		font-size: 26px;
+		line-height: 0.95;
 		font-weight: 800;
 		margin: 0 0 6px;
 		letter-spacing: -0.02em;
@@ -138,7 +139,7 @@ onMounted(loadFriendsAndRequests);
 
 	.subtitle {
 		margin: 0;
-		color: #767586;
+		color: var(--color-outline);
 		font-size: 14.5px;
 	}
 
@@ -151,11 +152,11 @@ onMounted(loadFriendsAndRequests);
 		height: 44px;
 		border-radius: 11px;
 		border: 1.5px solid rgba(118, 117, 134, 0.2);
-		background: #fff;
+		background: var(--color-surface-raised);
 		padding: 0 15px;
 		font-size: 14px;
 		font-family: inherit;
-		color: #111c2d;
+		color: var(--color-on-surface);
 		outline: none;
 		min-width: 200px;
 	}
@@ -165,8 +166,8 @@ onMounted(loadFriendsAndRequests);
 		padding: 0 20px;
 		border: none;
 		border-radius: 11px;
-		background: #4648d4;
-		color: #fff;
+		background: var(--color-primary);
+		color: var(--color-on-primary);
 		font-weight: 800;
 		font-size: 14px;
 		cursor: pointer;
@@ -184,7 +185,7 @@ onMounted(loadFriendsAndRequests);
 		padding: 10px 14px;
 		border-radius: 10px;
 		background: rgba(209, 53, 43, 0.08);
-		color: #d1352b;
+		color: var(--color-error);
 		font-size: 13px;
 		font-weight: 600;
 	}
@@ -194,13 +195,13 @@ onMounted(loadFriendsAndRequests);
 		padding: 10px 14px;
 		border-radius: 10px;
 		background: rgba(34, 197, 94, 0.1);
-		color: #15803d;
+		color: var(--color-on-success-container);
 		font-size: 13px;
 		font-weight: 600;
 	}
 
 	.panel {
-		background: #fff;
+		background: var(--color-surface-raised);
 		border: 1px solid rgba(118, 117, 134, 0.18);
 		border-radius: 18px;
 		padding: 26px;
@@ -224,7 +225,7 @@ onMounted(loadFriendsAndRequests);
 		gap: 12px;
 		padding: 12px 14px;
 		border-radius: 13px;
-		background: #f9f9ff;
+		background: var(--color-surface);
 		border: 1px solid rgba(118, 117, 134, 0.12);
 	}
 
@@ -233,8 +234,8 @@ onMounted(loadFriendsAndRequests);
 		height: 34px;
 		flex: none;
 		border-radius: 9999px;
-		background: #4648d4;
-		color: #fff;
+		background: var(--color-primary);
+		color: var(--color-on-primary);
 		display: grid;
 		place-items: center;
 		font-weight: 800;
@@ -253,7 +254,7 @@ onMounted(loadFriendsAndRequests);
 
 	.row-meta {
 		font-size: 11.5px;
-		color: #767586;
+		color: var(--color-outline);
 	}
 
 	.row-actions {
@@ -263,8 +264,8 @@ onMounted(loadFriendsAndRequests);
 
 	.accept-btn {
 		border: none;
-		background: #4648d4;
-		color: #fff;
+		background: var(--color-primary);
+		color: var(--color-on-primary);
 		font-weight: 700;
 		font-size: 12px;
 		padding: 7px 15px;
@@ -276,7 +277,7 @@ onMounted(loadFriendsAndRequests);
 	.decline-btn {
 		border: 1.5px solid rgba(118, 117, 134, 0.3);
 		background: none;
-		color: #767586;
+		color: var(--color-outline);
 		font-weight: 700;
 		font-size: 12px;
 		padding: 7px 14px;
@@ -288,6 +289,6 @@ onMounted(loadFriendsAndRequests);
 	.empty-hint {
 		margin: 0;
 		font-size: 13px;
-		color: #767586;
+		color: var(--color-outline);
 	}
 </style>

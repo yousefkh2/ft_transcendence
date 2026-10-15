@@ -77,6 +77,7 @@ const futureModes = ['Market Haggling', "Doctor's Visit", 'Job Interview'];
 
 	.eyebrow {
 		display: inline-block;
+		margin: 0 0 10px;
 		font-family: var(--font-mono);
 		font-weight: 700;
 		font-size: 13px;
@@ -98,7 +99,7 @@ const futureModes = ['Market Haggling', "Doctor's Visit", 'Job Interview'];
 		grid-template-columns: 1fr 1fr;
 		align-items: center;
 		gap: 40px;
-		background: #111c2d;
+		background: var(--color-surface-inverse);
 		border-radius: 24px;
 		padding: 48px;
 	}
@@ -113,7 +114,7 @@ const futureModes = ['Market Haggling', "Doctor's Visit", 'Job Interview'];
 	.mode-title {
 		font-size: clamp(24px, 3vw, 32px);
 		font-weight: 800;
-		color: #ffffff;
+		color: var(--color-on-primary);
 		margin: 0 0 12px;
 	}
 
@@ -207,7 +208,7 @@ const futureModes = ['Market Haggling', "Doctor's Visit", 'Job Interview'];
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: #ffffff;
+		color: var(--color-on-primary);
 	}
 
 	.furniture {
@@ -245,7 +246,7 @@ const futureModes = ['Market Haggling', "Doctor's Visit", 'Job Interview'];
 	.clue-1 {
 		top: 32%;
 		left: 10%;
-		color: #d1352b;
+		color: var(--color-error);
 		transform: rotate(-3deg);
 	}
 
