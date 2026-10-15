@@ -32,12 +32,12 @@ import HeroVisual from './HeroVisual.vue';
 		padding: 96px 40px;
 	}
 
-	.headling {
-		font-size: clamp(32px, 5vw, 48px);
-		font-weight: 800;
-		line-height: 1.1;
-		letter-spacing: -0.2em;
-		margin: 0 0 20px;
+	.headline {
+		max-width: 780px;
+		margin: 0;
+		font-size: clamp(42px, 9vw, 84px);
+		line-height: 0.95;
+		letter-spacing: 0;
 	}
 
 	.accent {

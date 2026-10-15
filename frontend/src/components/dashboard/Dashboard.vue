@@ -68,16 +68,10 @@ onMounted(async () => {
 
 <style scoped>
 	.dashboard {
-		--color-primary: #4648d4;
-		--color-surface: #f9f9ff;
-		--color-on-surface: #111c2d;
-		--color-on-surface-variant: #464554;
-		--color-muted: #767586;
-
 		min-height: 100vh;
 		background: var(--color-surface);
 		color: var(--color-on-surface);
-		font-family: 'Plus Jakarta Sans', sans-serif;
+		font-family: var(--font-display);
 	}
 
 	.dashboard-header {
@@ -126,7 +120,7 @@ onMounted(async () => {
 		border: none;
 		border-radius: 10px;
 		background: transparent;
-		color: var(--color-muted);
+		color: var(--color-outline);
 		font-family: inherit;
 		font-weight: 700;
 		font-size: 13.5px;
@@ -135,7 +129,7 @@ onMounted(async () => {
 	}
 
 	.tab-btn.active {
-		background: #fff;
+		background: var(--color-surface-raised);
 		color: var(--color-primary);
 		font-weight: 800;
 		box-shadow: 0 3px 8px rgba(17, 28, 45, 0.09);
@@ -153,7 +147,7 @@ onMounted(async () => {
 		gap: 7px;
 		padding: 7px 13px;
 		border-radius: 9999px;
-		background: #fff;
+		background: var(--color-surface-raised);
 		border: 1px solid rgba(118, 117, 134, 0.18);
 	}
 
@@ -161,11 +155,11 @@ onMounted(async () => {
 		width: 7px;
 		height: 7px;
 		border-radius: 9999px;
-		background: #fea619;
+		background: var(--color-secondary-container);
 	}
 
 	.xp-value {
-		font-family: 'Space Grotesk', monospace;
+		font-family: var(--font-mono);
 		font-size: 12.5px;
 		font-weight: 700;
 		color: var(--color-on-surface-variant);
@@ -175,8 +169,8 @@ onMounted(async () => {
 		width: 36px;
 		height: 36px;
 		border-radius: 9999px;
-		background: linear-gradient(135deg, #4648d4, #6063ee);
-		color: #fff;
+		background: linear-gradient(135deg, var(--color-primary), var(--color-primary-container));
+		color: var(--color-on-primary);
 		display: grid;
 		place-items: center;
 		font-weight: 800;
@@ -186,7 +180,7 @@ onMounted(async () => {
 	.logout-btn {
 		border: none;
 		background: none;
-		color: var(--color-muted);
+		color: var(--color-outline);
 		font-family: inherit;
 		font-weight: 700;
 		font-size: 13px;
@@ -208,7 +202,7 @@ onMounted(async () => {
 		padding: 16px 20px;
 		border-radius: 12px;
 		background: rgba(209, 53, 43, 0.08);
-		color: #d1352b;
+		color: var(--color-error);
 		font-weight: 600;
 		font-size: 14px;
 	}

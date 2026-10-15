@@ -18,44 +18,45 @@
 		min-height: 100vh;
 		padding: 32px 16px;
 		text-align: center;
-		background: #f9f9ff;
-		color: #111c2d;
-		font-family: 'Plus Jakarta Sans', sans-serif;
+		background: var(--color-surface);
+		color: var(--color-on-surface);
+		font-family: var(--font-display);
 	}
 
 	.bolt-mark {
 		width: 30px;
 		height: 48px;
 		margin-bottom: 8px;
-		background: linear-gradient(160deg, #fea619 0%, #ff5d8f 45%, #6063ee 100%);
+		background: linear-gradient(160deg, var(--color-secondary-container) 0%, var(--color-tertiary) 45%, var(--color-primary-container) 100%);
 		clip-path: polygon(55% 0%, 25% 55%, 45% 55%, 35% 100%, 80% 40%, 55% 40%, 70% 0%);
 	}
 
 	.code {
-		font-family: 'Space Grotesk', monospace;
+		font-family: var(--font-mono);
 		font-size: 13px;
 		font-weight: 700;
 		letter-spacing: 0.1em;
-		color: #4648d4;
+		color: var(--color-primary);
 	}
 
 	h1 {
 		margin: 0;
 		font-size: 28px;
+		line-height: 0.95;
 		font-weight: 800;
 	}
 
 	p {
 		margin: 0;
-		color: #464554;
+		color: var(--color-on-surface-variant);
 	}
 
 	.home-btn {
 		margin-top: 16px;
 		padding: 10px 20px;
 		border-radius: 12px;
-		background: #4648d4;
-		color: #ffffff;
+		background: var(--color-primary);
+		color: var(--color-on-primary);
 		font-weight: 700;
 		font-size: 14px;
 		text-decoration: none;

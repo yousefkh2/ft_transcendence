@@ -1,0 +1,289 @@
+/* Styles for the /dev prototype page only — every rule is scoped under .app-shell. */
+:root:has(.app-shell) {
+  background: #f4f1ea;
+}
+
+.app-shell {
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  color: #18212f;
+}
+
+.app-shell {
+  width: min(1040px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 56px 0;
+}
+
+.app-shell .hero {
+  padding: 40px 0;
+  border-bottom: 1px solid #d6d0c4;
+}
+
+.app-shell .eyebrow {
+  margin: 0 0 10px;
+  color: #3b6f65;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.app-shell h1 {
+  max-width: 780px;
+  margin: 0;
+  font-size: clamp(42px, 9vw, 84px);
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.app-shell .summary {
+  max-width: 620px;
+  margin: 22px 0 0;
+  color: #4c5867;
+  font-size: 19px;
+  line-height: 1.55;
+}
+
+.app-shell .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.app-shell .button {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #aeb7b0;
+  border-radius: 8px;
+  padding: 0 16px;
+  background: #fffaf1;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.app-shell .button.primary {
+  border-color: #1d6b61;
+  background: #1d6b61;
+  color: #ffffff;
+}
+
+.app-shell .status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.app-shell .status-grid article {
+  min-height: 116px;
+  border: 1px solid #d6d0c4;
+  border-radius: 8px;
+  padding: 18px;
+  background: #fffaf1;
+}
+
+.status-grid strong,
+.app-shell .status-grid span {
+  display: block;
+}
+
+.app-shell .status-grid strong {
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.app-shell .status-grid span {
+  color: #596574;
+  line-height: 1.45;
+}
+
+
+.app-shell .apartment-board {
+    margin-top: 24px;
+  }
+
+.app-shell .apartment-board h2 {
+  margin: 0 0 14px;
+  font-size: 24px;
+}
+
+.app-shell .grid-board {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(48px, 1fr));
+  gap: 8px;
+  max-width: 520px;
+}
+
+.app-shell .grid-cell {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 1px solid #d6d0c4;
+  border-radius: 8px;
+  background: #fffaf1;
+  color: #18212f;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+
+.app-shell .object-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .app-shell .object-controls label {
+    display: grid;
+    gap: 6px;
+    color: #596574;
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .app-shell .object-controls select {
+    min-height: 42px;
+    border: 1px solid #aeb7b0;
+    border-radius: 8px;
+    padding: 0 12px;
+    background: #fffaf1;
+    color: #18212f;
+    font: inherit;
+    font-weight: 800;
+  }
+
+  .app-shell .move-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .app-shell .mission-panel {
+    margin-top: 24px;
+  }
+
+  .app-shell .mission-panel h2 {
+    margin: 0 0 14px;
+    font-size: 24px;
+  }
+
+.app-shell .objective-list {
+  display: grid;
+  gap: 10px;
+  max-width: 520px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.app-shell .objective-list li {
+  border: 1px solid #d6d0c4;
+  border-radius: 8px;
+  padding: 14px 16px;
+  background: #fffaf1;
+  color: #18212f;
+  font-weight: 800;
+}
+
+.app-shell .objective-list li.completed {
+  border-color: #1d6b61;
+  background: #e6f4ef;
+  color: #15584f;
+}
+
+
+  .app-shell .round-complete {
+  display: grid;
+  gap: 6px;
+  margin-top: 24px;
+  border: 1px solid #1d6b61;
+  border-radius: 8px;
+  padding: 18px;
+  background: #e6f4ef;
+  color: #15584f;
+}
+
+.app-shell .round-complete strong {
+  font-size: 18px;
+}
+
+.app-shell .round-complete span {
+  color: #15584f;
+}
+
+.app-shell .round-expired {
+  display: grid;
+  gap: 6px;
+  margin-top: 24px;
+  border: 1px solid #9b2c2c;
+  border-radius: 8px;
+  padding: 18px;
+  background: #fff1f1;
+  color: #842020;
+}
+
+.app-shell .round-expired strong {
+  font-size: 18px;
+}
+
+.app-shell .round-expired span {
+  color: #842020;
+}
+
+.app-shell .transcript-panel {
+    margin-top: 24px;
+  }
+
+.app-shell .transcript-panel h2 {
+  margin: 0 0 14px;
+  font-size: 24px;
+}
+
+.app-shell .transcript-feed {
+  display: grid;
+  gap: 8px;
+  max-width: 720px;
+}
+
+.app-shell .transcript-feed p {
+  margin: 0;
+  border: 1px solid #d6d0c4;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #fffaf1;
+  color: #18212f;
+  line-height: 1.45;
+}
+
+
+@media (max-width: 720px) {
+  .app-shell {
+    padding: 32px 0;
+  }
+
+  .app-shell .status-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.app-shell .game-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.app-shell .game-iframe {
+  width: 100%;
+  height: 720px;
+  border: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #000;
+}

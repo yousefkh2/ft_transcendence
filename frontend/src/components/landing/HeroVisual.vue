@@ -34,7 +34,7 @@ withDefaults(defineProps<{ languages?: string[] }>(), {
 		width: 65%;
 		height: 65%;
 		border-radius: 50%;
-		background: radial-gradient(circle, #6063ee 0%, transparent 70%);
+		background: radial-gradient(circle, var(--color-primary-container) 0%, transparent 70%);
 		filter: blur(24px);
 		animation: glow-pulse 5s ease-in-out infinite;
 	}
@@ -43,7 +43,7 @@ withDefaults(defineProps<{ languages?: string[] }>(), {
 		position: relative;
 		width: 170px;
 		height: 270px;
-		background: linear-gradient(160deg, #fea619 0%, #ff5d8f 45%, #6063ee 100%);
+		background: linear-gradient(160deg, var(--color-secondary-container) 0%, var(--color-tertiary) 45%, var(--color-primary-container) 100%);
 		clip-path: polygon(55% 0%, 25% 55%, 45% 55%, 35% 100%, 80% 40%, 55% 40%, 70% 0%);
 		box-shadow: 0 30px 60px rgba(70, 72, 212, 0.35);
 		animation: bolt-float 4s ease-in-out infinite;
@@ -56,12 +56,12 @@ withDefaults(defineProps<{ languages?: string[] }>(), {
 		justify-content: center;
 		padding: 8px 16px;
 		border-radius: var(--radius-pill);
-		background: #ffffff;
+		background: var(--color-surface-raised);
 		box-shadow: 0 8px 20px rgba(17, 28, 45, 0.14);
 		font-family: var(--font-mono);
 		font-weight: 700;
 		font-size: 14px;
-		color: #4648d4;
+		color: var(--color-primary);
 		animation: chip-bob 3.6s ease-in-out infinite;
 	}
 

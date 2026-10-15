@@ -120,7 +120,7 @@ onMounted(async () => {
 	.hero {
 		position: relative;
 		overflow: hidden;
-		background: linear-gradient(135deg, #111c2d 0%, #26295c 100%);
+		background: linear-gradient(135deg, var(--color-surface-inverse) 0%, #26295c 100%);
 		border-radius: 24px;
 		padding: 40px;
 	}
@@ -146,8 +146,8 @@ onMounted(async () => {
 		padding: 5px 12px;
 		border-radius: 9999px;
 		background: rgba(255, 255, 255, 0.14);
-		color: #fff;
-		font-family: 'Space Grotesk', monospace;
+		color: var(--color-on-primary);
+		font-family: var(--font-mono);
 		font-size: 11px;
 		font-weight: 700;
 		letter-spacing: 0.1em;
@@ -156,8 +156,9 @@ onMounted(async () => {
 	}
 
 	.hero-copy h1 {
-		color: #fff;
+		color: var(--color-on-primary);
 		font-size: 32px;
+		line-height: 0.95;
 		font-weight: 800;
 		margin: 0 0 10px;
 		letter-spacing: -0.02em;
@@ -176,8 +177,8 @@ onMounted(async () => {
 		align-items: center;
 		padding: 0 28px;
 		border-radius: 12px;
-		background: linear-gradient(135deg, #4648d4, #6063ee);
-		color: #fff;
+		background: linear-gradient(135deg, var(--color-primary), var(--color-primary-container));
+		color: var(--color-on-primary);
 		font-weight: 800;
 		font-size: 15px;
 		box-shadow: 0 12px 28px rgba(70, 72, 212, 0.4);
@@ -191,19 +192,19 @@ onMounted(async () => {
 	}
 
 	.stat-card {
-		background: #fff;
+		background: var(--color-surface-raised);
 		border: 1px solid rgba(118, 117, 134, 0.18);
 		border-radius: 16px;
 		padding: 22px;
 	}
 
 	.stat-label {
-		font-family: 'Space Grotesk', monospace;
+		font-family: var(--font-mono);
 		font-size: 11.5px;
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: #767586;
+		color: var(--color-outline);
 	}
 
 	.stat-value {
@@ -216,7 +217,7 @@ onMounted(async () => {
 	.stat-sub {
 		margin: 0;
 		font-size: 12.5px;
-		color: #767586;
+		color: var(--color-outline);
 	}
 
 	.panels {
@@ -226,7 +227,7 @@ onMounted(async () => {
 	}
 
 	.panel {
-		background: #fff;
+		background: var(--color-surface-raised);
 		border: 1px solid rgba(118, 117, 134, 0.18);
 		border-radius: 18px;
 		padding: 26px;
@@ -248,7 +249,7 @@ onMounted(async () => {
 	.link-btn {
 		background: none;
 		border: none;
-		color: #4648d4;
+		color: var(--color-primary);
 		font-weight: 700;
 		font-size: 13px;
 		cursor: pointer;
@@ -268,7 +269,7 @@ onMounted(async () => {
 		gap: 14px;
 		padding: 13px 15px;
 		border-radius: 13px;
-		background: #f9f9ff;
+		background: var(--color-surface);
 		border: 1px solid rgba(118, 117, 134, 0.12);
 	}
 
@@ -279,22 +280,22 @@ onMounted(async () => {
 		border-radius: 10px;
 		display: grid;
 		place-items: center;
-		font-family: 'Space Grotesk', monospace;
+		font-family: var(--font-mono);
 		font-weight: 700;
 		font-size: 11px;
-		color: #fff;
+		color: var(--color-on-primary);
 	}
 
 	.round-badge.won {
-		background: #22c55e;
+		background: var(--color-success);
 	}
 
 	.round-badge.lost {
-		background: #ff5d8f;
+		background: var(--color-tertiary);
 	}
 
 	.round-badge.pending {
-		background: #767586;
+		background: var(--color-outline);
 	}
 
 	.round-info {
@@ -309,7 +310,7 @@ onMounted(async () => {
 
 	.round-when {
 		font-size: 12.5px;
-		color: #767586;
+		color: var(--color-outline);
 	}
 
 	.friend-avatar {
@@ -317,8 +318,8 @@ onMounted(async () => {
 		height: 34px;
 		flex: none;
 		border-radius: 9999px;
-		background: #4648d4;
-		color: #fff;
+		background: var(--color-primary);
+		color: var(--color-on-primary);
 		display: grid;
 		place-items: center;
 		font-weight: 800;
@@ -338,14 +339,14 @@ onMounted(async () => {
 	.empty-hint {
 		margin: 0;
 		font-size: 13px;
-		color: #767586;
+		color: var(--color-outline);
 	}
 
 	.load-error {
 		padding: 16px 20px;
 		border-radius: 12px;
 		background: rgba(209, 53, 43, 0.08);
-		color: #d1352b;
+		color: var(--color-error);
 		font-weight: 600;
 		font-size: 14px;
 	}
