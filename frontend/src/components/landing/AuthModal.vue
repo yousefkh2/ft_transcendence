@@ -105,6 +105,9 @@
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const open = defineModel<boolean>('open', { default: false });
 const tab = defineModel<'login' | 'register'>('tab', { default: 'login' });
@@ -164,7 +167,7 @@ async function handleLogin() {
 	try {
 		await login(loginForm.email, loginForm.password);
 		close();
-		window.location.href = '/dashboard';
+		router.push('/dashboard');
 	} catch (err) {
 		loginError.value = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
 	} finally {
@@ -192,7 +195,7 @@ async function handleRegister() {
 
 		await login(registerForm.email, registerForm.password);
 		close();
-		window.location.href = '/dashboard';
+		router.push('/dashboard');
 	} catch (err) {
 		registerError.value = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
 	} finally {
