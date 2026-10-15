@@ -58,7 +58,7 @@ import {
 	declineFriendRequest,
 	type Friend,
 	type FriendRequest,
-} from '../../api/dashboard';
+} from '../../api/friends';
 
 const friends = ref<Friend[]>([]);
 const requests = ref<FriendRequest[]>([]);

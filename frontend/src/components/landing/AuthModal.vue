@@ -106,6 +106,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { login, register } from '../../api/auth';
 
 const router = useRouter();
 
@@ -114,8 +115,6 @@ const tab = defineModel<'login' | 'register'>('tab', { default: 'login' });
 
 const direction = ref<'forward' | 'backward'>('forward');
 const showForgotNotice = ref(false);
-
-const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 const loginForm = reactive({ email: '', password: '' });
 const loginError = ref('');
@@ -141,26 +140,6 @@ function close() {
 	open.value = false;
 }
 
-async function parseErrorMessage(response: Response, fallback: string) {
-	const data = await response.json().catch(() => null);
-	return data && typeof data.message === 'string' ? data.message : fallback;
-}
-
-async function login(email: string, password: string) {
-	const response = await fetch(`${apiUrl}/api/auth/login`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ email, password }),
-	});
-
-	if (!response.ok) {
-		throw new Error(await parseErrorMessage(response, 'Invalid email or password.'));
-	}
-
-	const data = await response.json();
-	localStorage.setItem('lingodash_token', data.token);
-}
-
 async function handleLogin() {
 	loginError.value = '';
 	loginLoading.value = true;
@@ -179,20 +158,7 @@ async function handleRegister() {
 	registerError.value = '';
 	registerLoading.value = true;
 	try {
-		const response = await fetch(`${apiUrl}/api/auth/register`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				username: registerForm.username,
-				email: registerForm.email,
-				password: registerForm.password,
-			}),
-		});
-
-		if (!response.ok) {
-			throw new Error(await parseErrorMessage(response, 'Could not create your account.'));
-		}
-
+		await register(registerForm.username, registerForm.email, registerForm.password);
 		await login(registerForm.email, registerForm.password);
 		close();
 		router.push('/dashboard');
