@@ -6,7 +6,7 @@
 				<span class="hero-eyebrow">Next up · Apartment Setup</span>
 				<h1>Ready for a round?</h1>
 				<p>Jump into the live game and get matched with a partner for the next scenario.</p>
-				<a href="/" class="play-btn">Play now</a>
+				<RouterLink to="/dev" class="play-btn">Play now</RouterLink>
 			</div>
 		</section>
 
