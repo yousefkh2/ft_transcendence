@@ -6,37 +6,37 @@
 				<p class="subtitle">Play with people you know.</p>
 			</div>
 			<form class="add-form" @submit.prevent="addFriend">
-				<input v-model="newUsername" type="text" placeholder="Add by username" :disabled="sending" />
-				<button type="submit" :disabled="sending || !newUsername.trim()">Add</button>
+				<BaseInput v-model="newUsername" size="sm" class="add-input" type="text" placeholder="Add by username" aria-label="Username to add as friend" :disabled="sending" />
+				<BaseButton type="submit" :disabled="sending || !newUsername.trim()">Add</BaseButton>
 			</form>
 		</div>
 
-		<p v-if="addError" class="form-error">{{ addError }}</p>
-		<p v-if="addNotice" class="form-notice">{{ addNotice }}</p>
-		<p v-if="loadError" class="load-error">{{ loadError }}</p>
+		<BaseAlert v-if="addError">{{ addError }}</BaseAlert>
+		<BaseAlert v-if="addNotice" variant="success">{{ addNotice }}</BaseAlert>
+		<BaseAlert v-if="loadError">{{ loadError }}</BaseAlert>
 
-		<section v-if="requests.length" class="panel">
-			<h2>Pending requests</h2>
+		<BaseCard v-if="requests.length" tag="section">
+			<h2 class="panel-title">Pending requests</h2>
 			<div class="request-list">
 				<div v-for="request in requests" :key="request.id" class="row">
-					<div class="avatar">{{ request.requesterUsername[0]?.toUpperCase() }}</div>
+					<BaseAvatar :name="request.requesterUsername" />
 					<div class="row-info">
 						<div class="row-name">{{ request.requesterUsername }}</div>
 						<div class="row-meta">Sent {{ formatDate(request.createdAt) }}</div>
 					</div>
 					<div class="row-actions">
-						<button type="button" class="accept-btn" @click="respond(request.id, 'accept')">Accept</button>
-						<button type="button" class="decline-btn" @click="respond(request.id, 'decline')">Ignore</button>
+						<BaseButton size="sm" pill @click="respond(request.id, 'accept')">Accept</BaseButton>
+						<BaseButton variant="outline" size="sm" pill @click="respond(request.id, 'decline')">Ignore</BaseButton>
 					</div>
 				</div>
 			</div>
-		</section>
+		</BaseCard>
 
-		<section class="panel">
-			<h2>Your friends</h2>
+		<BaseCard tag="section">
+			<h2 class="panel-title">Your friends</h2>
 			<div v-if="friends.length" class="friend-list">
 				<div v-for="friend in friends" :key="friend.friendId" class="row">
-					<div class="avatar">{{ friend.friendUsername[0]?.toUpperCase() }}</div>
+					<BaseAvatar :name="friend.friendUsername" />
 					<div class="row-info">
 						<div class="row-name">{{ friend.friendUsername }}</div>
 						<div class="row-meta">Friends since {{ formatDate(friend.createdAt) }}</div>
@@ -44,7 +44,7 @@
 				</div>
 			</div>
 			<p v-else class="empty-hint">No friends yet — add someone above.</p>
-		</section>
+		</BaseCard>
 	</div>
 </template>
 
@@ -59,6 +59,11 @@ import {
 	type Friend,
 	type FriendRequest,
 } from '../../api/friends';
+import BaseAlert from '../base/BaseAlert.vue';
+import BaseAvatar from '../base/BaseAvatar.vue';
+import BaseCard from '../base/BaseCard.vue';
+import BaseInput from '../base/BaseInput.vue';
+import BaseButton from '../base/BaseButton.vue';
 
 const friends = ref<Friend[]>([]);
 const requests = ref<FriendRequest[]>([]);
@@ -148,66 +153,11 @@ onMounted(loadFriendsAndRequests);
 		gap: 10px;
 	}
 
-	.add-form input {
-		height: 44px;
-		border-radius: 11px;
-		border: 1.5px solid rgba(118, 117, 134, 0.2);
-		background: var(--color-surface-raised);
-		padding: 0 15px;
-		font-size: 14px;
-		font-family: inherit;
-		color: var(--color-on-surface);
-		outline: none;
+	.add-input {
 		min-width: 200px;
 	}
 
-	.add-form button {
-		height: 44px;
-		padding: 0 20px;
-		border: none;
-		border-radius: 11px;
-		background: var(--color-primary);
-		color: var(--color-on-primary);
-		font-weight: 800;
-		font-size: 14px;
-		cursor: pointer;
-		font-family: inherit;
-	}
-
-	.add-form button:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
-	}
-
-	.form-error,
-	.load-error {
-		margin: 0;
-		padding: 10px 14px;
-		border-radius: 10px;
-		background: rgba(209, 53, 43, 0.08);
-		color: var(--color-error);
-		font-size: 13px;
-		font-weight: 600;
-	}
-
-	.form-notice {
-		margin: 0;
-		padding: 10px 14px;
-		border-radius: 10px;
-		background: rgba(34, 197, 94, 0.1);
-		color: var(--color-on-success-container);
-		font-size: 13px;
-		font-weight: 600;
-	}
-
-	.panel {
-		background: var(--color-surface-raised);
-		border: 1px solid rgba(118, 117, 134, 0.18);
-		border-radius: 18px;
-		padding: 26px;
-	}
-
-	.panel h2 {
+	.panel-title {
 		font-size: 17px;
 		font-weight: 800;
 		margin: 0 0 16px;
@@ -229,19 +179,6 @@ onMounted(loadFriendsAndRequests);
 		border: 1px solid rgba(118, 117, 134, 0.12);
 	}
 
-	.avatar {
-		width: 34px;
-		height: 34px;
-		flex: none;
-		border-radius: 9999px;
-		background: var(--color-primary);
-		color: var(--color-on-primary);
-		display: grid;
-		place-items: center;
-		font-weight: 800;
-		font-size: 13px;
-	}
-
 	.row-info {
 		flex: 1;
 		min-width: 0;
@@ -260,30 +197,6 @@ onMounted(loadFriendsAndRequests);
 	.row-actions {
 		display: flex;
 		gap: 8px;
-	}
-
-	.accept-btn {
-		border: none;
-		background: var(--color-primary);
-		color: var(--color-on-primary);
-		font-weight: 700;
-		font-size: 12px;
-		padding: 7px 15px;
-		border-radius: 9999px;
-		cursor: pointer;
-		font-family: inherit;
-	}
-
-	.decline-btn {
-		border: 1.5px solid rgba(118, 117, 134, 0.3);
-		background: none;
-		color: var(--color-outline);
-		font-weight: 700;
-		font-size: 12px;
-		padding: 7px 14px;
-		border-radius: 9999px;
-		cursor: pointer;
-		font-family: inherit;
 	}
 
 	.empty-hint {

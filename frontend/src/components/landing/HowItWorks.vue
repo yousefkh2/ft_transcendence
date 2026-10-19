@@ -1,21 +1,23 @@
 <template>
 	<section id="how-it-works" class="how-it-works">
 		<div class="header">
-			<span class="eyebrow">How It Works</span>
+			<BaseEyebrow>How It Works</BaseEyebrow>
 			<h2 class="title">Four steps to fluency under pressure</h2>
 		</div>
 
 		<div class="grid">
-			<div class="card" v-for="step in steps" :key="step.number">
+			<BaseCard v-for="step in steps" :key="step.number" size="lg">
 				<span class="step-number">{{ step.number }}</span>
 				<h3 class="card-title">{{ step.title }}</h3>
 				<p class="card-desc">{{ step.description }}</p>
-			</div>
+			</BaseCard>
 		</div>
 	</section>
 </template>
 
 <script setup lang="ts">
+import BaseEyebrow from '../base/BaseEyebrow.vue';
+import BaseCard from '../base/BaseCard.vue';
 const steps = [
 	{
 		number: '01',
@@ -53,17 +55,6 @@ const steps = [
 		text-align: center;
 	}
 
-	.eyebrow {
-		display: inline-block;
-		margin: 0 0 10px;
-		font-family: var(--font-mono);
-		font-weight: 700;
-		font-size: 13px;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: var(--color-primary);
-	}
-
 	.title {
 		font-size: clamp(28px, 4vw, 40px);
 		font-weight: 800;
@@ -76,13 +67,6 @@ const steps = [
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
 		gap: 20px;
-	}
-
-	.card {
-		background: var(--color-surface-raised);
-		border: 1px solid rgba(118, 117, 134, 0.18);
-		border-radius: 16px;
-		padding: 28px;
 	}
 
 	.step-number {

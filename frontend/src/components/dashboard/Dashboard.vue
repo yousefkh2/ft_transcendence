@@ -30,13 +30,13 @@
 					<span class="xp-dot"></span>
 					<span class="xp-value">{{ xpLabel }}</span>
 				</div>
-				<div class="avatar" :title="profile?.username">{{ avatarInitial }}</div>
+				<BaseAvatar :name="profile?.username" size="md" variant="gradient" />
 				<button type="button" class="logout-btn" @click="logout">Log out</button>
 			</div>
 		</header>
 
 		<main class="dashboard-main">
-			<p v-if="error" class="load-error">{{ error }}</p>
+			<BaseAlert v-if="error" size="md">{{ error }}</BaseAlert>
 			<OverviewTab v-else-if="tab === 'overview'" :profile="profile" @switch-tab="tab = $event" />
 			<FriendsTab v-else-if="tab === 'friends'" />
 		</main>
@@ -47,6 +47,8 @@
 import { computed, onMounted, ref } from 'vue';
 import { fetchProfile, type Profile } from '../../api/users';
 import { logout } from '../../auth/logout';
+import BaseAlert from '../base/BaseAlert.vue';
+import BaseAvatar from '../base/BaseAvatar.vue';
 import OverviewTab from './OverviewTab.vue';
 import FriendsTab from './FriendsTab.vue';
 
@@ -55,7 +57,6 @@ const profile = ref<Profile | null>(null);
 const error = ref('');
 
 const xpLabel = computed(() => (profile.value ? `${profile.value.xp.toLocaleString()} XP` : '… XP'));
-const avatarInitial = computed(() => profile.value?.username?.[0]?.toUpperCase() ?? '?');
 
 onMounted(async () => {
 	try {
@@ -165,18 +166,6 @@ onMounted(async () => {
 		color: var(--color-on-surface-variant);
 	}
 
-	.avatar {
-		width: 36px;
-		height: 36px;
-		border-radius: 9999px;
-		background: linear-gradient(135deg, var(--color-primary), var(--color-primary-container));
-		color: var(--color-on-primary);
-		display: grid;
-		place-items: center;
-		font-weight: 800;
-		font-size: 14px;
-	}
-
 	.logout-btn {
 		border: none;
 		background: none;
@@ -196,14 +185,5 @@ onMounted(async () => {
 		max-width: 1180px;
 		margin: 0 auto;
 		padding: 32px;
-	}
-
-	.load-error {
-		padding: 16px 20px;
-		border-radius: 12px;
-		background: rgba(209, 53, 43, 0.08);
-		color: var(--color-error);
-		font-weight: 600;
-		font-size: 14px;
 	}
 </style>

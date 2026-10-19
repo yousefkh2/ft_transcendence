@@ -1,7 +1,7 @@
 <template>
 	<div class="hero-visual" aria-hidden="true">
 		<div class="glow"></div>
-		<div class="bolt"></div>
+		<BrandBolt size="lg" class="hero-bolt" />
 		<span
 			v-for="(lang, index) in languages"
 			:key="lang"
@@ -15,6 +15,7 @@
 </template>
 
 <script setup lang="ts">
+import BrandBolt from '../base/BrandBolt.vue';
 withDefaults(defineProps<{ languages?: string[] }>(), {
 	languages: () => ['DE', 'ES', 'JA'],
 });
@@ -39,12 +40,8 @@ withDefaults(defineProps<{ languages?: string[] }>(), {
 		animation: glow-pulse 5s ease-in-out infinite;
 	}
 
-	.bolt {
+	.hero-bolt {
 		position: relative;
-		width: 170px;
-		height: 270px;
-		background: linear-gradient(160deg, var(--color-secondary-container) 0%, var(--color-tertiary) 45%, var(--color-primary-container) 100%);
-		clip-path: polygon(55% 0%, 25% 55%, 45% 55%, 35% 100%, 80% 40%, 55% 40%, 70% 0%);
 		box-shadow: 0 30px 60px rgba(70, 72, 212, 0.35);
 		animation: bolt-float 4s ease-in-out infinite;
 	}
@@ -111,7 +108,7 @@ withDefaults(defineProps<{ languages?: string[] }>(), {
 
 	@media (prefers-reduced-motion: reduce) {
 		.glow,
-		.bolt,
+		.hero-bolt,
 		.chip {
 			animation-play-state: paused;
 		}

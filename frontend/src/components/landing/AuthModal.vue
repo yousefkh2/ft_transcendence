@@ -9,7 +9,7 @@
 
 				<div class="modal-content">
 					<div class="header">
-						<div class="bolt-mark"></div>
+						<BrandBolt class="bolt-mark" />
 						<h2 class="title">{{ tab === 'login' ? 'Welcome back' : 'Create your account' }}</h2>
 						<p class="subtitle">
 							{{
@@ -43,41 +43,26 @@
 					<div class="form-area">
 						<Transition :name="direction === 'forward' ? 'slide-fwd' : 'slide-back'">
 							<form v-if="tab === 'login'" key="login" class="auth-form" @submit.prevent="handleLogin">
-								<p v-if="loginError" class="form-error">{{ loginError }}</p>
-								<label class="field">
-									<span class="field-label">Email</span>
-									<input v-model="loginForm.email" type="email" required placeholder="you@example.com" />
-								</label>
-								<label class="field">
-									<span class="field-label">Password</span>
-									<input v-model="loginForm.password" type="password" required placeholder="••••••••" />
-								</label>
+								<BaseAlert v-if="loginError">{{ loginError }}</BaseAlert>
+								<BaseInput v-model="loginForm.email" label="Email" type="email" required placeholder="you@example.com" />
+								<BaseInput v-model="loginForm.password" label="Password" type="password" required placeholder="••••••••" />
 								<a href="#" class="forgot-link" @click.prevent="showForgotNotice = true">Forgot password?</a>
-								<p v-if="showForgotNotice" class="form-notice">
+								<BaseAlert v-if="showForgotNotice" variant="info" class="forgot-notice">
 									Password reset isn't available yet - hang tight, it's coming soon.
-								</p>
-								<button type="submit" class="submit-btn" :disabled="loginLoading">
+								</BaseAlert>
+								<BaseButton type="submit" variant="gradient" size="lg" block class="submit-btn" :disabled="loginLoading">
 									{{ loginLoading ? 'Logging in…' : 'Log In' }}
-								</button>
+								</BaseButton>
 								<p class="switch-line">
 									Don't have an account?
 									<a href="#" @click.prevent="switchTab('register')">Sign Up</a>
 								</p>
 							</form>
 							<form v-else key="register" class="auth-form" @submit.prevent="handleRegister">
-								<p v-if="registerError" class="form-error">{{ registerError }}</p>
-								<label class="field">
-									<span class="field-label">Username</span>
-									<input v-model="registerForm.username" type="text" required placeholder="yourname" />
-								</label>
-								<label class="field">
-									<span class="field-label">Email</span>
-									<input v-model="registerForm.email" type="email" required placeholder="you@example.com" />
-								</label>
-								<label class="field">
-									<span class="field-label">Password</span>
-									<input v-model="registerForm.password" type="password" required placeholder="••••••••" />
-								</label>
+								<BaseAlert v-if="registerError">{{ registerError }}</BaseAlert>
+								<BaseInput v-model="registerForm.username" label="Username" type="text" required placeholder="yourname" />
+								<BaseInput v-model="registerForm.email" label="Email" type="email" required placeholder="you@example.com" />
+								<BaseInput v-model="registerForm.password" label="Password" type="password" required placeholder="••••••••" />
 								<label class="field">
 									<span class="field-label">Learning language</span>
 									<select v-model="registerForm.language">
@@ -87,9 +72,9 @@
 										<option value="ja" disabled>Japanese — coming soon</option>
 									</select>
 								</label>
-								<button type="submit" class="submit-btn" :disabled="registerLoading">
+								<BaseButton type="submit" variant="gradient" size="lg" block class="submit-btn" :disabled="registerLoading">
 									{{ registerLoading ? 'Creating account…' : 'Create Account' }}
-								</button>
+								</BaseButton>
 								<p class="switch-line">
 									Already have an account?
 									<a href="#" @click.prevent="switchTab('login')">Log In</a>
@@ -107,6 +92,10 @@
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { login, register } from '../../api/auth';
+import BaseAlert from '../base/BaseAlert.vue';
+import BaseInput from '../base/BaseInput.vue';
+import BaseButton from '../base/BaseButton.vue';
+import BrandBolt from '../base/BrandBolt.vue';
 
 const router = useRouter();
 
@@ -262,11 +251,7 @@ async function handleRegister() {
 	}
 
 	.bolt-mark {
-		width: 30px;
-		height: 48px;
 		margin: 0 auto 16px;
-		background: linear-gradient(160deg, var(--color-secondary-container) 0%, var(--color-tertiary) 45%, var(--color-primary-container) 100%);
-		clip-path: polygon(55% 0%, 25% 55%, 45% 55%, 35% 100%, 80% 40%, 55% 40%, 70% 0%);
 		filter: drop-shadow(0 8px 14px rgba(70, 72, 212, 0.35));
 	}
 
@@ -341,26 +326,8 @@ async function handleRegister() {
 		gap: 14px;
 	}
 
-	.form-error {
-		margin: 0;
-		padding: 10px 14px;
-		border-radius: 10px;
-		background: rgba(209, 53, 43, 0.08);
-		color: var(--color-error);
-		font-size: 13px;
-		font-weight: 600;
-		line-height: 1.4;
-	}
-
-	.form-notice {
-		margin: -6px 0 0;
-		padding: 10px 14px;
-		border-radius: 10px;
-		background: rgba(118, 117, 134, 0.1);
-		color: var(--color-on-surface-variant);
-		font-size: 12.5px;
-		font-weight: 600;
-		line-height: 1.4;
+	.forgot-notice {
+		margin-top: -6px;
 	}
 
 	.field {
@@ -375,7 +342,6 @@ async function handleRegister() {
 		color: var(--color-on-surface-variant);
 	}
 
-	.field input,
 	.field select {
 		height: 47px;
 		padding: 0 14px;
@@ -388,7 +354,6 @@ async function handleRegister() {
 		transition: border-color 0.2s ease;
 	}
 
-	.field input:focus,
 	.field select:focus {
 		outline: none;
 		border-color: var(--color-primary);
@@ -408,31 +373,7 @@ async function handleRegister() {
 	}
 
 	.submit-btn {
-		height: 47px;
 		margin-top: 4px;
-		border: none;
-		border-radius: 12px;
-		background: linear-gradient(135deg, #3739b8 0%, var(--color-primary) 55%, var(--color-primary-container) 100%);
-		color: var(--color-on-primary);
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 15px;
-		cursor: pointer;
-		box-shadow: 0 10px 20px -8px rgba(53, 55, 170, 0.55), 0 20px 40px -16px rgba(53, 55, 170, 0.4);
-		transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
-	}
-
-	.submit-btn:hover {
-		transform: translateY(-2px);
-		filter: brightness(1.08);
-		box-shadow: 0 14px 26px -8px rgba(53, 55, 170, 0.6), 0 26px 48px -16px rgba(53, 55, 170, 0.48);
-	}
-
-	.submit-btn:disabled {
-		cursor: not-allowed;
-		opacity: 0.7;
-		transform: none;
-		filter: none;
 	}
 
 	.switch-line {

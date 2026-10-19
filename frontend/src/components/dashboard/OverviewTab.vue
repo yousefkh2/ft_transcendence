@@ -3,29 +3,29 @@
 		<section class="hero">
 			<div class="hero-glow"></div>
 			<div class="hero-copy">
-				<span class="hero-eyebrow">Next up · Apartment Setup</span>
+				<BaseEyebrow variant="chip">Next up · Apartment Setup</BaseEyebrow>
 				<h1>Ready for a round?</h1>
 				<p>Jump into the live game and get matched with a partner for the next scenario.</p>
-				<RouterLink to="/dev" class="play-btn">Play now</RouterLink>
+				<BaseButton to="/dev" variant="gradient" size="lg">Play now</BaseButton>
 			</div>
 		</section>
 
-		<p v-if="error" class="load-error">{{ error }}</p>
+		<BaseAlert v-if="error" size="md">{{ error }}</BaseAlert>
 
 		<section v-else class="stat-grid">
-			<div class="stat-card">
+			<BaseCard size="sm">
 				<span class="stat-label">Total XP</span>
 				<div class="stat-value">{{ xpDisplay }}</div>
-			</div>
-			<div class="stat-card">
+			</BaseCard>
+			<BaseCard size="sm">
 				<span class="stat-label">Rounds played</span>
 				<div class="stat-value">{{ matches.length }}</div>
 				<p class="stat-sub">{{ roundsThisWeek }} this week</p>
-			</div>
+			</BaseCard>
 		</section>
 
 		<section class="panels">
-			<div class="panel">
+			<BaseCard>
 				<div class="panel-header">
 					<h2>Recent rounds</h2>
 				</div>
@@ -39,23 +39,23 @@
 					</div>
 				</div>
 				<p v-else class="empty-hint">No rounds played yet - jump into a game to see them here.</p>
-			</div>
+			</BaseCard>
 
-			<div class="panel">
+			<BaseCard>
 				<div class="panel-header">
 					<h2>Friends</h2>
 					<button type="button" class="link-btn" @click="emit('switch-tab', 'friends')">See all</button>
 				</div>
 				<div v-if="friends.length" class="friend-list">
 					<div v-for="friend in friendsPreview" :key="friend.friendId" class="friend-row">
-						<div class="friend-avatar">{{ friend.friendUsername[0]?.toUpperCase() }}</div>
+						<BaseAvatar :name="friend.friendUsername" />
 						<div class="friend-info">
 							<div class="friend-name">{{ friend.friendUsername }}</div>
 						</div>
 					</div>
 				</div>
 				<p v-else class="empty-hint">No friends yet - add someone from the Friends tab.</p>
-			</div>
+			</BaseCard>
 		</section>
 	</div>
 </template>
@@ -64,6 +64,11 @@
 import { computed, onMounted, ref } from 'vue';
 import { fetchFriends, type Friend } from '../../api/friends';
 import { fetchMatchHistory, type MatchHistoryEntry, type Profile } from '../../api/users';
+import BaseAlert from '../base/BaseAlert.vue';
+import BaseAvatar from '../base/BaseAvatar.vue';
+import BaseCard from '../base/BaseCard.vue';
+import BaseButton from '../base/BaseButton.vue';
+import BaseEyebrow from '../base/BaseEyebrow.vue';
 
 const props = defineProps<{ profile: Profile | null }>();
 const emit = defineEmits<{ (e: 'switch-tab', tab: 'friends'): void }>();
@@ -141,20 +146,6 @@ onMounted(async () => {
 		max-width: 460px;
 	}
 
-	.hero-eyebrow {
-		display: inline-flex;
-		padding: 5px 12px;
-		border-radius: 9999px;
-		background: rgba(255, 255, 255, 0.14);
-		color: var(--color-on-primary);
-		font-family: var(--font-mono);
-		font-size: 11px;
-		font-weight: 700;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		margin-bottom: 14px;
-	}
-
 	.hero-copy h1 {
 		color: var(--color-on-primary);
 		font-size: 32px;
@@ -171,31 +162,10 @@ onMounted(async () => {
 		margin: 0 0 24px;
 	}
 
-	.play-btn {
-		display: inline-flex;
-		height: 50px;
-		align-items: center;
-		padding: 0 28px;
-		border-radius: 12px;
-		background: linear-gradient(135deg, var(--color-primary), var(--color-primary-container));
-		color: var(--color-on-primary);
-		font-weight: 800;
-		font-size: 15px;
-		box-shadow: 0 12px 28px rgba(70, 72, 212, 0.4);
-		text-decoration: none;
-	}
-
 	.stat-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 		gap: 16px;
-	}
-
-	.stat-card {
-		background: var(--color-surface-raised);
-		border: 1px solid rgba(118, 117, 134, 0.18);
-		border-radius: 16px;
-		padding: 22px;
 	}
 
 	.stat-label {
@@ -224,13 +194,6 @@ onMounted(async () => {
 		display: grid;
 		grid-template-columns: minmax(300px, 1.6fr) minmax(260px, 1fr);
 		gap: 22px;
-	}
-
-	.panel {
-		background: var(--color-surface-raised);
-		border: 1px solid rgba(118, 117, 134, 0.18);
-		border-radius: 18px;
-		padding: 26px;
 	}
 
 	.panel-header {
@@ -313,19 +276,6 @@ onMounted(async () => {
 		color: var(--color-outline);
 	}
 
-	.friend-avatar {
-		width: 34px;
-		height: 34px;
-		flex: none;
-		border-radius: 9999px;
-		background: var(--color-primary);
-		color: var(--color-on-primary);
-		display: grid;
-		place-items: center;
-		font-weight: 800;
-		font-size: 13px;
-	}
-
 	.friend-info {
 		flex: 1;
 		min-width: 0;
@@ -340,14 +290,5 @@ onMounted(async () => {
 		margin: 0;
 		font-size: 13px;
 		color: var(--color-outline);
-	}
-
-	.load-error {
-		padding: 16px 20px;
-		border-radius: 12px;
-		background: rgba(209, 53, 43, 0.08);
-		color: var(--color-error);
-		font-weight: 600;
-		font-size: 14px;
 	}
 </style>
