@@ -48,7 +48,7 @@
 				</div>
 				<div v-if="friends.length" class="friend-list">
 					<div v-for="friend in friendsPreview" :key="friend.friendId" class="friend-row">
-						<div class="friend-avatar">{{ friend.friendUsername[0]?.toUpperCase() }}</div>
+						<BaseAvatar :name="friend.friendUsername" />
 						<div class="friend-info">
 							<div class="friend-name">{{ friend.friendUsername }}</div>
 						</div>
@@ -65,6 +65,7 @@ import { computed, onMounted, ref } from 'vue';
 import { fetchFriends, type Friend } from '../../api/friends';
 import { fetchMatchHistory, type MatchHistoryEntry, type Profile } from '../../api/users';
 import BaseAlert from '../base/BaseAlert.vue';
+import BaseAvatar from '../base/BaseAvatar.vue';
 
 const props = defineProps<{ profile: Profile | null }>();
 const emit = defineEmits<{ (e: 'switch-tab', tab: 'friends'): void }>();
@@ -312,19 +313,6 @@ onMounted(async () => {
 	.round-when {
 		font-size: 12.5px;
 		color: var(--color-outline);
-	}
-
-	.friend-avatar {
-		width: 34px;
-		height: 34px;
-		flex: none;
-		border-radius: 9999px;
-		background: var(--color-primary);
-		color: var(--color-on-primary);
-		display: grid;
-		place-items: center;
-		font-weight: 800;
-		font-size: 13px;
 	}
 
 	.friend-info {

@@ -19,7 +19,7 @@
 			<h2>Pending requests</h2>
 			<div class="request-list">
 				<div v-for="request in requests" :key="request.id" class="row">
-					<div class="avatar">{{ request.requesterUsername[0]?.toUpperCase() }}</div>
+					<BaseAvatar :name="request.requesterUsername" />
 					<div class="row-info">
 						<div class="row-name">{{ request.requesterUsername }}</div>
 						<div class="row-meta">Sent {{ formatDate(request.createdAt) }}</div>
@@ -36,7 +36,7 @@
 			<h2>Your friends</h2>
 			<div v-if="friends.length" class="friend-list">
 				<div v-for="friend in friends" :key="friend.friendId" class="row">
-					<div class="avatar">{{ friend.friendUsername[0]?.toUpperCase() }}</div>
+					<BaseAvatar :name="friend.friendUsername" />
 					<div class="row-info">
 						<div class="row-name">{{ friend.friendUsername }}</div>
 						<div class="row-meta">Friends since {{ formatDate(friend.createdAt) }}</div>
@@ -60,6 +60,7 @@ import {
 	type FriendRequest,
 } from '../../api/friends';
 import BaseAlert from '../base/BaseAlert.vue';
+import BaseAvatar from '../base/BaseAvatar.vue';
 
 const friends = ref<Friend[]>([]);
 const requests = ref<FriendRequest[]>([]);
@@ -207,19 +208,6 @@ onMounted(loadFriendsAndRequests);
 		border-radius: 13px;
 		background: var(--color-surface);
 		border: 1px solid rgba(118, 117, 134, 0.12);
-	}
-
-	.avatar {
-		width: 34px;
-		height: 34px;
-		flex: none;
-		border-radius: 9999px;
-		background: var(--color-primary);
-		color: var(--color-on-primary);
-		display: grid;
-		place-items: center;
-		font-weight: 800;
-		font-size: 13px;
 	}
 
 	.row-info {

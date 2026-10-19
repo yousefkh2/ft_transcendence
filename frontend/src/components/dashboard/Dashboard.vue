@@ -30,7 +30,7 @@
 					<span class="xp-dot"></span>
 					<span class="xp-value">{{ xpLabel }}</span>
 				</div>
-				<div class="avatar" :title="profile?.username">{{ avatarInitial }}</div>
+				<BaseAvatar :name="profile?.username" size="md" variant="gradient" />
 				<button type="button" class="logout-btn" @click="logout">Log out</button>
 			</div>
 		</header>
@@ -48,6 +48,7 @@ import { computed, onMounted, ref } from 'vue';
 import { fetchProfile, type Profile } from '../../api/users';
 import { logout } from '../../auth/logout';
 import BaseAlert from '../base/BaseAlert.vue';
+import BaseAvatar from '../base/BaseAvatar.vue';
 import OverviewTab from './OverviewTab.vue';
 import FriendsTab from './FriendsTab.vue';
 
@@ -56,7 +57,6 @@ const profile = ref<Profile | null>(null);
 const error = ref('');
 
 const xpLabel = computed(() => (profile.value ? `${profile.value.xp.toLocaleString()} XP` : '… XP'));
-const avatarInitial = computed(() => profile.value?.username?.[0]?.toUpperCase() ?? '?');
 
 onMounted(async () => {
 	try {
@@ -164,18 +164,6 @@ onMounted(async () => {
 		font-size: 12.5px;
 		font-weight: 700;
 		color: var(--color-on-surface-variant);
-	}
-
-	.avatar {
-		width: 36px;
-		height: 36px;
-		border-radius: 9999px;
-		background: linear-gradient(135deg, var(--color-primary), var(--color-primary-container));
-		color: var(--color-on-primary);
-		display: grid;
-		place-items: center;
-		font-weight: 800;
-		font-size: 14px;
 	}
 
 	.logout-btn {
