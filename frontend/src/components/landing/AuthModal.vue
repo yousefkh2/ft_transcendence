@@ -44,14 +44,8 @@
 						<Transition :name="direction === 'forward' ? 'slide-fwd' : 'slide-back'">
 							<form v-if="tab === 'login'" key="login" class="auth-form" @submit.prevent="handleLogin">
 								<BaseAlert v-if="loginError">{{ loginError }}</BaseAlert>
-								<label class="field">
-									<span class="field-label">Email</span>
-									<input v-model="loginForm.email" type="email" required placeholder="you@example.com" />
-								</label>
-								<label class="field">
-									<span class="field-label">Password</span>
-									<input v-model="loginForm.password" type="password" required placeholder="••••••••" />
-								</label>
+								<BaseInput v-model="loginForm.email" label="Email" type="email" required placeholder="you@example.com" />
+								<BaseInput v-model="loginForm.password" label="Password" type="password" required placeholder="••••••••" />
 								<a href="#" class="forgot-link" @click.prevent="showForgotNotice = true">Forgot password?</a>
 								<BaseAlert v-if="showForgotNotice" variant="info" class="forgot-notice">
 									Password reset isn't available yet - hang tight, it's coming soon.
@@ -66,18 +60,9 @@
 							</form>
 							<form v-else key="register" class="auth-form" @submit.prevent="handleRegister">
 								<BaseAlert v-if="registerError">{{ registerError }}</BaseAlert>
-								<label class="field">
-									<span class="field-label">Username</span>
-									<input v-model="registerForm.username" type="text" required placeholder="yourname" />
-								</label>
-								<label class="field">
-									<span class="field-label">Email</span>
-									<input v-model="registerForm.email" type="email" required placeholder="you@example.com" />
-								</label>
-								<label class="field">
-									<span class="field-label">Password</span>
-									<input v-model="registerForm.password" type="password" required placeholder="••••••••" />
-								</label>
+								<BaseInput v-model="registerForm.username" label="Username" type="text" required placeholder="yourname" />
+								<BaseInput v-model="registerForm.email" label="Email" type="email" required placeholder="you@example.com" />
+								<BaseInput v-model="registerForm.password" label="Password" type="password" required placeholder="••••••••" />
 								<label class="field">
 									<span class="field-label">Learning language</span>
 									<select v-model="registerForm.language">
@@ -108,6 +93,7 @@ import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { login, register } from '../../api/auth';
 import BaseAlert from '../base/BaseAlert.vue';
+import BaseInput from '../base/BaseInput.vue';
 
 const router = useRouter();
 
@@ -358,7 +344,6 @@ async function handleRegister() {
 		color: var(--color-on-surface-variant);
 	}
 
-	.field input,
 	.field select {
 		height: 47px;
 		padding: 0 14px;
@@ -371,7 +356,6 @@ async function handleRegister() {
 		transition: border-color 0.2s ease;
 	}
 
-	.field input:focus,
 	.field select:focus {
 		outline: none;
 		border-color: var(--color-primary);

@@ -6,7 +6,7 @@
 				<p class="subtitle">Play with people you know.</p>
 			</div>
 			<form class="add-form" @submit.prevent="addFriend">
-				<input v-model="newUsername" type="text" placeholder="Add by username" :disabled="sending" />
+				<BaseInput v-model="newUsername" size="sm" class="add-input" type="text" placeholder="Add by username" aria-label="Username to add as friend" :disabled="sending" />
 				<button type="submit" :disabled="sending || !newUsername.trim()">Add</button>
 			</form>
 		</div>
@@ -62,6 +62,7 @@ import {
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseAvatar from '../base/BaseAvatar.vue';
 import BaseCard from '../base/BaseCard.vue';
+import BaseInput from '../base/BaseInput.vue';
 
 const friends = ref<Friend[]>([]);
 const requests = ref<FriendRequest[]>([]);
@@ -151,16 +152,7 @@ onMounted(loadFriendsAndRequests);
 		gap: 10px;
 	}
 
-	.add-form input {
-		height: 44px;
-		border-radius: 11px;
-		border: 1.5px solid rgba(118, 117, 134, 0.2);
-		background: var(--color-surface-raised);
-		padding: 0 15px;
-		font-size: 14px;
-		font-family: inherit;
-		color: var(--color-on-surface);
-		outline: none;
+	.add-input {
 		min-width: 200px;
 	}
 
