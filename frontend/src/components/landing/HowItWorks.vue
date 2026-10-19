@@ -6,16 +6,17 @@
 		</div>
 
 		<div class="grid">
-			<div class="card" v-for="step in steps" :key="step.number">
+			<BaseCard v-for="step in steps" :key="step.number" size="lg">
 				<span class="step-number">{{ step.number }}</span>
 				<h3 class="card-title">{{ step.title }}</h3>
 				<p class="card-desc">{{ step.description }}</p>
-			</div>
+			</BaseCard>
 		</div>
 	</section>
 </template>
 
 <script setup lang="ts">
+import BaseCard from '../base/BaseCard.vue';
 const steps = [
 	{
 		number: '01',
@@ -76,13 +77,6 @@ const steps = [
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
 		gap: 20px;
-	}
-
-	.card {
-		background: var(--color-surface-raised);
-		border: 1px solid rgba(118, 117, 134, 0.18);
-		border-radius: 16px;
-		padding: 28px;
 	}
 
 	.step-number {

@@ -13,19 +13,19 @@
 		<BaseAlert v-if="error" size="md">{{ error }}</BaseAlert>
 
 		<section v-else class="stat-grid">
-			<div class="stat-card">
+			<BaseCard size="sm">
 				<span class="stat-label">Total XP</span>
 				<div class="stat-value">{{ xpDisplay }}</div>
-			</div>
-			<div class="stat-card">
+			</BaseCard>
+			<BaseCard size="sm">
 				<span class="stat-label">Rounds played</span>
 				<div class="stat-value">{{ matches.length }}</div>
 				<p class="stat-sub">{{ roundsThisWeek }} this week</p>
-			</div>
+			</BaseCard>
 		</section>
 
 		<section class="panels">
-			<div class="panel">
+			<BaseCard>
 				<div class="panel-header">
 					<h2>Recent rounds</h2>
 				</div>
@@ -39,9 +39,9 @@
 					</div>
 				</div>
 				<p v-else class="empty-hint">No rounds played yet - jump into a game to see them here.</p>
-			</div>
+			</BaseCard>
 
-			<div class="panel">
+			<BaseCard>
 				<div class="panel-header">
 					<h2>Friends</h2>
 					<button type="button" class="link-btn" @click="emit('switch-tab', 'friends')">See all</button>
@@ -55,7 +55,7 @@
 					</div>
 				</div>
 				<p v-else class="empty-hint">No friends yet - add someone from the Friends tab.</p>
-			</div>
+			</BaseCard>
 		</section>
 	</div>
 </template>
@@ -66,6 +66,7 @@ import { fetchFriends, type Friend } from '../../api/friends';
 import { fetchMatchHistory, type MatchHistoryEntry, type Profile } from '../../api/users';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseAvatar from '../base/BaseAvatar.vue';
+import BaseCard from '../base/BaseCard.vue';
 
 const props = defineProps<{ profile: Profile | null }>();
 const emit = defineEmits<{ (e: 'switch-tab', tab: 'friends'): void }>();
@@ -193,13 +194,6 @@ onMounted(async () => {
 		gap: 16px;
 	}
 
-	.stat-card {
-		background: var(--color-surface-raised);
-		border: 1px solid rgba(118, 117, 134, 0.18);
-		border-radius: 16px;
-		padding: 22px;
-	}
-
 	.stat-label {
 		font-family: var(--font-mono);
 		font-size: 11.5px;
@@ -226,13 +220,6 @@ onMounted(async () => {
 		display: grid;
 		grid-template-columns: minmax(300px, 1.6fr) minmax(260px, 1fr);
 		gap: 22px;
-	}
-
-	.panel {
-		background: var(--color-surface-raised);
-		border: 1px solid rgba(118, 117, 134, 0.18);
-		border-radius: 18px;
-		padding: 26px;
 	}
 
 	.panel-header {

@@ -6,7 +6,7 @@
 		</div>
 
 		<div class="grid">
-			<div class="card">
+			<BaseCard size="lg">
 				<h3 class="card-title">XP &amp; levels</h3>
 				<p class="card-desc">
 					Every round you finish earns XP. Win, lose, or run out the clock -
@@ -21,9 +21,9 @@
 						<div class="xp-fill" style="width: 71%"></div>
 					</div>
 				</div>
-			</div>
+			</BaseCard>
 
-			<div class="card">
+			<BaseCard size="lg">
 				<h3 class="card-title">AI-reviewed flashcards</h3>
 				<p class="card-desc">
 					Slip-ups from the round get turned into flashcards, each with a
@@ -37,9 +37,9 @@
 						auxiliary in the perfect tense.
 					</p>
 				</div>
-			</div>
+			</BaseCard>
 
-			<div class="card">
+			<BaseCard size="lg">
 				<h3 class="card-title">Friends</h3>
 				<p class="card-desc">
 					Add friends and see who's climbing fastest. Send a request, get
@@ -52,12 +52,13 @@
 						<span class="friend-xp">{{ friend.xp.toLocaleString() }} XP</span>
 					</li>
 				</ul>
-			</div>
+			</BaseCard>
 		</div>
 	</section>
 </template>
 
 <script setup lang="ts">
+import BaseCard from '../base/BaseCard.vue';
 const friends = [
 	{ name: 'jonas.k', xp: 5820 },
 	{ name: 'mei_learns', xp: 4390 },
@@ -101,13 +102,6 @@ const friends = [
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 		gap: 20px;
-	}
-
-	.card {
-		background: var(--color-surface-raised);
-		border: 1px solid rgba(118, 117, 134, 0.18);
-		border-radius: 16px;
-		padding: 28px;
 	}
 
 	.card-title {

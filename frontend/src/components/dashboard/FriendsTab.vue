@@ -15,8 +15,8 @@
 		<BaseAlert v-if="addNotice" variant="success">{{ addNotice }}</BaseAlert>
 		<BaseAlert v-if="loadError">{{ loadError }}</BaseAlert>
 
-		<section v-if="requests.length" class="panel">
-			<h2>Pending requests</h2>
+		<BaseCard v-if="requests.length" tag="section">
+			<h2 class="panel-title">Pending requests</h2>
 			<div class="request-list">
 				<div v-for="request in requests" :key="request.id" class="row">
 					<BaseAvatar :name="request.requesterUsername" />
@@ -30,10 +30,10 @@
 					</div>
 				</div>
 			</div>
-		</section>
+		</BaseCard>
 
-		<section class="panel">
-			<h2>Your friends</h2>
+		<BaseCard tag="section">
+			<h2 class="panel-title">Your friends</h2>
 			<div v-if="friends.length" class="friend-list">
 				<div v-for="friend in friends" :key="friend.friendId" class="row">
 					<BaseAvatar :name="friend.friendUsername" />
@@ -44,7 +44,7 @@
 				</div>
 			</div>
 			<p v-else class="empty-hint">No friends yet — add someone above.</p>
-		</section>
+		</BaseCard>
 	</div>
 </template>
 
@@ -61,6 +61,7 @@ import {
 } from '../../api/friends';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseAvatar from '../base/BaseAvatar.vue';
+import BaseCard from '../base/BaseCard.vue';
 
 const friends = ref<Friend[]>([]);
 const requests = ref<FriendRequest[]>([]);
@@ -181,14 +182,7 @@ onMounted(loadFriendsAndRequests);
 		cursor: not-allowed;
 	}
 
-	.panel {
-		background: var(--color-surface-raised);
-		border: 1px solid rgba(118, 117, 134, 0.18);
-		border-radius: 18px;
-		padding: 26px;
-	}
-
-	.panel h2 {
+	.panel-title {
 		font-size: 17px;
 		font-weight: 800;
 		margin: 0 0 16px;
