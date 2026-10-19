@@ -9,8 +9,8 @@
 				Jump into fast-paced multiplayer games built to get you speaking from day one. Describe, argue, guess, and race the clock - whichever language you're learning.
 			</p>
 			<div class="cta-row">
-				<button class="btn btn-primary">Play Now</button>
-				<button class="btn btn-ghost">How It Works</button>
+				<BaseButton size="lg" pill>Play Now</BaseButton>
+				<BaseButton variant="outline" size="lg" pill>How It Works</BaseButton>
 			</div>
 		</div>
 		<HeroVisual class="hero-visual" />
@@ -18,6 +18,7 @@
 </template>
 
 <script setup lang="ts">
+import BaseButton from '../base/BaseButton.vue';
 import HeroVisual from './HeroVisual.vue';
 </script>
 
@@ -56,33 +57,6 @@ import HeroVisual from './HeroVisual.vue';
 		display: flex;
 		gap: 12px;
 		flex-wrap: wrap;
-	}
-
-	.btn {
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 15px;
-		padding: 14px 24px;
-		border-radius: var(--radius-pill);
-		border: none;
-		cursor: pointer;
-	}
-
-	.btn-primary {
-		background: var(--color-primary);
-		color: var(--color-on-primary);
-		border-bottom: 4px solid #2f2ebe;
-	}
-
-	.btn-primary:active {
-		border-bottom-width: 0;
-		transform: translateY(4px);
-	}
-
-	.btn-ghost {
-		background: transparent;
-		color: var(--color-on-surface);
-		border: 2px solid var(--color-outline);
 	}
 
 	@media (max-width: 900px) {

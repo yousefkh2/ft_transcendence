@@ -50,9 +50,9 @@
 								<BaseAlert v-if="showForgotNotice" variant="info" class="forgot-notice">
 									Password reset isn't available yet - hang tight, it's coming soon.
 								</BaseAlert>
-								<button type="submit" class="submit-btn" :disabled="loginLoading">
+								<BaseButton type="submit" variant="gradient" size="lg" block class="submit-btn" :disabled="loginLoading">
 									{{ loginLoading ? 'Logging in…' : 'Log In' }}
-								</button>
+								</BaseButton>
 								<p class="switch-line">
 									Don't have an account?
 									<a href="#" @click.prevent="switchTab('register')">Sign Up</a>
@@ -72,9 +72,9 @@
 										<option value="ja" disabled>Japanese — coming soon</option>
 									</select>
 								</label>
-								<button type="submit" class="submit-btn" :disabled="registerLoading">
+								<BaseButton type="submit" variant="gradient" size="lg" block class="submit-btn" :disabled="registerLoading">
 									{{ registerLoading ? 'Creating account…' : 'Create Account' }}
-								</button>
+								</BaseButton>
 								<p class="switch-line">
 									Already have an account?
 									<a href="#" @click.prevent="switchTab('login')">Log In</a>
@@ -94,6 +94,7 @@ import { useRouter } from 'vue-router';
 import { login, register } from '../../api/auth';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseInput from '../base/BaseInput.vue';
+import BaseButton from '../base/BaseButton.vue';
 
 const router = useRouter();
 
@@ -375,31 +376,7 @@ async function handleRegister() {
 	}
 
 	.submit-btn {
-		height: 47px;
 		margin-top: 4px;
-		border: none;
-		border-radius: 12px;
-		background: linear-gradient(135deg, #3739b8 0%, var(--color-primary) 55%, var(--color-primary-container) 100%);
-		color: var(--color-on-primary);
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 15px;
-		cursor: pointer;
-		box-shadow: 0 10px 20px -8px rgba(53, 55, 170, 0.55), 0 20px 40px -16px rgba(53, 55, 170, 0.4);
-		transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
-	}
-
-	.submit-btn:hover {
-		transform: translateY(-2px);
-		filter: brightness(1.08);
-		box-shadow: 0 14px 26px -8px rgba(53, 55, 170, 0.6), 0 26px 48px -16px rgba(53, 55, 170, 0.48);
-	}
-
-	.submit-btn:disabled {
-		cursor: not-allowed;
-		opacity: 0.7;
-		transform: none;
-		filter: none;
 	}
 
 	.switch-line {

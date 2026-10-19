@@ -11,13 +11,14 @@
 		</nav>
 
 		<div class="auth-buttons">
-			<button class="btn-ghost" type="button" @click="emit('open-auth', 'login')">Login</button>
-			<button class="btn-login" type="button" @click="emit('open-auth', 'register')">Sign Up</button>
+			<BaseButton variant="ghost" pill @click="emit('open-auth', 'login')">Login</BaseButton>
+			<BaseButton pill @click="emit('open-auth', 'register')">Sign Up</BaseButton>
 		</div>
 	</header>
 </template>
 
 <script setup lang="ts">
+import BaseButton from '../base/BaseButton.vue';
 import logo from "../../images/logo-transparent.png"
 
 const emit = defineEmits<{ 'open-auth': [tab: 'login' | 'register'] }>();
@@ -100,46 +101,6 @@ const emit = defineEmits<{ 'open-auth': [tab: 'login' | 'register'] }>();
 		display: flex;
 		align-items: center;
 		gap: 8px;
-	}
-
-	.btn-ghost {
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 14px;
-		padding: 10px 18px;
-		border-radius: var(--radius-pill);
-		border: none;
-		background: transparent;
-		color: var(--color-on-surface);
-		cursor: pointer;
-		transition: background 0.15s ease;
-	}
-
-	.btn-ghost:hover {
-		background: rgba(17, 28, 45, 0.06);
-	}
-
-	.btn-login {
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 14px;
-		padding: 10px 22px;
-		border-radius: var(--radius-pill);
-		border: none;
-		background: var(--color-primary);
-		color: var(--color-on-primary);
-		cursor: pointer;
-		transition: tansform 0.15s ease, box-shadow 0.15s ease;
-	}
-
-	.btn-login:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(70, 72, 212, 0.35);
-	}
-
-	.btn-login:active {
-		transform: translateY(0);
-		box-shadow: none;
 	}
 
 	@media (max-width: 720px) {

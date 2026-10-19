@@ -7,7 +7,7 @@
 			</div>
 			<form class="add-form" @submit.prevent="addFriend">
 				<BaseInput v-model="newUsername" size="sm" class="add-input" type="text" placeholder="Add by username" aria-label="Username to add as friend" :disabled="sending" />
-				<button type="submit" :disabled="sending || !newUsername.trim()">Add</button>
+				<BaseButton type="submit" :disabled="sending || !newUsername.trim()">Add</BaseButton>
 			</form>
 		</div>
 
@@ -25,8 +25,8 @@
 						<div class="row-meta">Sent {{ formatDate(request.createdAt) }}</div>
 					</div>
 					<div class="row-actions">
-						<button type="button" class="accept-btn" @click="respond(request.id, 'accept')">Accept</button>
-						<button type="button" class="decline-btn" @click="respond(request.id, 'decline')">Ignore</button>
+						<BaseButton size="sm" pill @click="respond(request.id, 'accept')">Accept</BaseButton>
+						<BaseButton variant="outline" size="sm" pill @click="respond(request.id, 'decline')">Ignore</BaseButton>
 					</div>
 				</div>
 			</div>
@@ -63,6 +63,7 @@ import BaseAlert from '../base/BaseAlert.vue';
 import BaseAvatar from '../base/BaseAvatar.vue';
 import BaseCard from '../base/BaseCard.vue';
 import BaseInput from '../base/BaseInput.vue';
+import BaseButton from '../base/BaseButton.vue';
 
 const friends = ref<Friend[]>([]);
 const requests = ref<FriendRequest[]>([]);
@@ -156,24 +157,6 @@ onMounted(loadFriendsAndRequests);
 		min-width: 200px;
 	}
 
-	.add-form button {
-		height: 44px;
-		padding: 0 20px;
-		border: none;
-		border-radius: 11px;
-		background: var(--color-primary);
-		color: var(--color-on-primary);
-		font-weight: 800;
-		font-size: 14px;
-		cursor: pointer;
-		font-family: inherit;
-	}
-
-	.add-form button:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
-	}
-
 	.panel-title {
 		font-size: 17px;
 		font-weight: 800;
@@ -214,30 +197,6 @@ onMounted(loadFriendsAndRequests);
 	.row-actions {
 		display: flex;
 		gap: 8px;
-	}
-
-	.accept-btn {
-		border: none;
-		background: var(--color-primary);
-		color: var(--color-on-primary);
-		font-weight: 700;
-		font-size: 12px;
-		padding: 7px 15px;
-		border-radius: 9999px;
-		cursor: pointer;
-		font-family: inherit;
-	}
-
-	.decline-btn {
-		border: 1.5px solid rgba(118, 117, 134, 0.3);
-		background: none;
-		color: var(--color-outline);
-		font-weight: 700;
-		font-size: 12px;
-		padding: 7px 14px;
-		border-radius: 9999px;
-		cursor: pointer;
-		font-family: inherit;
 	}
 
 	.empty-hint {

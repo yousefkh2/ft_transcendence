@@ -4,9 +4,13 @@
 		<span class="code">404</span>
 		<h1>Page not found</h1>
 		<p>The page you're looking for doesn't exist or has moved.</p>
-		<RouterLink to="/" class="home-btn">Back to home</RouterLink>
+		<BaseButton to="/" class="home-btn">Back to home</BaseButton>
 	</main>
 </template>
+
+<script setup lang="ts">
+import BaseButton from './base/BaseButton.vue';
+</script>
 
 <style scoped>
 	.not-found {
@@ -53,12 +57,5 @@
 
 	.home-btn {
 		margin-top: 16px;
-		padding: 10px 20px;
-		border-radius: 12px;
-		background: var(--color-primary);
-		color: var(--color-on-primary);
-		font-weight: 700;
-		font-size: 14px;
-		text-decoration: none;
 	}
 </style>

@@ -6,7 +6,7 @@
 				<span class="hero-eyebrow">Next up · Apartment Setup</span>
 				<h1>Ready for a round?</h1>
 				<p>Jump into the live game and get matched with a partner for the next scenario.</p>
-				<RouterLink to="/dev" class="play-btn">Play now</RouterLink>
+				<BaseButton to="/dev" variant="gradient" size="lg">Play now</BaseButton>
 			</div>
 		</section>
 
@@ -67,6 +67,7 @@ import { fetchMatchHistory, type MatchHistoryEntry, type Profile } from '../../a
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseAvatar from '../base/BaseAvatar.vue';
 import BaseCard from '../base/BaseCard.vue';
+import BaseButton from '../base/BaseButton.vue';
 
 const props = defineProps<{ profile: Profile | null }>();
 const emit = defineEmits<{ (e: 'switch-tab', tab: 'friends'): void }>();
@@ -172,20 +173,6 @@ onMounted(async () => {
 		font-size: 15px;
 		line-height: 1.6;
 		margin: 0 0 24px;
-	}
-
-	.play-btn {
-		display: inline-flex;
-		height: 50px;
-		align-items: center;
-		padding: 0 28px;
-		border-radius: 12px;
-		background: linear-gradient(135deg, var(--color-primary), var(--color-primary-container));
-		color: var(--color-on-primary);
-		font-weight: 800;
-		font-size: 15px;
-		box-shadow: 0 12px 28px rgba(70, 72, 212, 0.4);
-		text-decoration: none;
 	}
 
 	.stat-grid {
