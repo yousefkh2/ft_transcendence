@@ -1,6 +1,6 @@
 <template>
 	<main class="not-found">
-		<div class="bolt-mark"></div>
+		<BrandBolt class="bolt-mark" />
 		<span class="code">404</span>
 		<h1>Page not found</h1>
 		<p>The page you're looking for doesn't exist or has moved.</p>
@@ -10,6 +10,7 @@
 
 <script setup lang="ts">
 import BaseButton from './base/BaseButton.vue';
+import BrandBolt from './base/BrandBolt.vue';
 </script>
 
 <style scoped>
@@ -28,11 +29,7 @@ import BaseButton from './base/BaseButton.vue';
 	}
 
 	.bolt-mark {
-		width: 30px;
-		height: 48px;
 		margin-bottom: 8px;
-		background: linear-gradient(160deg, var(--color-secondary-container) 0%, var(--color-tertiary) 45%, var(--color-primary-container) 100%);
-		clip-path: polygon(55% 0%, 25% 55%, 45% 55%, 35% 100%, 80% 40%, 55% 40%, 70% 0%);
 	}
 
 	.code {

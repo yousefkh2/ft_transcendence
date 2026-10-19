@@ -1,7 +1,7 @@
 <template>
 	<section id="gamification" class="gamification">
 		<div class="header">
-			<span class="eyebrow">Gamification</span>
+			<BaseEyebrow>Gamification</BaseEyebrow>
 			<h2 class="title">Progress you can feel every round</h2>
 		</div>
 
@@ -58,6 +58,7 @@
 </template>
 
 <script setup lang="ts">
+import BaseEyebrow from '../base/BaseEyebrow.vue';
 import BaseCard from '../base/BaseCard.vue';
 const friends = [
 	{ name: 'jonas.k', xp: 5820 },
@@ -77,17 +78,6 @@ const friends = [
 		max-width: 620px;
 		margin: 0 auto 48px;
 		text-align: center;
-	}
-
-	.eyebrow {
-		display: inline-block;
-		margin: 0 0 10px;
-		font-family: var(--font-mono);
-		font-weight: 700;
-		font-size: 13px;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: var(--color-primary);
 	}
 
 	.title {

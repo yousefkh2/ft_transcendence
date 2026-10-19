@@ -1,7 +1,7 @@
 <template>
 	<section id="game-modes" class="game-modes">
 		<div class="header">
-			<span class="eyebrow">Game Modes</span>
+			<BaseEyebrow>Game Modes</BaseEyebrow>
 			<h2 class="title">One scenario live. Many more landing.</h2>
 		</div>
 
@@ -48,6 +48,7 @@
 </template>
 
 <script setup lang="ts">
+import BaseEyebrow from '../base/BaseEyebrow.vue';
 import livingroomBg from '../../images/livingroom/livingroom_background.png';
 import missionControlBg from '../../images/livingroom/mission_control_background.png';
 import sofa from '../../images/livingroom/sofa.png';
@@ -73,17 +74,6 @@ const futureModes = ['Market Haggling', "Doctor's Visit", 'Job Interview'];
 		max-width: 620px;
 		margin: 0 auto 48px;
 		text-align: center;
-	}
-
-	.eyebrow {
-		display: inline-block;
-		margin: 0 0 10px;
-		font-family: var(--font-mono);
-		font-weight: 700;
-		font-size: 13px;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: var(--color-primary);
 	}
 
 	.title {

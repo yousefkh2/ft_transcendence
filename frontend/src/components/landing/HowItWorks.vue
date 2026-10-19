@@ -1,7 +1,7 @@
 <template>
 	<section id="how-it-works" class="how-it-works">
 		<div class="header">
-			<span class="eyebrow">How It Works</span>
+			<BaseEyebrow>How It Works</BaseEyebrow>
 			<h2 class="title">Four steps to fluency under pressure</h2>
 		</div>
 
@@ -16,6 +16,7 @@
 </template>
 
 <script setup lang="ts">
+import BaseEyebrow from '../base/BaseEyebrow.vue';
 import BaseCard from '../base/BaseCard.vue';
 const steps = [
 	{
@@ -52,17 +53,6 @@ const steps = [
 		max-width: 620px;
 		margin: 0 auto 48px;
 		text-align: center;
-	}
-
-	.eyebrow {
-		display: inline-block;
-		margin: 0 0 10px;
-		font-family: var(--font-mono);
-		font-weight: 700;
-		font-size: 13px;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: var(--color-primary);
 	}
 
 	.title {

@@ -3,7 +3,7 @@
 		<section class="hero">
 			<div class="hero-glow"></div>
 			<div class="hero-copy">
-				<span class="hero-eyebrow">Next up · Apartment Setup</span>
+				<BaseEyebrow variant="chip">Next up · Apartment Setup</BaseEyebrow>
 				<h1>Ready for a round?</h1>
 				<p>Jump into the live game and get matched with a partner for the next scenario.</p>
 				<BaseButton to="/dev" variant="gradient" size="lg">Play now</BaseButton>
@@ -68,6 +68,7 @@ import BaseAlert from '../base/BaseAlert.vue';
 import BaseAvatar from '../base/BaseAvatar.vue';
 import BaseCard from '../base/BaseCard.vue';
 import BaseButton from '../base/BaseButton.vue';
+import BaseEyebrow from '../base/BaseEyebrow.vue';
 
 const props = defineProps<{ profile: Profile | null }>();
 const emit = defineEmits<{ (e: 'switch-tab', tab: 'friends'): void }>();
@@ -143,20 +144,6 @@ onMounted(async () => {
 	.hero-copy {
 		position: relative;
 		max-width: 460px;
-	}
-
-	.hero-eyebrow {
-		display: inline-flex;
-		padding: 5px 12px;
-		border-radius: 9999px;
-		background: rgba(255, 255, 255, 0.14);
-		color: var(--color-on-primary);
-		font-family: var(--font-mono);
-		font-size: 11px;
-		font-weight: 700;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		margin-bottom: 14px;
 	}
 
 	.hero-copy h1 {

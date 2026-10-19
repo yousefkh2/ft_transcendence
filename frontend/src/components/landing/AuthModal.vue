@@ -9,7 +9,7 @@
 
 				<div class="modal-content">
 					<div class="header">
-						<div class="bolt-mark"></div>
+						<BrandBolt class="bolt-mark" />
 						<h2 class="title">{{ tab === 'login' ? 'Welcome back' : 'Create your account' }}</h2>
 						<p class="subtitle">
 							{{
@@ -95,6 +95,7 @@ import { login, register } from '../../api/auth';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseInput from '../base/BaseInput.vue';
 import BaseButton from '../base/BaseButton.vue';
+import BrandBolt from '../base/BrandBolt.vue';
 
 const router = useRouter();
 
@@ -250,11 +251,7 @@ async function handleRegister() {
 	}
 
 	.bolt-mark {
-		width: 30px;
-		height: 48px;
 		margin: 0 auto 16px;
-		background: linear-gradient(160deg, var(--color-secondary-container) 0%, var(--color-tertiary) 45%, var(--color-primary-container) 100%);
-		clip-path: polygon(55% 0%, 25% 55%, 45% 55%, 35% 100%, 80% 40%, 55% 40%, 70% 0%);
 		filter: drop-shadow(0 8px 14px rgba(70, 72, 212, 0.35));
 	}
 
