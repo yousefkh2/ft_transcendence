@@ -1,7 +1,7 @@
 <template>
 	<main class="landing">
 		<Navbar @open-auth="openAuth" />
-		<Hero />
+		<Hero @open-auth="openAuth" />
 		<HowItWorks />
 		<GameModesPreview />
 		<Gamification />

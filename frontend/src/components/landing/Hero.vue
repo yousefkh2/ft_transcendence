@@ -9,8 +9,8 @@
 				Jump into fast-paced multiplayer games built to get you speaking from day one. Describe, argue, guess, and race the clock - whichever language you're learning.
 			</p>
 			<div class="cta-row">
-				<BaseButton size="lg" pill>Play Now</BaseButton>
-				<BaseButton variant="outline" size="lg" pill>How It Works</BaseButton>
+				<BaseButton size="lg" pill @click="emit('open-auth', 'register')">Play Now</BaseButton>
+				<BaseButton variant="outline" size="lg" pill @click="scrollToHowItWorks">How It Works</BaseButton>
 			</div>
 		</div>
 		<HeroVisual class="hero-visual" />
@@ -20,6 +20,12 @@
 <script setup lang="ts">
 import BaseButton from '../base/BaseButton.vue';
 import HeroVisual from './HeroVisual.vue';
+
+const emit = defineEmits<{ 'open-auth': [tab: 'login' | 'register'] }>();
+
+function scrollToHowItWorks() {
+	document.getElementById('how-it-works')?.scrollIntoView();
+}
 </script>
 
 <style scoped>
