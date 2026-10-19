@@ -32,6 +32,21 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Keeps anchored sections from sliding under the sticky landing navbar. */
+section[id] {
+  scroll-margin-top: 88px;
+}
+
 body {
   margin: 0;
   min-width: 320px;
