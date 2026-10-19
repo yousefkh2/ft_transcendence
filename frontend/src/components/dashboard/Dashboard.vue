@@ -40,6 +40,11 @@
 			<OverviewTab v-else-if="tab === 'overview'" :profile="profile" @switch-tab="tab = $event" />
 			<FriendsTab v-else-if="tab === 'friends'" />
 		</main>
+
+		<footer class="dashboard-footer">
+			<RouterLink to="/privacy">Privacy Policy</RouterLink>
+			<RouterLink to="/terms">Terms of Service</RouterLink>
+		</footer>
 	</div>
 </template>
 
@@ -69,6 +74,8 @@ onMounted(async () => {
 
 <style scoped>
 	.dashboard {
+		display: flex;
+		flex-direction: column;
 		min-height: 100vh;
 		background: var(--color-surface);
 		color: var(--color-on-surface);
@@ -182,8 +189,28 @@ onMounted(async () => {
 	}
 
 	.dashboard-main {
+		flex: 1;
+		width: 100%;
 		max-width: 1180px;
 		margin: 0 auto;
 		padding: 32px;
+	}
+
+	.dashboard-footer {
+		display: flex;
+		justify-content: center;
+		gap: 20px;
+		padding: 20px 32px 28px;
+	}
+
+	.dashboard-footer a {
+		font-size: 12.5px;
+		font-weight: 600;
+		color: var(--color-outline);
+		text-decoration: none;
+	}
+
+	.dashboard-footer a:hover {
+		color: var(--color-on-surface);
 	}
 </style>

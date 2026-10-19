@@ -75,6 +75,11 @@
 								<BaseButton type="submit" variant="gradient" size="lg" block class="submit-btn" :disabled="registerLoading">
 									{{ registerLoading ? 'Creating account…' : 'Create Account' }}
 								</BaseButton>
+								<p class="legal-note">
+									By creating an account, you agree to our
+									<RouterLink to="/terms">Terms of Service</RouterLink> and
+									<RouterLink to="/privacy">Privacy Policy</RouterLink>.
+								</p>
 								<p class="switch-line">
 									Already have an account?
 									<a href="#" @click.prevent="switchTab('login')">Log In</a>
@@ -374,6 +379,19 @@ async function handleRegister() {
 
 	.submit-btn {
 		margin-top: 4px;
+	}
+
+	.legal-note {
+		margin: 0;
+		text-align: center;
+		font-size: 12px;
+		line-height: 1.5;
+		color: var(--color-outline);
+	}
+
+	.legal-note a {
+		color: var(--color-on-surface-variant);
+		font-weight: 600;
 	}
 
 	.switch-line {

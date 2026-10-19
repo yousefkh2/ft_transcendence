@@ -22,6 +22,10 @@
 
 			<div class="bottom">
 				<span class="copyright">© 2026 LingoDash. All rights reserved.</span>
+				<nav class="legal-links" aria-label="Legal">
+					<RouterLink to="/privacy">Privacy Policy</RouterLink>
+					<RouterLink to="/terms">Terms of Service</RouterLink>
+				</nav>
 			</div>
 		</div>
 	</footer>
@@ -94,9 +98,30 @@ import logo from '../../images/logo-transparent.png';
 	}
 
 	.bottom {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
 		margin-top: 32px;
 		padding-top: 20px;
 		border-top: 1px solid rgba(118, 117, 134, 0.12);
+	}
+
+	.legal-links {
+		display: flex;
+		gap: 20px;
+	}
+
+	.legal-links a {
+		font-size: 12.5px;
+		font-weight: 600;
+		color: var(--color-outline);
+		text-decoration: none;
+	}
+
+	.legal-links a:hover {
+		color: var(--color-on-surface);
 	}
 
 	.copyright {
