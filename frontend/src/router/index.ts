@@ -20,9 +20,14 @@ const router = createRouter({
 			component: () => import('../components/dashboard/Dashboard.vue'),
 			meta: { requiresAuth: true },
 		},
+		{ path: '/privacy', name: 'privacy', component: () => import('../components/legal/PrivacyPage.vue') },
+		{ path: '/terms', name: 'terms', component: () => import('../components/legal/TermsPage.vue') },
 		{ path: '/dev', name: 'dev', component: () => import('../components/DevPrototype') },
 		{ path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('../components/NotFoundPage.vue') },
 	],
+	scrollBehavior(_to, _from, savedPosition) {
+		return savedPosition ?? { top: 0, behavior: 'instant' };
+	},
 });
 
 router.beforeEach((to) => {
