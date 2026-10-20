@@ -27,12 +27,12 @@ const steps = [
 	{
 		number: '02',
 		title: 'Get a secret role',
-		description: 'Each player sees different information — nobody has the full picture alone.',
+		description: 'Each player sees different information - nobody has the full picture alone.',
 	},
 	{
 		number: '03',
 		title: 'Speak it out',
-		description: 'Describe, argue, negotiate — out loud, in the target language, before the clock runs out.',
+		description: 'Describe, argue, negotiate - out loud, in the target language, before the clock runs out.',
 	},
 	{
 		number: '04',

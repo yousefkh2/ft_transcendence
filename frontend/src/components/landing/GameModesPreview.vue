@@ -10,7 +10,7 @@
 				<h3 class="mode-title">Apartment Setup</h3>
 				<p class="mode-desc">
 					One player sees the room, the other reads the whiteboard. Move the
-					furniture exactly where the clues say — before the 60-second clock
+					furniture exactly where the clues say - before the 60-second clock
 					runs out.
 				</p>
 				<div class="roles">

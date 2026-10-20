@@ -100,7 +100,7 @@ const recentRounds = computed(() =>
 		sessionId: m.sessionId,
 		modeLabel: formatMode(m.gameMode),
 		whenLabel: formatWhen(m.startedAt),
-		badgeLabel: m.isWinner === true ? 'Won' : m.isWinner === false ? 'Lost' : '—',
+		badgeLabel: m.isWinner === true ? 'Won' : m.isWinner === false ? 'Lost' : '-',
 		badgeClass: m.isWinner === true ? 'won' : m.isWinner === false ? 'lost' : 'pending',
 	})),
 );
