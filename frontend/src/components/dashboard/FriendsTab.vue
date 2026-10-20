@@ -43,7 +43,7 @@
 					</div>
 				</div>
 			</div>
-			<p v-else class="empty-hint">No friends yet — add someone above.</p>
+			<p v-else class="empty-hint">No friends yet - add someone above.</p>
 		</BaseCard>
 	</div>
 </template>

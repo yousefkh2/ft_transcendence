@@ -67,9 +67,9 @@
 									<span class="field-label">Learning language</span>
 									<select v-model="registerForm.language">
 										<option value="de">German</option>
-										<option value="es" disabled>Spanish — coming soon</option>
-										<option value="fr" disabled>French — coming soon</option>
-										<option value="ja" disabled>Japanese — coming soon</option>
+										<option value="es" disabled>Spanish - coming soon</option>
+										<option value="fr" disabled>French - coming soon</option>
+										<option value="ja" disabled>Japanese - coming soon</option>
 									</select>
 								</label>
 								<BaseButton type="submit" variant="gradient" size="lg" block class="submit-btn" :disabled="registerLoading">
