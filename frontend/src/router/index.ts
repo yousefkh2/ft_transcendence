@@ -20,6 +20,12 @@ const router = createRouter({
 			component: () => import('../components/dashboard/Dashboard.vue'),
 			meta: { requiresAuth: true },
 		},
+		{
+			path: '/play',
+			name: 'play',
+			component: () => import('../components/play/PlayPage.vue'),
+			meta: { requiresAuth: true },
+		},
 		{ path: '/privacy', name: 'privacy', component: () => import('../components/legal/PrivacyPage.vue') },
 		{ path: '/terms', name: 'terms', component: () => import('../components/legal/TermsPage.vue') },
 		{ path: '/dev', name: 'dev', component: () => import('../components/DevPrototype') },

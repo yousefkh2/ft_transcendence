@@ -6,7 +6,7 @@
 				<BaseEyebrow variant="chip">Next up · Apartment Setup</BaseEyebrow>
 				<h1>Ready for a round?</h1>
 				<p>Jump into the live game and get matched with a partner for the next scenario.</p>
-				<BaseButton to="/dev" variant="gradient" size="lg">Play now</BaseButton>
+				<BaseButton to="/play" variant="gradient" size="lg">Play now</BaseButton>
 			</div>
 		</section>
 
