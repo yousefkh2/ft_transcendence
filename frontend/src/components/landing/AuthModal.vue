@@ -1,7 +1,7 @@
 <template>
 	<Transition name="overlay">
 		<div v-if="open" class="overlay" @click.self="close">
-			<div class="modal">
+			<div ref="modalEl" class="modal">
 				<div class="glow glow-top"></div>
 				<div class="glow glow-bottom"></div>
 
@@ -42,10 +42,26 @@
 
 					<div class="form-area">
 						<Transition :name="direction === 'forward' ? 'slide-fwd' : 'slide-back'">
-							<form v-if="tab === 'login'" key="login" class="auth-form" @submit.prevent="handleLogin">
+							<form v-if="tab === 'login'" key="login" class="auth-form" novalidate @submit.prevent="handleLogin">
 								<BaseAlert v-if="loginError">{{ loginError }}</BaseAlert>
-								<BaseInput v-model="loginForm.email" label="Email" type="email" required placeholder="you@example.com" />
-								<BaseInput v-model="loginForm.password" label="Password" type="password" required placeholder="••••••••" />
+								<BaseInput
+									v-model="loginForm.email"
+									label="Email"
+									type="email"
+									autocomplete="email"
+									required
+									placeholder="you@example.com"
+									:error="loginErrors.email"
+								/>
+								<BaseInput
+									v-model="loginForm.password"
+									label="Password"
+									type="password"
+									autocomplete="current-password"
+									required
+									placeholder="••••••••"
+									:error="loginErrors.password"
+								/>
 								<a href="#" class="forgot-link" @click.prevent="showForgotNotice = true">Forgot password?</a>
 								<BaseAlert v-if="showForgotNotice" variant="info" class="forgot-notice">
 									Password reset isn't available yet - hang tight, it's coming soon.
@@ -58,11 +74,36 @@
 									<a href="#" @click.prevent="switchTab('register')">Sign Up</a>
 								</p>
 							</form>
-							<form v-else key="register" class="auth-form" @submit.prevent="handleRegister">
+							<form v-else key="register" class="auth-form" novalidate @submit.prevent="handleRegister">
 								<BaseAlert v-if="registerError">{{ registerError }}</BaseAlert>
-								<BaseInput v-model="registerForm.username" label="Username" type="text" required placeholder="yourname" />
-								<BaseInput v-model="registerForm.email" label="Email" type="email" required placeholder="you@example.com" />
-								<BaseInput v-model="registerForm.password" label="Password" type="password" required placeholder="••••••••" />
+								<BaseInput
+									v-model="registerForm.username"
+									label="Username"
+									type="text"
+									autocomplete="username"
+									required
+									placeholder="yourname"
+									:error="registerErrors.username"
+								/>
+								<BaseInput
+									v-model="registerForm.email"
+									label="Email"
+									type="email"
+									autocomplete="email"
+									required
+									placeholder="you@example.com"
+									:error="registerErrors.email"
+								/>
+								<BaseInput
+									v-model="registerForm.password"
+									label="Password"
+									type="password"
+									autocomplete="new-password"
+									required
+									placeholder="••••••••"
+									:hint="PASSWORD_HINT"
+									:error="registerErrors.password"
+								/>
 								<label class="field">
 									<span class="field-label">Learning language</span>
 									<select v-model="registerForm.language">
@@ -94,9 +135,16 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { nextTick, reactive, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { login, register } from '../../api/auth';
+import {
+	PASSWORD_HINT,
+	validateEmail,
+	validateLoginPassword,
+	validateNewPassword,
+	validateUsername,
+} from '../../validation/rules';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseInput from '../base/BaseInput.vue';
 import BaseButton from '../base/BaseButton.vue';
@@ -110,13 +158,47 @@ const tab = defineModel<'login' | 'register'>('tab', { default: 'login' });
 const direction = ref<'forward' | 'backward'>('forward');
 const showForgotNotice = ref(false);
 
+const modalEl = ref<HTMLElement | null>(null);
+
 const loginForm = reactive({ email: '', password: '' });
+const loginErrors = reactive({ email: '', password: '' });
+const loginSubmitted = ref(false);
 const loginError = ref('');
 const loginLoading = ref(false);
 
 const registerForm = reactive({ username: '', email: '', password: '', language: 'de' });
+const registerErrors = reactive({ username: '', email: '', password: '' });
+const registerSubmitted = ref(false);
 const registerError = ref('');
 const registerLoading = ref(false);
+
+function validateLoginForm() {
+	loginErrors.email = validateEmail(loginForm.email);
+	loginErrors.password = validateLoginPassword(loginForm.password);
+	return !loginErrors.email && !loginErrors.password;
+}
+
+function validateRegisterForm() {
+	registerErrors.username = validateUsername(registerForm.username);
+	registerErrors.email = validateEmail(registerForm.email);
+	registerErrors.password = validateNewPassword(registerForm.password);
+	return !registerErrors.username && !registerErrors.email && !registerErrors.password;
+}
+
+// After a first submit attempt, errors update live while the user fixes them.
+watch(loginForm, () => loginSubmitted.value && validateLoginForm());
+watch(registerForm, () => registerSubmitted.value && validateRegisterForm());
+
+function focusFirstInvalidField() {
+	nextTick(() => modalEl.value?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus());
+}
+
+function resetValidation() {
+	loginSubmitted.value = false;
+	registerSubmitted.value = false;
+	Object.assign(loginErrors, { email: '', password: '' });
+	Object.assign(registerErrors, { username: '', email: '', password: '' });
+}
 
 function switchTab(next: 'login' | 'register') {
 	if (next === tab.value) return;
@@ -125,20 +207,27 @@ function switchTab(next: 'login' | 'register') {
 	loginError.value = '';
 	registerError.value = '';
 	showForgotNotice.value = false;
+	resetValidation();
 }
 
 function close() {
 	loginError.value = '';
 	registerError.value = '';
 	showForgotNotice.value = false;
+	resetValidation();
 	open.value = false;
 }
 
 async function handleLogin() {
 	loginError.value = '';
+	loginSubmitted.value = true;
+	if (!validateLoginForm()) {
+		focusFirstInvalidField();
+		return;
+	}
 	loginLoading.value = true;
 	try {
-		await login(loginForm.email, loginForm.password);
+		await login(loginForm.email.trim(), loginForm.password);
 		close();
 		router.push('/dashboard');
 	} catch (err) {
@@ -150,10 +239,17 @@ async function handleLogin() {
 
 async function handleRegister() {
 	registerError.value = '';
+	registerSubmitted.value = true;
+	if (!validateRegisterForm()) {
+		focusFirstInvalidField();
+		return;
+	}
 	registerLoading.value = true;
+	const username = registerForm.username.trim();
+	const email = registerForm.email.trim();
 	try {
-		await register(registerForm.username, registerForm.email, registerForm.password);
-		await login(registerForm.email, registerForm.password);
+		await register(username, email, registerForm.password);
+		await login(email, registerForm.password);
 		close();
 		router.push('/dashboard');
 	} catch (err) {
@@ -352,7 +448,7 @@ async function handleRegister() {
 		padding: 0 14px;
 		border-radius: 12px;
 		border: 1px solid rgba(118, 117, 134, 0.18);
-		background: rgba(249, 249, 255, 0.8);
+		background: var(--color-surface-raised);
 		font-family: var(--font-display);
 		font-size: 14px;
 		color: var(--color-on-surface);

@@ -6,7 +6,7 @@
 				<p class="subtitle">Play with people you know.</p>
 			</div>
 			<form class="add-form" @submit.prevent="addFriend">
-				<BaseInput v-model="newUsername" size="sm" class="add-input" type="text" placeholder="Add by username" aria-label="Username to add as friend" :disabled="sending" />
+				<BaseInput v-model="newUsername" size="sm" class="add-input" :error="addError" type="text" placeholder="Add by username" aria-label="Username to add as friend" :disabled="sending" />
 				<BaseButton type="submit" :disabled="sending || !newUsername.trim()">Add</BaseButton>
 			</form>
 		</div>
@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import {
 	fetchFriends,
 	fetchFriendRequests,
@@ -64,6 +64,8 @@ import BaseAvatar from '../base/BaseAvatar.vue';
 import BaseCard from '../base/BaseCard.vue';
 import BaseInput from '../base/BaseInput.vue';
 import BaseButton from '../base/BaseButton.vue';
+
+const props = defineProps<{ currentUsername?: string }>();
 
 const friends = ref<Friend[]>([]);
 const requests = ref<FriendRequest[]>([]);
@@ -86,12 +88,27 @@ async function loadFriendsAndRequests() {
 	}
 }
 
+watch(newUsername, () => {
+	addError.value = '';
+});
+
+// Catches requests the backend would reject anyway, so they never leave the browser.
+function checkNewFriend(username: string): string {
+	if (username === props.currentUsername) return "You can't add yourself as a friend.";
+	if (friends.value.some((f) => f.friendUsername === username)) return `${username} is already your friend.`;
+	if (requests.value.some((r) => r.requesterUsername === username)) {
+		return `${username} already sent you a request. You can accept it below.`;
+	}
+	return '';
+}
+
 async function addFriend() {
 	const username = newUsername.value.trim();
 	if (!username) return;
 
-	addError.value = '';
+	addError.value = checkNewFriend(username);
 	addNotice.value = '';
+	if (addError.value) return;
 	sending.value = true;
 	try {
 		await sendFriendRequest(username);
