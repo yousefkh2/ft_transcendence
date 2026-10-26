@@ -22,6 +22,11 @@ const router = createRouter({
 				{ path: '', name: 'dashboard', component: () => import('../components/dashboard/OverviewTab.vue') },
 				{ path: 'friends', name: 'friends', component: () => import('../components/dashboard/FriendsTab.vue') },
 				{ path: 'profile', name: 'profile', component: () => import('../components/dashboard/ProfileTab.vue') },
+				{
+					path: 'profile/:username',
+					name: 'user-profile',
+					component: () => import('../components/dashboard/UserProfileTab.vue'),
+				},
 			],
 		},
 		{

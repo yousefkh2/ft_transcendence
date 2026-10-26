@@ -1,23 +1,21 @@
 <template>
 	<div class="profile">
-		<BaseCard class="profile-head">
-			<BaseAvatar :name="profile?.username" size="lg" variant="gradient" />
-			<div class="identity">
-				<h1>{{ profile?.username ?? '…' }}</h1>
-				<p v-if="profile" class="email">
-					{{ profile.email }}
-					<span class="private">Only visible to you</span>
-				</p>
-			</div>
-		</BaseCard>
+		<ProfileHead :name="profile?.username">
+			<p v-if="profile" class="email">
+				{{ profile.email }}
+				<span class="private">Only visible to you</span>
+			</p>
+			<p v-if="profile" class="member-since">Member since {{ formatDate(profile.createdAt) }}</p>
+		</ProfileHead>
 
-		<section v-if="!historyError" class="stat-grid" aria-label="Your stats">
-			<BaseCard v-for="stat in stats" :key="stat.label" size="sm">
-				<span class="stat-label">{{ stat.label }}</span>
-				<div class="stat-value">{{ stat.value }}</div>
-				<p class="stat-sub">{{ stat.sub }}</p>
-			</BaseCard>
-		</section>
+		<ProfileStats
+			v-if="!historyError"
+			:xp="profile?.xp ?? null"
+			:rounds="matches.length"
+			:wins="wins"
+			:losses="losses"
+			:rounds-sub="`${countSince(matches, 7)} this week`"
+		/>
 
 		<section class="panels">
 			<BaseCard>
@@ -50,36 +48,23 @@ import { computed, onMounted, ref } from 'vue';
 import { fetchFriends, type Friend } from '../../api/friends';
 import { fetchMatchHistory, type MatchHistoryEntry, type Profile } from '../../api/users';
 import { countSince, roundResult } from '../../utils/matches';
+import { formatDate } from '../../utils/format';
 import BaseAlert from '../base/BaseAlert.vue';
-import BaseAvatar from '../base/BaseAvatar.vue';
 import BaseButton from '../base/BaseButton.vue';
 import BaseCard from '../base/BaseCard.vue';
+import ProfileHead from './ProfileHead.vue';
+import ProfileStats from './ProfileStats.vue';
 import RoundList from './RoundList.vue';
 
-const props = defineProps<{ profile: Profile | null }>();
+defineProps<{ profile: Profile | null }>();
 
 const matches = ref<MatchHistoryEntry[]>([]);
 const friends = ref<Friend[]>([]);
 const historyError = ref(false);
 const friendsError = ref(false);
 
-const xpDisplay = computed(() => (props.profile ? props.profile.xp.toLocaleString() : '…'));
-
-const stats = computed(() => {
-	const wins = matches.value.filter((m) => roundResult(m) === 'won').length;
-	const losses = matches.value.filter((m) => roundResult(m) === 'lost').length;
-	const decided = wins + losses;
-	return [
-		{ label: 'Total XP', value: xpDisplay.value, sub: 'earned so far' },
-		{ label: 'Rounds played', value: matches.value.length, sub: `${countSince(matches.value, 7)} this week` },
-		{ label: 'Wins', value: wins, sub: `${losses} ${losses === 1 ? 'loss' : 'losses'}` },
-		{
-			label: 'Win rate',
-			value: decided ? `${Math.round((wins / decided) * 100)}%` : '-',
-			sub: decided ? `of ${decided} finished ${decided === 1 ? 'round' : 'rounds'}` : 'no finished rounds yet',
-		},
-	];
-});
+const wins = computed(() => matches.value.filter((m) => roundResult(m) === 'won').length);
+const losses = computed(() => matches.value.filter((m) => roundResult(m) === 'lost').length);
 
 // Loaded independently, so one failing request does not hide the rest of the profile.
 onMounted(async () => {
@@ -97,27 +82,6 @@ onMounted(async () => {
 		gap: 22px;
 	}
 
-	.profile-head {
-		display: flex;
-		align-items: center;
-		gap: 20px;
-	}
-
-	.identity {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.identity h1 {
-		margin: 0 0 6px;
-		font-size: 26px;
-		font-weight: 800;
-		line-height: 1.1;
-		letter-spacing: -0.02em;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
 	.email {
 		display: flex;
 		flex-wrap: wrap;
@@ -129,6 +93,12 @@ onMounted(async () => {
 		overflow-wrap: anywhere;
 	}
 
+	.member-since {
+		margin: 6px 0 0;
+		font-size: 12.5px;
+		color: var(--color-outline);
+	}
+
 	.private {
 		padding: 2px 8px;
 		border-radius: var(--radius-pill);
@@ -136,28 +106,6 @@ onMounted(async () => {
 		font-size: 11.5px;
 		font-weight: 600;
 		color: var(--color-outline);
-	}
-
-	.stat-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-		gap: 16px;
-	}
-
-	.stat-label {
-		font-family: var(--font-mono);
-		font-size: 11.5px;
-		font-weight: 700;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: var(--color-outline);
-	}
-
-	.stat-value {
-		font-size: 30px;
-		font-weight: 800;
-		margin: 8px 0 2px;
-		letter-spacing: -0.02em;
 	}
 
 	.stat-sub {
@@ -219,14 +167,6 @@ onMounted(async () => {
 	}
 
 	@media (max-width: 720px) {
-		.profile-head {
-			flex-wrap: wrap;
-		}
-
-		.identity h1 {
-			font-size: 22px;
-		}
-
 		.panels {
 			grid-template-columns: 1fr;
 		}

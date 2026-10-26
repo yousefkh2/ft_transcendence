@@ -42,7 +42,7 @@
 					<div v-for="friend in friendsPreview" :key="friend.friendId" class="friend-row">
 						<BaseAvatar :name="friend.friendUsername" />
 						<div class="friend-info">
-							<div class="friend-name">{{ friend.friendUsername }}</div>
+							<RouterLink :to="{ name: 'user-profile', params: { username: friend.friendUsername } }" class="friend-name">{{ friend.friendUsername }}</RouterLink>
 						</div>
 					</div>
 				</div>
@@ -213,8 +213,18 @@ onMounted(async () => {
 	}
 
 	.friend-name {
+		display: block;
+		color: inherit;
+		text-decoration: none;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 		font-size: 13.5px;
 		font-weight: 700;
+	}
+
+	.friend-name:hover {
+		text-decoration: underline;
 	}
 
 	.empty-hint {
