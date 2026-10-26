@@ -26,7 +26,7 @@
 
 		<main class="dashboard-main">
 			<BaseAlert v-if="error" size="md">{{ error }}</BaseAlert>
-			<RouterView v-else :profile="profile" />
+			<RouterView v-else :profile="profile" @profile-updated="profile = $event" />
 		</main>
 
 		<footer class="dashboard-footer">
