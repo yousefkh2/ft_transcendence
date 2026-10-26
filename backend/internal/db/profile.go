@@ -39,6 +39,7 @@ func GetMatchHistory(ctx context.Context, pool *pgxpool.Pool, userID string) ([]
 		FROM session_participants sp
 		JOIN game_sessions gs ON gs.id = sp.session_id
 		WHERE sp.user_id = $1
+		AND gs.status = 'completed'
 		ORDER BY gs.started_at DESC`,
 		userID,
 	)

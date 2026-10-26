@@ -65,7 +65,7 @@ func createSession(t *testing.T, pool *pgxpool.Pool, userID, status string, role
 func TestGetMatchHistory_ParticipantWithoutRole(t *testing.T) {
 	pool := testPool(t)
 	userID := createUser(t, pool)
-	createSession(t, pool, userID, "active", nil)
+	createSession(t, pool, userID, "completed", nil)
 
 	matches, err := db.GetMatchHistory(context.Background(), pool, userID)
 	if err != nil {
@@ -91,5 +91,21 @@ func TestGetMatchHistory_ParticipantWithRole(t *testing.T) {
 	}
 	if len(matches) != 1 || matches[0].Role == nil || *matches[0].Role != role {
 		t.Fatalf("expected one match with role %q, got %+v", role, matches)
+	}
+}
+
+func TestGetMatchHistory_OnlyCompletedSessions(t *testing.T) {
+	pool := testPool(t)
+	userID := createUser(t, pool)
+	createSession(t, pool, userID, "waiting", nil)
+	createSession(t, pool, userID, "active", nil)
+	createSession(t, pool, userID, "completed", nil)
+
+	matches, err := db.GetMatchHistory(context.Background(), pool, userID)
+	if err != nil {
+		t.Fatalf("GetMatchHistory: %v", err)
+	}
+	if len(matches) != 1 || matches[0].Status != "completed" {
+		t.Fatalf("expected only the completed session, got %+v", matches)
 	}
 }
