@@ -13,7 +13,7 @@ export interface MatchHistoryEntry {
 	status: string;
 	startedAt: string;
 	endedAt: string | null;
-	role: string;
+	role?: string;
 	isWinner: boolean | null;
 }
 
