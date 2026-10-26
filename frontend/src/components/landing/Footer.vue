@@ -8,8 +8,8 @@
 						<span class="brand-name">LingoDash</span>
 					</div>
 					<p class="brand-desc">
-						Real conversation, real pressure. Available now: German. Coming
-						soon: Spanish, French, Japanese.
+						Real conversation, real pressure. Available now: German, English,
+						Polish and Turkish.
 					</p>
 				</div>
 
