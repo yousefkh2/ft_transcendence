@@ -1,7 +1,7 @@
 <template>
 	<div class="legal">
 		<header class="legal-header">
-			<RouterLink to="/" class="brand">
+			<RouterLink to="/" class="brand" aria-label="LingoDash home">
 				<img :src="logo" alt="" class="brand-logo" />
 				<span class="brand-name">LingoDash</span>
 			</RouterLink>
@@ -141,6 +141,7 @@ defineProps<{ title: string; updated: string }>();
 	.legal-content :slotted(a) {
 		color: var(--color-primary);
 		font-weight: 600;
+		overflow-wrap: anywhere;
 	}
 
 	.legal-footer {
@@ -184,6 +185,12 @@ defineProps<{ title: string; updated: string }>();
 
 		.legal-main {
 			padding: 32px 16px 48px;
+		}
+	}
+
+	@media (max-width: 400px) {
+		.brand-name {
+			display: none;
 		}
 	}
 </style>
