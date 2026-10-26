@@ -1,5 +1,5 @@
 <template>
-	<LegalLayout title="Terms of Service" updated="October 19, 2026">
+	<LegalLayout title="Terms of Service" updated="October 26, 2026">
 		<p>
 			These terms are the rules for using LingoDash. By creating an account or playing a round, you agree to
 			them. Please read them together with our <RouterLink to="/privacy">Privacy Policy</RouterLink>.
@@ -74,8 +74,7 @@
 				serious the problem is.
 			</li>
 			<li>
-				You can stop using LingoDash at any time and ask us to delete your account through the contact in
-				section 11.
+				You can stop using LingoDash at any time and delete your account yourself on your profile page.
 			</li>
 		</ul>
 

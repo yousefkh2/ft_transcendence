@@ -105,8 +105,10 @@
 
 		<h2>7. How long we keep your data</h2>
 		<p>
-			We keep your data for as long as your account exists. When your account is deleted, your profile,
-			friendships, rounds and flashcards are deleted with it.
+			We keep your data for as long as your account exists. You can delete your account yourself at any
+			time on your profile page (Dashboard, then Profile, then Delete account). Your profile, friendships,
+			flashcards and your entries in past rounds are deleted right away. Finished rounds you played stay in
+			the other player's match history, without any link to your account.
 		</p>
 
 		<h2>8. Your rights</h2>
@@ -119,8 +121,8 @@
 			<li>receive your data in a portable format.</li>
 		</ul>
 		<p>
-			To use any of these rights, contact the team through the project repository linked in section 1. You
-			can also file a complaint with a data protection authority, for example the State Commissioner for
+			You can delete your account yourself as described in section 7. To use any of the other rights,
+			contact the team through the project repository linked in section 1. You can also file a complaint with a data protection authority, for example the State Commissioner for
 			Data Protection and Freedom of Information Baden-Württemberg.
 		</p>
 
