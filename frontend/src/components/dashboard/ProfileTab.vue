@@ -40,6 +40,8 @@
 				<BaseButton :to="{ name: 'friends' }" variant="outline" size="sm" pill>Manage friends</BaseButton>
 			</BaseCard>
 		</section>
+
+		<DeleteAccountCard />
 	</div>
 </template>
 
@@ -52,6 +54,7 @@ import { formatDate } from '../../utils/format';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseButton from '../base/BaseButton.vue';
 import BaseCard from '../base/BaseCard.vue';
+import DeleteAccountCard from './DeleteAccountCard.vue';
 import ProfileHead from './ProfileHead.vue';
 import ProfileStats from './ProfileStats.vue';
 import RoundList from './RoundList.vue';
