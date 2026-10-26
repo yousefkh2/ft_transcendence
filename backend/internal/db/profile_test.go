@@ -175,7 +175,7 @@ func TestUpdateProfile_ChangesOnlyGivenFields(t *testing.T) {
 	userID, oldName := createUser(t, pool)
 	newName := oldName + "x"
 
-	p, err := db.UpdateProfile(ctx, pool, userID, &newName, nil)
+	p, err := db.UpdateProfile(ctx, pool, userID, &newName, nil, nil)
 	if err != nil {
 		t.Fatalf("UpdateProfile: %v", err)
 	}
@@ -189,7 +189,7 @@ func TestUpdateProfile_TakenUsernameFails(t *testing.T) {
 	_, taken := createUser(t, pool)
 	userID, _ := createUser(t, pool)
 
-	if _, err := db.UpdateProfile(context.Background(), pool, userID, &taken, nil); err == nil {
+	if _, err := db.UpdateProfile(context.Background(), pool, userID, &taken, nil, nil); err == nil {
 		t.Fatalf("expected a unique violation when taking another user's name")
 	}
 }
@@ -204,5 +204,22 @@ func TestUpdatePasswordHash(t *testing.T) {
 	}
 	if hash, err := db.GetPasswordHash(ctx, pool, userID); err != nil || hash != "newhash" {
 		t.Fatalf("expected stored hash, got %q (err %v)", hash, err)
+	}
+}
+
+func TestLearningLanguage_DefaultAndUpdate(t *testing.T) {
+	pool := testPool(t)
+	ctx := context.Background()
+	userID, username := createUser(t, pool)
+
+	if p, err := db.GetProfile(ctx, pool, userID); err != nil || p.LearningLanguage != "de" {
+		t.Fatalf("new users should learn German by default, got %q (err %v)", p.LearningLanguage, err)
+	}
+	lang := "pl"
+	if p, err := db.UpdateProfile(ctx, pool, userID, nil, nil, &lang); err != nil || p.LearningLanguage != "pl" {
+		t.Fatalf("UpdateProfile language: got %q (err %v)", p.LearningLanguage, err)
+	}
+	if p, err := db.GetPublicProfile(ctx, pool, username); err != nil || p.LearningLanguage != "pl" {
+		t.Fatalf("public profile should show the learning language, got %q (err %v)", p.LearningLanguage, err)
 	}
 }

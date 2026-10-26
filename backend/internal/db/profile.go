@@ -13,6 +13,7 @@ type Profile struct {
 	Email		string	`json:"email"`
 	XP			int		`json:"xp"`
 	CreatedAt	time.Time	`json:"createdAt"`
+	LearningLanguage	string	`json:"learningLanguage"`
 }
 
 type MatchHistoryEntry struct {
@@ -28,9 +29,9 @@ type MatchHistoryEntry struct {
 func GetProfile(ctx context.Context, pool *pgxpool.Pool, userID string) (Profile, error) {
 	p := Profile{ID: userID}
 	err := pool.QueryRow(ctx,
-		`SELECT username, email, xp, created_at FROM users WHERE id = $1`,
+		`SELECT username, email, xp, created_at, learning_lang FROM users WHERE id = $1`,
 		userID,
-	).Scan(&p.Username, &p.Email, &p.XP, &p.CreatedAt)
+	).Scan(&p.Username, &p.Email, &p.XP, &p.CreatedAt, &p.LearningLanguage)
 	return p, err
 }
 
@@ -39,6 +40,7 @@ type PublicProfile struct {
 	Username	string		`json:"username"`
 	XP			int			`json:"xp"`
 	CreatedAt	time.Time	`json:"createdAt"`
+	LearningLanguage	string	`json:"learningLanguage"`
 	RoundsPlayed	int		`json:"roundsPlayed"`
 	Wins		int			`json:"wins"`
 	Losses		int			`json:"losses"`
@@ -47,7 +49,7 @@ type PublicProfile struct {
 func GetPublicProfile(ctx context.Context, pool *pgxpool.Pool, username string) (PublicProfile, error) {
 	var p PublicProfile
 	err := pool.QueryRow(ctx,
-		`SELECT u.username, u.xp, u.created_at,
+		`SELECT u.username, u.xp, u.created_at, u.learning_lang,
 			COUNT(gs.id) FILTER (WHERE gs.status = 'completed'),
 			COUNT(gs.id) FILTER (WHERE gs.status = 'completed' AND sp.is_winner),
 			COUNT(gs.id) FILTER (WHERE gs.status = 'completed' AND NOT sp.is_winner)
@@ -57,7 +59,7 @@ func GetPublicProfile(ctx context.Context, pool *pgxpool.Pool, username string) 
 		WHERE u.username = $1
 		GROUP BY u.id`,
 		username,
-	).Scan(&p.Username, &p.XP, &p.CreatedAt, &p.RoundsPlayed, &p.Wins, &p.Losses)
+	).Scan(&p.Username, &p.XP, &p.CreatedAt, &p.LearningLanguage, &p.RoundsPlayed, &p.Wins, &p.Losses)
 	return p, err
 }
 
@@ -122,15 +124,16 @@ func GetPasswordHash(ctx context.Context, pool *pgxpool.Pool, userID string) (st
 	return hash, err
 }
 
-// UpdateProfile changes username and/or email. A nil value keeps the current one.
-func UpdateProfile(ctx context.Context, pool *pgxpool.Pool, userID string, username, email *string) (Profile, error) {
+// UpdateProfile changes username, email and/or learning language. A nil value keeps the current one.
+func UpdateProfile(ctx context.Context, pool *pgxpool.Pool, userID string, username, email, learningLang *string) (Profile, error) {
 	p := Profile{ID: userID}
 	err := pool.QueryRow(ctx,
-		`UPDATE users SET username = COALESCE($2, username), email = COALESCE($3, email)
+		`UPDATE users SET username = COALESCE($2, username), email = COALESCE($3, email),
+			learning_lang = COALESCE($4, learning_lang)
 		WHERE id = $1
-		RETURNING username, email, xp, created_at`,
-		userID, username, email,
-	).Scan(&p.Username, &p.Email, &p.XP, &p.CreatedAt)
+		RETURNING username, email, xp, created_at, learning_lang`,
+		userID, username, email, learningLang,
+	).Scan(&p.Username, &p.Email, &p.XP, &p.CreatedAt, &p.LearningLanguage)
 	return p, err
 }
 

@@ -43,6 +43,7 @@ func TestRegister_RejectsInvalidInput(t *testing.T) {
 		{"weak password", `{"username":"mira","email":"a@example.com","password":"password"}`, "Use at least one letter and one number."},
 		{"password over bcrypt limit", `{"username":"mira","email":"a@example.com","password":"a1` + strings.Repeat("x", 80) + `"}`, "Password is too long."},
 		{"only spaces count as empty", `{"username":"   ","email":"a@example.com","password":"GoodPass123"}`, "Please choose a username."},
+		{"unsupported learning language", `{"username":"mira","email":"a@example.com","password":"GoodPass123","learningLanguage":"xx"}`, "Please choose a supported language."},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {

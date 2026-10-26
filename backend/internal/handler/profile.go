@@ -93,9 +93,10 @@ func (h *ProfileHandler) HandleDeleteAccount(c echo.Context) error {
 }
 
 type updateProfileRequest struct {
-	Username        *string `json:"username"`
-	Email           *string `json:"email"`
-	CurrentPassword string  `json:"currentPassword"`
+	Username         *string `json:"username"`
+	Email            *string `json:"email"`
+	LearningLanguage *string `json:"learningLanguage"`
+	CurrentPassword  string  `json:"currentPassword"`
 }
 
 // HandleUpdateProfile changes username and/or email. A new email needs the current password,
@@ -108,7 +109,7 @@ func (h *ProfileHandler) HandleUpdateProfile(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
 	}
-	if req.Username == nil && req.Email == nil {
+	if req.Username == nil && req.Email == nil && req.LearningLanguage == nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "nothing to update")
 	}
 
@@ -118,6 +119,9 @@ func (h *ProfileHandler) HandleUpdateProfile(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, msg)
 		}
 		req.Username = &username
+	}
+	if req.LearningLanguage != nil && !db.SupportedLobbyLangs[*req.LearningLanguage] {
+		return echo.NewHTTPError(http.StatusBadRequest, unsupportedLanguageMsg)
 	}
 	if req.Email != nil {
 		email := strings.TrimSpace(*req.Email)
@@ -137,7 +141,7 @@ func (h *ProfileHandler) HandleUpdateProfile(c echo.Context) error {
 		}
 	}
 
-	profile, err := db.UpdateProfile(ctx, h.DB, userID, req.Username, req.Email)
+	profile, err := db.UpdateProfile(ctx, h.DB, userID, req.Username, req.Email, req.LearningLanguage)
 	if err != nil {
 		if msg := uniqueViolationMessage(err); msg != "" {
 			return echo.NewHTTPError(http.StatusConflict, msg)

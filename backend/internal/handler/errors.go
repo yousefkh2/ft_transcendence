@@ -22,3 +22,8 @@ func uniqueViolationMessage(err error) string {
 		return "user already exists"
 	}
 }
+
+const (
+	defaultLearningLanguage = "de"
+	unsupportedLanguageMsg  = "Please choose a supported language."
+)
