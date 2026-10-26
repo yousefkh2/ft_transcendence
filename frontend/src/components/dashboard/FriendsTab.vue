@@ -21,7 +21,7 @@
 				<div v-for="request in requests" :key="request.id" class="row">
 					<BaseAvatar :name="request.requesterUsername" />
 					<div class="row-info">
-						<div class="row-name">{{ request.requesterUsername }}</div>
+						<RouterLink :to="{ name: 'user-profile', params: { username: request.requesterUsername } }" class="row-name">{{ request.requesterUsername }}</RouterLink>
 						<div class="row-meta">Sent {{ formatDate(request.createdAt) }}</div>
 					</div>
 					<div class="row-actions">
@@ -38,7 +38,7 @@
 				<div v-for="friend in friends" :key="friend.friendId" class="row">
 					<BaseAvatar :name="friend.friendUsername" />
 					<div class="row-info">
-						<div class="row-name">{{ friend.friendUsername }}</div>
+						<RouterLink :to="{ name: 'user-profile', params: { username: friend.friendUsername } }" class="row-name">{{ friend.friendUsername }}</RouterLink>
 						<div class="row-meta">Friends since {{ formatDate(friend.createdAt) }}</div>
 					</div>
 				</div>
@@ -60,6 +60,7 @@ import {
 	type FriendRequest,
 } from '../../api/friends';
 import type { Profile } from '../../api/users';
+import { formatDate } from '../../utils/format';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseAvatar from '../base/BaseAvatar.vue';
 import BaseCard from '../base/BaseCard.vue';
@@ -76,10 +77,6 @@ const newUsername = ref('');
 const sending = ref(false);
 const addError = ref('');
 const addNotice = ref('');
-
-function formatDate(iso: string) {
-	return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-}
 
 async function loadFriendsAndRequests() {
 	try {
@@ -203,11 +200,18 @@ onMounted(loadFriendsAndRequests);
 	}
 
 	.row-name {
+		display: block;
+		color: inherit;
+		text-decoration: none;
 		font-size: 13.5px;
 		font-weight: 700;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+	}
+
+	.row-name:hover {
+		text-decoration: underline;
 	}
 
 	.row-meta {

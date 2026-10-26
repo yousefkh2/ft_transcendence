@@ -12,6 +12,7 @@ type Profile struct {
 	Username	string	`json:"username"`
 	Email		string	`json:"email"`
 	XP			int		`json:"xp"`
+	CreatedAt	time.Time	`json:"createdAt"`
 }
 
 type MatchHistoryEntry struct {
@@ -27,9 +28,36 @@ type MatchHistoryEntry struct {
 func GetProfile(ctx context.Context, pool *pgxpool.Pool, userID string) (Profile, error) {
 	p := Profile{ID: userID}
 	err := pool.QueryRow(ctx,
-		`SELECT username, email, xp FROM users WHERE id = $1`,
+		`SELECT username, email, xp, created_at FROM users WHERE id = $1`,
 		userID,
-	).Scan(&p.Username, &p.Email, &p.XP)
+	).Scan(&p.Username, &p.Email, &p.XP, &p.CreatedAt)
+	return p, err
+}
+
+// PublicProfile is what other logged-in users may see: no email, only completed rounds count.
+type PublicProfile struct {
+	Username	string		`json:"username"`
+	XP			int			`json:"xp"`
+	CreatedAt	time.Time	`json:"createdAt"`
+	RoundsPlayed	int		`json:"roundsPlayed"`
+	Wins		int			`json:"wins"`
+	Losses		int			`json:"losses"`
+}
+
+func GetPublicProfile(ctx context.Context, pool *pgxpool.Pool, username string) (PublicProfile, error) {
+	var p PublicProfile
+	err := pool.QueryRow(ctx,
+		`SELECT u.username, u.xp, u.created_at,
+			COUNT(gs.id) FILTER (WHERE gs.status = 'completed'),
+			COUNT(gs.id) FILTER (WHERE gs.status = 'completed' AND sp.is_winner),
+			COUNT(gs.id) FILTER (WHERE gs.status = 'completed' AND NOT sp.is_winner)
+		FROM users u
+		LEFT JOIN session_participants sp ON sp.user_id = u.id
+		LEFT JOIN game_sessions gs ON gs.id = sp.session_id
+		WHERE u.username = $1
+		GROUP BY u.id`,
+		username,
+	).Scan(&p.Username, &p.XP, &p.CreatedAt, &p.RoundsPlayed, &p.Wins, &p.Losses)
 	return p, err
 }
 

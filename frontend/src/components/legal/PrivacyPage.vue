@@ -1,5 +1,5 @@
 <template>
-	<LegalLayout title="Privacy Policy" updated="October 19, 2026">
+	<LegalLayout title="Privacy Policy" updated="October 26, 2026">
 		<p>
 			This policy explains which personal data LingoDash collects when you use it, why we need it,
 			who it is shared with and what rights you have. We only collect what the game needs to work.
@@ -84,6 +84,11 @@
 		<h2>5. Who can see your data</h2>
 		<ul>
 			<li>Other players can see your username, for example in rounds and friend requests.</li>
+			<li>
+				Logged-in players can open your public profile. It shows your username, XP, the date you joined and
+				your game stats (rounds played, wins and losses). Your email and your detailed match history stay
+				private.
+			</li>
 			<li>Your friends can see that you are friends with them.</li>
 			<li>Your email address and password hash are never shown to other players.</li>
 			<li>The project team can access the database to run and maintain LingoDash.</li>

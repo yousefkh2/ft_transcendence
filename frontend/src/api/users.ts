@@ -5,6 +5,7 @@ export interface Profile {
 	username: string;
 	email: string;
 	xp: number;
+	createdAt: string;
 }
 
 export interface MatchHistoryEntry {
@@ -23,4 +24,17 @@ export function fetchProfile(): Promise<Profile> {
 
 export function fetchMatchHistory(): Promise<MatchHistoryEntry[]> {
 	return request<MatchHistoryEntry[]>('/api/users/me/matches');
+}
+
+export interface PublicProfile {
+	username: string;
+	xp: number;
+	createdAt: string;
+	roundsPlayed: number;
+	wins: number;
+	losses: number;
+}
+
+export function fetchPublicProfile(username: string): Promise<PublicProfile> {
+	return request<PublicProfile>(`/api/users/${encodeURIComponent(username)}`);
 }
