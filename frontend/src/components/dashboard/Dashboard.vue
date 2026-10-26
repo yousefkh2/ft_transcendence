@@ -167,6 +167,7 @@ onMounted(async () => {
 	}
 
 	.xp-value {
+		white-space: nowrap;
 		font-family: var(--font-mono);
 		font-size: 12.5px;
 		font-weight: 700;
@@ -174,6 +175,7 @@ onMounted(async () => {
 	}
 
 	.logout-btn {
+		white-space: nowrap;
 		border: none;
 		background: none;
 		color: var(--color-outline);
@@ -212,5 +214,34 @@ onMounted(async () => {
 
 	.dashboard-footer a:hover {
 		color: var(--color-on-surface);
+	}
+
+	@media (max-width: 720px) {
+		.dashboard-header {
+			flex-wrap: wrap;
+			gap: 12px;
+			padding: 12px 16px;
+		}
+
+		.tabs {
+			order: 3;
+			width: 100%;
+		}
+
+		.tab-btn {
+			flex: 1;
+		}
+
+		.header-right {
+			gap: 10px;
+		}
+
+		.dashboard-main {
+			padding: 20px 16px;
+		}
+
+		.dashboard-footer {
+			padding: 16px 16px 24px;
+		}
 	}
 </style>

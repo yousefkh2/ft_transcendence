@@ -104,8 +104,23 @@ const emit = defineEmits<{ 'open-auth': [tab: 'login' | 'register'] }>();
 	}
 
 	@media (max-width: 720px) {
+		.navbar {
+			gap: 12px;
+			padding: 12px 16px;
+		}
+
 		.nav-links {
-			display: none;;
+			display: none;
+		}
+
+		.auth-buttons .btn {
+			padding: 0 14px;
+		}
+	}
+
+	@media (max-width: 400px) {
+		.brand-name {
+			display: none;
 		}
 	}
 

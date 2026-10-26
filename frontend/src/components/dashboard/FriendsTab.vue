@@ -187,6 +187,9 @@ onMounted(loadFriendsAndRequests);
 	.row-name {
 		font-size: 13.5px;
 		font-weight: 700;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.row-meta {
@@ -203,5 +206,27 @@ onMounted(loadFriendsAndRequests);
 		margin: 0;
 		font-size: 13px;
 		color: var(--color-outline);
+	}
+
+	@media (max-width: 720px) {
+		.add-form {
+			width: 100%;
+		}
+
+		.add-input {
+			flex: 1;
+			min-width: 0;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.row {
+			flex-wrap: wrap;
+		}
+
+		.row-actions {
+			width: 100%;
+			justify-content: flex-end;
+		}
 	}
 </style>

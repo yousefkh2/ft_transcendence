@@ -34,4 +34,11 @@ withDefaults(
 		padding: 28px;
 		border-radius: 16px;
 	}
+
+	@media (max-width: 720px) {
+		.md,
+		.lg {
+			padding: 20px;
+		}
+	}
 </style>

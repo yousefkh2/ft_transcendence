@@ -291,4 +291,18 @@ onMounted(async () => {
 		font-size: 13px;
 		color: var(--color-outline);
 	}
+
+	@media (max-width: 720px) {
+		.hero {
+			padding: 28px 22px;
+		}
+
+		.hero-copy h1 {
+			font-size: 26px;
+		}
+
+		.panels {
+			grid-template-columns: 1fr;
+		}
+	}
 </style>

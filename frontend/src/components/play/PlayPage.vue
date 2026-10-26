@@ -122,4 +122,14 @@ function enterFullscreen() {
 			display: none;
 		}
 	}
+
+	@media (max-width: 400px) {
+		.actions {
+			gap: 6px;
+		}
+
+		.actions .btn {
+			padding: 0 12px;
+		}
+	}
 </style>
