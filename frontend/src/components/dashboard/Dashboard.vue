@@ -9,6 +9,7 @@
 			<nav class="tabs">
 				<RouterLink :to="{ name: 'dashboard' }" class="tab-btn" exact-active-class="active">Overview</RouterLink>
 				<RouterLink :to="{ name: 'friends' }" class="tab-btn" exact-active-class="active">Friends</RouterLink>
+				<RouterLink :to="{ name: 'profile' }" class="tab-btn" exact-active-class="active">Profile</RouterLink>
 			</nav>
 
 			<div class="header-right">
@@ -16,7 +17,9 @@
 					<span class="xp-dot"></span>
 					<span class="xp-value">{{ xpLabel }}</span>
 				</div>
-				<BaseAvatar :name="profile?.username" size="md" variant="gradient" />
+				<RouterLink :to="{ name: 'profile' }" class="avatar-link" aria-label="Your profile">
+					<BaseAvatar :name="profile?.username" size="md" variant="gradient" />
+				</RouterLink>
 				<button type="button" class="logout-btn" @click="logout">Log out</button>
 			</div>
 		</header>
@@ -156,6 +159,17 @@ onMounted(async () => {
 		font-size: 12.5px;
 		font-weight: 700;
 		color: var(--color-on-surface-variant);
+	}
+
+	.avatar-link {
+		display: flex;
+		text-decoration: none;
+		border-radius: var(--radius-pill);
+	}
+
+	.avatar-link:focus-visible {
+		outline: 2px solid var(--color-primary);
+		outline-offset: 2px;
 	}
 
 	.logout-btn {
