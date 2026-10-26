@@ -9,6 +9,7 @@
 				<BaseAlert v-if="detailsError">{{ detailsError }}</BaseAlert>
 				<BaseInput v-model="details.username" label="Username" autocomplete="username" :error="detailsErrors.username" />
 				<BaseInput v-model="details.email" label="Email" type="email" autocomplete="email" :error="detailsErrors.email" />
+				<BaseSelect v-model="details.learningLanguage" label="Learning language" :options="LEARNING_LANGUAGES" />
 				<BaseInput
 					v-if="emailChanged"
 					v-model="details.currentPassword"
@@ -66,11 +67,13 @@ import BaseAlert from '../base/BaseAlert.vue';
 import BaseButton from '../base/BaseButton.vue';
 import BaseCard from '../base/BaseCard.vue';
 import BaseInput from '../base/BaseInput.vue';
+import BaseSelect from '../base/BaseSelect.vue';
+import { LEARNING_LANGUAGES } from '../../constants/languages';
 
 const props = defineProps<{ profile: Profile | null }>();
 const emit = defineEmits<{ updated: [profile: Profile] }>();
 
-const details = reactive({ username: '', email: '', currentPassword: '' });
+const details = reactive({ username: '', email: '', learningLanguage: '', currentPassword: '' });
 const detailsErrors = reactive({ username: '', email: '', currentPassword: '' });
 const detailsNotice = ref('');
 const detailsError = ref('');
@@ -89,13 +92,15 @@ watch(
 		if (!p) return;
 		details.username = p.username;
 		details.email = p.email;
+		details.learningLanguage = p.learningLanguage;
 	},
 	{ immediate: true },
 );
 
 const usernameChanged = computed(() => !!props.profile && details.username.trim() !== props.profile.username);
 const emailChanged = computed(() => !!props.profile && details.email.trim() !== props.profile.email);
-const detailsChanged = computed(() => usernameChanged.value || emailChanged.value);
+const languageChanged = computed(() => !!props.profile && details.learningLanguage !== props.profile.learningLanguage);
+const detailsChanged = computed(() => usernameChanged.value || emailChanged.value || languageChanged.value);
 
 async function saveDetails() {
 	detailsNotice.value = '';
@@ -107,6 +112,7 @@ async function saveDetails() {
 
 	const changes: ProfileChanges = {};
 	if (usernameChanged.value) changes.username = details.username.trim();
+	if (languageChanged.value) changes.learningLanguage = details.learningLanguage;
 	if (emailChanged.value) {
 		changes.email = details.email.trim();
 		changes.currentPassword = details.currentPassword;

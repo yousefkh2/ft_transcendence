@@ -5,7 +5,9 @@
 				{{ profile.email }}
 				<span class="private">Only visible to you</span>
 			</p>
-			<p v-if="profile" class="member-since">Member since {{ formatDate(profile.createdAt) }}</p>
+			<p v-if="profile" class="member-since">
+				Learning {{ languageName(profile.learningLanguage) }} · Member since {{ formatDate(profile.createdAt) }}
+			</p>
 		</ProfileHead>
 
 		<ProfileStats
@@ -53,6 +55,7 @@ import { fetchFriends, type Friend } from '../../api/friends';
 import { fetchMatchHistory, type MatchHistoryEntry, type Profile } from '../../api/users';
 import { countSince, roundResult } from '../../utils/matches';
 import { formatDate } from '../../utils/format';
+import { languageName } from '../../constants/languages';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseButton from '../base/BaseButton.vue';
 import BaseCard from '../base/BaseCard.vue';

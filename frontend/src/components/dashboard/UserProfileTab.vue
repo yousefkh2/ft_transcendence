@@ -7,7 +7,9 @@
 
 		<template v-else>
 			<ProfileHead :name="user?.username ?? username">
-				<p v-if="user" class="member-since">Member since {{ formatDate(user.createdAt) }}</p>
+				<p v-if="user" class="member-since">
+					Learning {{ languageName(user.learningLanguage) }} · Member since {{ formatDate(user.createdAt) }}
+				</p>
 				<template #actions>
 					<span v-if="relation === 'friend'" class="badge">Friends</span>
 					<span v-else-if="relation === 'sent'" class="badge">Request sent</span>
@@ -42,6 +44,7 @@ import { ApiError } from '../../api/client';
 import { fetchFriendRequests, fetchFriends, sendFriendRequest, type Friend, type FriendRequest } from '../../api/friends';
 import { fetchPublicProfile, type Profile, type PublicProfile } from '../../api/users';
 import { formatDate } from '../../utils/format';
+import { languageName } from '../../constants/languages';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseButton from '../base/BaseButton.vue';
 import ProfileHead from './ProfileHead.vue';

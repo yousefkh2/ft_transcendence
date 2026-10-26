@@ -104,15 +104,7 @@
 									:hint="PASSWORD_HINT"
 									:error="registerErrors.password"
 								/>
-								<label class="field">
-									<span class="field-label">Learning language</span>
-									<select v-model="registerForm.language">
-										<option value="de">German</option>
-										<option value="es" disabled>Spanish - coming soon</option>
-										<option value="fr" disabled>French - coming soon</option>
-										<option value="ja" disabled>Japanese - coming soon</option>
-									</select>
-								</label>
+								<BaseSelect v-model="registerForm.language" label="Learning language" :options="LEARNING_LANGUAGES" />
 								<BaseButton type="submit" variant="gradient" size="lg" block class="submit-btn" :disabled="registerLoading">
 									{{ registerLoading ? 'Creating account…' : 'Create Account' }}
 								</BaseButton>
@@ -147,6 +139,8 @@ import {
 } from '../../validation/rules';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseInput from '../base/BaseInput.vue';
+import BaseSelect from '../base/BaseSelect.vue';
+import { DEFAULT_LEARNING_LANGUAGE, LEARNING_LANGUAGES } from '../../constants/languages';
 import BaseButton from '../base/BaseButton.vue';
 import BrandBolt from '../base/BrandBolt.vue';
 
@@ -166,7 +160,7 @@ const loginSubmitted = ref(false);
 const loginError = ref('');
 const loginLoading = ref(false);
 
-const registerForm = reactive({ username: '', email: '', password: '', language: 'de' });
+const registerForm = reactive({ username: '', email: '', password: '', language: DEFAULT_LEARNING_LANGUAGE });
 const registerErrors = reactive({ username: '', email: '', password: '' });
 const registerSubmitted = ref(false);
 const registerError = ref('');
@@ -248,7 +242,7 @@ async function handleRegister() {
 	const username = registerForm.username.trim();
 	const email = registerForm.email.trim();
 	try {
-		await register(username, email, registerForm.password);
+		await register(username, email, registerForm.password, registerForm.language);
 		await login(email, registerForm.password);
 		close();
 		router.push('/dashboard');
@@ -429,35 +423,6 @@ async function handleRegister() {
 
 	.forgot-notice {
 		margin-top: -6px;
-	}
-
-	.field {
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-	}
-
-	.field-label {
-		font-size: 13px;
-		font-weight: 600;
-		color: var(--color-on-surface-variant);
-	}
-
-	.field select {
-		height: 47px;
-		padding: 0 14px;
-		border-radius: 12px;
-		border: 1px solid rgba(118, 117, 134, 0.18);
-		background: var(--color-surface-raised);
-		font-family: var(--font-display);
-		font-size: 14px;
-		color: var(--color-on-surface);
-		transition: border-color 0.2s ease;
-	}
-
-	.field select:focus {
-		outline: none;
-		border-color: var(--color-primary);
 	}
 
 	.forgot-link {
