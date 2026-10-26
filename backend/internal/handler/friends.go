@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"transcendence/backend/internal/db"
 	"transcendence/backend/internal/middleware"
@@ -27,6 +28,11 @@ func (h *FriendHandler) HandleSendRequest(c echo.Context) error {
 	var body sendRequestBody
 	if err := c.Bind(&body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
+	}
+
+	body.Username = strings.TrimSpace(body.Username)
+	if body.Username == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "username is required")
 	}
 
 	addresseeID, err := db.ResolveUserID(c.Request().Context(), h.DB, body.Username)

@@ -3,8 +3,10 @@ package handler
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"transcendence/backend/internal/auth"
+	"transcendence/backend/internal/validate"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -29,8 +31,14 @@ func (h *AuthHandler) HandleRegister(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
 	}
 
-	if req.Username == "" || req.Email == "" || req.Password == "" {
-		return echo.NewHTTPError(http.StatusBadRequest, "username, email and password are required")
+	req.Username = strings.TrimSpace(req.Username)
+	req.Email = strings.TrimSpace(req.Email)
+	if msg := validate.FirstError(
+		validate.Username(req.Username),
+		validate.Email(req.Email),
+		validate.NewPassword(req.Password),
+	); msg != "" {
+		return echo.NewHTTPError(http.StatusBadRequest, msg)
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
@@ -75,6 +83,11 @@ func (h *AuthHandler) HandleLogin(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
 	}
 
+	req.Email = strings.TrimSpace(req.Email)
+	if req.Email == "" || req.Password == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "email and password are required")
+	}
+
 	var userID, passwordHash string
 	err := h.DB.QueryRow(c.Request().Context(),
 		`SELECT id, password_hash FROM users WHERE email = $1`,
@@ -104,6 +117,11 @@ func (h *AuthHandler) HandleRealtimeLogin(c echo.Context) error {
 	var req loginRequest
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
+	}
+
+	req.Email = strings.TrimSpace(req.Email)
+	if req.Email == "" || req.Password == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "email and password are required")
 	}
 
 	var userID, username, passwordHash string
