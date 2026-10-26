@@ -20,7 +20,7 @@ type MatchHistoryEntry struct {
 	Status		string		`json:"status"`
 	StartedAt	time.Time	`json:"startedAt"`
 	EndedAt		*time.Time	`json:"endedAt,omitempty"`
-	Role		string		`json:"role"`
+	Role		*string		`json:"role,omitempty"`
 	IsWinner	*bool		`json:"isWinner,omitempty"`
 }
 
@@ -39,6 +39,7 @@ func GetMatchHistory(ctx context.Context, pool *pgxpool.Pool, userID string) ([]
 		FROM session_participants sp
 		JOIN game_sessions gs ON gs.id = sp.session_id
 		WHERE sp.user_id = $1
+		AND gs.status = 'completed'
 		ORDER BY gs.started_at DESC`,
 		userID,
 	)
