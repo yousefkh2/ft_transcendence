@@ -41,6 +41,26 @@
 						<RouterLink :to="{ name: 'user-profile', params: { username: friend.friendUsername } }" class="row-name">{{ friend.friendUsername }}</RouterLink>
 						<div class="row-meta">Friends since {{ formatDate(friend.createdAt) }}</div>
 					</div>
+					<div class="row-actions">
+						<template v-if="confirmingId === friend.friendId">
+							<BaseButton variant="danger" size="sm" pill :disabled="removing" @click="remove(friend)">
+								Remove friend
+							</BaseButton>
+							<BaseButton variant="outline" size="sm" pill :disabled="removing" @click="confirmingId = ''">
+								Cancel
+							</BaseButton>
+						</template>
+						<BaseButton
+							v-else
+							variant="ghost"
+							size="sm"
+							pill
+							:aria-label="`Remove ${friend.friendUsername} from your friends`"
+							@click="confirmingId = friend.friendId"
+						>
+							Remove
+						</BaseButton>
+					</div>
 				</div>
 			</div>
 			<p v-else class="empty-hint">No friends yet - add someone above.</p>
@@ -56,6 +76,7 @@ import {
 	sendFriendRequest,
 	acceptFriendRequest,
 	declineFriendRequest,
+	removeFriend,
 	type Friend,
 	type FriendRequest,
 } from '../../api/friends';
@@ -116,6 +137,24 @@ async function addFriend() {
 		addError.value = err instanceof Error ? err.message : 'Could not send that friend request.';
 	} finally {
 		sending.value = false;
+	}
+}
+
+const confirmingId = ref('');
+const removing = ref(false);
+
+async function remove(friend: Friend) {
+	removing.value = true;
+	addError.value = '';
+	try {
+		await removeFriend(friend.friendId);
+		addNotice.value = `${friend.friendUsername} was removed from your friends.`;
+		confirmingId.value = '';
+		await loadFriendsAndRequests();
+	} catch (err) {
+		loadError.value = err instanceof Error ? err.message : 'Could not remove that friend.';
+	} finally {
+		removing.value = false;
 	}
 }
 
