@@ -168,3 +168,41 @@ func TestGetPublicProfile_UnknownUser(t *testing.T) {
 		t.Fatalf("expected pgx.ErrNoRows, got %v", err)
 	}
 }
+
+func TestUpdateProfile_ChangesOnlyGivenFields(t *testing.T) {
+	pool := testPool(t)
+	ctx := context.Background()
+	userID, oldName := createUser(t, pool)
+	newName := oldName + "x"
+
+	p, err := db.UpdateProfile(ctx, pool, userID, &newName, nil)
+	if err != nil {
+		t.Fatalf("UpdateProfile: %v", err)
+	}
+	if p.Username != newName || p.Email != oldName+"@example.com" {
+		t.Fatalf("expected new username and unchanged email, got %+v", p)
+	}
+}
+
+func TestUpdateProfile_TakenUsernameFails(t *testing.T) {
+	pool := testPool(t)
+	_, taken := createUser(t, pool)
+	userID, _ := createUser(t, pool)
+
+	if _, err := db.UpdateProfile(context.Background(), pool, userID, &taken, nil); err == nil {
+		t.Fatalf("expected a unique violation when taking another user's name")
+	}
+}
+
+func TestUpdatePasswordHash(t *testing.T) {
+	pool := testPool(t)
+	ctx := context.Background()
+	userID, _ := createUser(t, pool)
+
+	if err := db.UpdatePasswordHash(ctx, pool, userID, "newhash"); err != nil {
+		t.Fatalf("UpdatePasswordHash: %v", err)
+	}
+	if hash, err := db.GetPasswordHash(ctx, pool, userID); err != nil || hash != "newhash" {
+		t.Fatalf("expected stored hash, got %q (err %v)", hash, err)
+	}
+}
