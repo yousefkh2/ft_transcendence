@@ -20,7 +20,7 @@ type MatchHistoryEntry struct {
 	Status		string		`json:"status"`
 	StartedAt	time.Time	`json:"startedAt"`
 	EndedAt		*time.Time	`json:"endedAt,omitempty"`
-	Role		string		`json:"role"`
+	Role		*string		`json:"role,omitempty"`
 	IsWinner	*bool		`json:"isWinner,omitempty"`
 }
 
