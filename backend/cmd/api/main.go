@@ -54,6 +54,7 @@ func main() {
 	friends.POST("/requests/:id/accept", friendHandler.HandleAcceptRequest)
 	friends.POST("/requests/:id/decline", friendHandler.HandleDeclineRequest)
 	friends.GET("", friendHandler.HandleListFriends)
+	friends.DELETE("/:friendId", friendHandler.HandleRemoveFriend)
 
 	lobbies := e.Group("/api/lobbies", middleware.EchoWithAuth)
 	lobbies.POST("", lobbyHandler.HandleCreateLobby)

@@ -115,3 +115,18 @@ func ListFriends(ctx context.Context, pool *pgxpool.Pool, userID string) ([]Frie
 	}
 	return friends, nil
 }
+
+// RemoveFriend deletes an accepted friendship in either direction, so both users can add each other again later.
+// It returns false when the two users are not friends.
+func RemoveFriend(ctx context.Context, pool *pgxpool.Pool, userID, friendID string) (bool, error) {
+	tag, err := pool.Exec(ctx,
+		`DELETE FROM friendships
+		WHERE status = 'accepted'
+		AND ((requester_id = $1 AND addressee_id = $2) OR (requester_id = $2 AND addressee_id = $1))`,
+		userID, friendID,
+	)
+	if err != nil {
+		return false, err
+	}
+	return tag.RowsAffected() > 0, nil
+}

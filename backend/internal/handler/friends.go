@@ -117,3 +117,22 @@ func (h *FriendHandler) HandleListFriends(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, friends)
 }
+
+func (h *FriendHandler) HandleRemoveFriend(c echo.Context) error {
+	userID := middleware.UserID(c)
+
+	removed, err := db.RemoveFriend(c.Request().Context(), h.DB, userID, c.Param("friendId"))
+	if err != nil {
+		var pgErr *pgconn.PgError
+		// 22P02: the id is not a valid UUID, so it cannot belong to a friend.
+		if errors.As(err, &pgErr) && pgErr.Code == "22P02" {
+			return echo.NewHTTPError(http.StatusNotFound, "friend not found")
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	if !removed {
+		return echo.NewHTTPError(http.StatusNotFound, "friend not found")
+	}
+
+	return c.NoContent(http.StatusNoContent)
+}
