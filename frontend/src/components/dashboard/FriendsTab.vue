@@ -59,13 +59,14 @@ import {
 	type Friend,
 	type FriendRequest,
 } from '../../api/friends';
+import type { Profile } from '../../api/users';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseAvatar from '../base/BaseAvatar.vue';
 import BaseCard from '../base/BaseCard.vue';
 import BaseInput from '../base/BaseInput.vue';
 import BaseButton from '../base/BaseButton.vue';
 
-const props = defineProps<{ currentUsername?: string }>();
+const props = defineProps<{ profile: Profile | null }>();
 
 const friends = ref<Friend[]>([]);
 const requests = ref<FriendRequest[]>([]);
@@ -94,7 +95,7 @@ watch(newUsername, () => {
 
 // Catches requests the backend would reject anyway, so they never leave the browser.
 function checkNewFriend(username: string): string {
-	if (username === props.currentUsername) return "You can't add yourself as a friend.";
+	if (username === props.profile?.username) return "You can't add yourself as a friend.";
 	if (friends.value.some((f) => f.friendUsername === username)) return `${username} is already your friend.`;
 	if (requests.value.some((r) => r.requesterUsername === username)) {
 		return `${username} already sent you a request. You can accept it below.`;

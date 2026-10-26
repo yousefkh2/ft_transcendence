@@ -44,7 +44,7 @@
 			<BaseCard>
 				<div class="panel-header">
 					<h2>Friends</h2>
-					<button type="button" class="link-btn" @click="emit('switch-tab', 'friends')">See all</button>
+					<RouterLink :to="{ name: 'friends' }" class="link-btn">See all</RouterLink>
 				</div>
 				<div v-if="friends.length" class="friend-list">
 					<div v-for="friend in friendsPreview" :key="friend.friendId" class="friend-row">
@@ -71,7 +71,6 @@ import BaseButton from '../base/BaseButton.vue';
 import BaseEyebrow from '../base/BaseEyebrow.vue';
 
 const props = defineProps<{ profile: Profile | null }>();
-const emit = defineEmits<{ (e: 'switch-tab', tab: 'friends'): void }>();
 
 const matches = ref<MatchHistoryEntry[]>([]);
 const friends = ref<Friend[]>([]);
@@ -210,6 +209,8 @@ onMounted(async () => {
 	}
 
 	.link-btn {
+		text-decoration: none;
+		padding: 1px 6px;
 		background: none;
 		border: none;
 		color: var(--color-primary);
