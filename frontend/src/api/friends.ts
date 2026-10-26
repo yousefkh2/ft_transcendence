@@ -32,3 +32,7 @@ export function acceptFriendRequest(id: string): Promise<void> {
 export function declineFriendRequest(id: string): Promise<void> {
 	return request<void>(`/api/friends/requests/${id}/decline`, { method: 'POST' });
 }
+
+export function removeFriend(friendId: string): Promise<void> {
+	return request<void>(`/api/friends/${encodeURIComponent(friendId)}`, { method: 'DELETE' });
+}

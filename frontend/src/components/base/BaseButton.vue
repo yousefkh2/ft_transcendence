@@ -13,7 +13,7 @@ import type { RouteLocationRaw } from 'vue-router';
 
 const props = withDefaults(
 	defineProps<{
-		variant?: 'primary' | 'gradient' | 'outline' | 'ghost';
+		variant?: 'primary' | 'gradient' | 'outline' | 'ghost' | 'danger';
 		size?: 'sm' | 'md' | 'lg';
 		pill?: boolean;
 		block?: boolean;
@@ -113,6 +113,15 @@ const classes = computed(() => [props.variant, props.size, { pill: props.pill, b
 	.ghost {
 		background: transparent;
 		color: var(--color-on-surface);
+	}
+
+	.danger {
+		background: var(--color-error);
+		color: var(--color-on-primary);
+	}
+
+	.danger:not(:disabled):hover {
+		filter: brightness(1.08);
 	}
 
 	.outline:not(:disabled):hover,
