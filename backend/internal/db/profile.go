@@ -121,3 +121,20 @@ func GetPasswordHash(ctx context.Context, pool *pgxpool.Pool, userID string) (st
 	err := pool.QueryRow(ctx, `SELECT password_hash FROM users WHERE id = $1`, userID).Scan(&hash)
 	return hash, err
 }
+
+// UpdateProfile changes username and/or email. A nil value keeps the current one.
+func UpdateProfile(ctx context.Context, pool *pgxpool.Pool, userID string, username, email *string) (Profile, error) {
+	p := Profile{ID: userID}
+	err := pool.QueryRow(ctx,
+		`UPDATE users SET username = COALESCE($2, username), email = COALESCE($3, email)
+		WHERE id = $1
+		RETURNING username, email, xp, created_at`,
+		userID, username, email,
+	).Scan(&p.Username, &p.Email, &p.XP, &p.CreatedAt)
+	return p, err
+}
+
+func UpdatePasswordHash(ctx context.Context, pool *pgxpool.Pool, userID, hash string) error {
+	_, err := pool.Exec(ctx, `UPDATE users SET password_hash = $2 WHERE id = $1`, userID, hash)
+	return err
+}

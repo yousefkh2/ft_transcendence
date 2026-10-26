@@ -41,6 +41,8 @@
 			</BaseCard>
 		</section>
 
+		<EditProfileCard :profile="profile" @updated="emit('profile-updated', $event)" />
+
 		<DeleteAccountCard />
 	</div>
 </template>
@@ -55,11 +57,13 @@ import BaseAlert from '../base/BaseAlert.vue';
 import BaseButton from '../base/BaseButton.vue';
 import BaseCard from '../base/BaseCard.vue';
 import DeleteAccountCard from './DeleteAccountCard.vue';
+import EditProfileCard from './EditProfileCard.vue';
 import ProfileHead from './ProfileHead.vue';
 import ProfileStats from './ProfileStats.vue';
 import RoundList from './RoundList.vue';
 
 defineProps<{ profile: Profile | null }>();
+const emit = defineEmits<{ 'profile-updated': [profile: Profile] }>();
 
 const matches = ref<MatchHistoryEntry[]>([]);
 const friends = ref<Friend[]>([]);

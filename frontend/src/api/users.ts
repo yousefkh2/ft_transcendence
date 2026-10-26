@@ -42,3 +42,17 @@ export function fetchPublicProfile(username: string): Promise<PublicProfile> {
 export function deleteAccount(password: string): Promise<void> {
 	return request<void>('/api/users/me', { method: 'DELETE', body: { password } });
 }
+
+export interface ProfileChanges {
+	username?: string;
+	email?: string;
+	currentPassword?: string;
+}
+
+export function updateProfile(changes: ProfileChanges): Promise<Profile> {
+	return request<Profile>('/api/users/me', { method: 'PATCH', body: changes });
+}
+
+export function changePassword(currentPassword: string, newPassword: string): Promise<void> {
+	return request<void>('/api/users/me/password', { method: 'PATCH', body: { currentPassword, newPassword } });
+}
