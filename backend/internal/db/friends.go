@@ -76,6 +76,12 @@ func GetFriendRequest(ctx context.Context, pool *pgxpool.Pool, requestID string)
 	return addresseeID, status, err
 }
 
+// DeleteFriendRequest removes a request instead of keeping it as "declined", so the sender can try again later.
+func DeleteFriendRequest(ctx context.Context, pool *pgxpool.Pool, requestID string) error {
+	_, err := pool.Exec(ctx, `DELETE FROM friendships WHERE id = $1 AND status = 'pending'`, requestID)
+	return err
+}
+
 func SetFriendRequestStatus(ctx context.Context, pool *pgxpool.Pool, requestID, targetStatus string) error {
 	_, err := pool.Exec(ctx,
 		`UPDATE friendships SET status = $1 WHERE id = $2`,
