@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import BrandBolt from '../base/BrandBolt.vue';
 withDefaults(defineProps<{ languages?: string[] }>(), {
-	languages: () => ['DE', 'ES', 'JA'],
+	languages: () => ['DE', 'PL', 'TR'],
 });
 </script>
 

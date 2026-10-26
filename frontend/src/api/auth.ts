@@ -10,10 +10,10 @@ export async function login(email: string, password: string) {
 	setToken(token);
 }
 
-export async function register(username: string, email: string, password: string) {
+export async function register(username: string, email: string, password: string, learningLanguage: string) {
 	await request<{ id: string }>('/api/auth/register', {
 		method: 'POST',
-		body: { username, email, password },
+		body: { username, email, password, learningLanguage },
 		auth: false,
 	});
 }

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"transcendence/backend/internal/auth"
+	"transcendence/backend/internal/db"
 	"transcendence/backend/internal/validate"
 
 	"github.com/jackc/pgx/v5"
@@ -19,9 +20,10 @@ type AuthHandler struct {
 }
 
 type registerRequest struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Username         string `json:"username"`
+	Email            string `json:"email"`
+	Password         string `json:"password"`
+	LearningLanguage string `json:"learningLanguage"`
 }
 
 func (h *AuthHandler) HandleRegister(c echo.Context) error {
@@ -39,6 +41,12 @@ func (h *AuthHandler) HandleRegister(c echo.Context) error {
 	); msg != "" {
 		return echo.NewHTTPError(http.StatusBadRequest, msg)
 	}
+	if req.LearningLanguage == "" {
+		req.LearningLanguage = defaultLearningLanguage
+	}
+	if !db.SupportedLobbyLangs[req.LearningLanguage] {
+		return echo.NewHTTPError(http.StatusBadRequest, unsupportedLanguageMsg)
+	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -47,10 +55,10 @@ func (h *AuthHandler) HandleRegister(c echo.Context) error {
 
 	var userID string
 	err = h.DB.QueryRow(c.Request().Context(),
-		`INSERT INTO users (username, email, password_hash)
-		VALUES ($1, $2, $3)
+		`INSERT INTO users (username, email, password_hash, learning_lang)
+		VALUES ($1, $2, $3, $4)
 		RETURNING id`,
-		req.Username, req.Email, string(hash),
+		req.Username, req.Email, string(hash), req.LearningLanguage,
 	).Scan(&userID)
 
 	if err != nil {

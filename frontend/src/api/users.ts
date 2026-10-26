@@ -6,6 +6,7 @@ export interface Profile {
 	email: string;
 	xp: number;
 	createdAt: string;
+	learningLanguage: string;
 }
 
 export interface MatchHistoryEntry {
@@ -30,6 +31,7 @@ export interface PublicProfile {
 	username: string;
 	xp: number;
 	createdAt: string;
+	learningLanguage: string;
 	roundsPlayed: number;
 	wins: number;
 	losses: number;
@@ -46,6 +48,7 @@ export function deleteAccount(password: string): Promise<void> {
 export interface ProfileChanges {
 	username?: string;
 	email?: string;
+	learningLanguage?: string;
 	currentPassword?: string;
 }
 

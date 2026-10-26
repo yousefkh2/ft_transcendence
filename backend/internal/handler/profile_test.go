@@ -29,6 +29,7 @@ func TestUpdateProfile_RejectsInvalidInput(t *testing.T) {
 		{"short username", `{"username":"ab"}`, "Username must be at least 3 characters."},
 		{"username with spaces only", `{"username":"   "}`, "Please choose a username."},
 		{"bad email", `{"email":"nope"}`, "Please enter a valid email address."},
+		{"unsupported learning language", `{"learningLanguage":"xx"}`, "Please choose a supported language."},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
