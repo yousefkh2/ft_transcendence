@@ -2,11 +2,13 @@ package db_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"testing"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"transcendence/backend/internal/db"
@@ -28,7 +30,7 @@ func testPool(t *testing.T) *pgxpool.Pool {
 	return pool
 }
 
-func createUser(t *testing.T, pool *pgxpool.Pool) string {
+func createUser(t *testing.T, pool *pgxpool.Pool) (string, string) {
 	t.Helper()
 	name := fmt.Sprintf("dbtest%d", time.Now().UnixNano())
 	var id string
@@ -40,7 +42,7 @@ func createUser(t *testing.T, pool *pgxpool.Pool) string {
 		t.Fatalf("create user: %v", err)
 	}
 	t.Cleanup(func() { pool.Exec(context.Background(), `DELETE FROM users WHERE id = $1`, id) })
-	return id
+	return id, name
 }
 
 func createSession(t *testing.T, pool *pgxpool.Pool, userID, status string, role *string) {
@@ -64,7 +66,7 @@ func createSession(t *testing.T, pool *pgxpool.Pool, userID, status string, role
 
 func TestGetMatchHistory_ParticipantWithoutRole(t *testing.T) {
 	pool := testPool(t)
-	userID := createUser(t, pool)
+	userID, _ := createUser(t, pool)
 	createSession(t, pool, userID, "completed", nil)
 
 	matches, err := db.GetMatchHistory(context.Background(), pool, userID)
@@ -81,7 +83,7 @@ func TestGetMatchHistory_ParticipantWithoutRole(t *testing.T) {
 
 func TestGetMatchHistory_ParticipantWithRole(t *testing.T) {
 	pool := testPool(t)
-	userID := createUser(t, pool)
+	userID, _ := createUser(t, pool)
 	role := "on_site"
 	createSession(t, pool, userID, "completed", &role)
 
@@ -96,7 +98,7 @@ func TestGetMatchHistory_ParticipantWithRole(t *testing.T) {
 
 func TestGetMatchHistory_OnlyCompletedSessions(t *testing.T) {
 	pool := testPool(t)
-	userID := createUser(t, pool)
+	userID, _ := createUser(t, pool)
 	createSession(t, pool, userID, "waiting", nil)
 	createSession(t, pool, userID, "active", nil)
 	createSession(t, pool, userID, "completed", nil)
@@ -107,5 +109,62 @@ func TestGetMatchHistory_OnlyCompletedSessions(t *testing.T) {
 	}
 	if len(matches) != 1 || matches[0].Status != "completed" {
 		t.Fatalf("expected only the completed session, got %+v", matches)
+	}
+}
+
+func createFinishedRound(t *testing.T, pool *pgxpool.Pool, userID string, won bool) {
+	t.Helper()
+	ctx := context.Background()
+	var sessionID string
+	if err := pool.QueryRow(ctx,
+		`INSERT INTO game_sessions (game_mode, status, ended_at) VALUES ('apartment_setup', 'completed', NOW()) RETURNING id`,
+	).Scan(&sessionID); err != nil {
+		t.Fatalf("create session: %v", err)
+	}
+	t.Cleanup(func() { pool.Exec(context.Background(), `DELETE FROM game_sessions WHERE id = $1`, sessionID) })
+	if _, err := pool.Exec(ctx,
+		`INSERT INTO session_participants (session_id, user_id, role, is_winner) VALUES ($1, $2, 'on_site', $3)`,
+		sessionID, userID, won,
+	); err != nil {
+		t.Fatalf("add participant: %v", err)
+	}
+}
+
+func TestGetPublicProfile_CountsOnlyCompletedRounds(t *testing.T) {
+	pool := testPool(t)
+	userID, username := createUser(t, pool)
+	createFinishedRound(t, pool, userID, true)
+	createFinishedRound(t, pool, userID, true)
+	createFinishedRound(t, pool, userID, false)
+	createSession(t, pool, userID, "active", nil)
+
+	p, err := db.GetPublicProfile(context.Background(), pool, username)
+	if err != nil {
+		t.Fatalf("GetPublicProfile: %v", err)
+	}
+	if p.Username != username || p.RoundsPlayed != 3 || p.Wins != 2 || p.Losses != 1 || p.CreatedAt.IsZero() {
+		t.Fatalf("unexpected profile %+v", p)
+	}
+}
+
+func TestGetPublicProfile_NewUserHasZeroStats(t *testing.T) {
+	pool := testPool(t)
+	_, username := createUser(t, pool)
+
+	p, err := db.GetPublicProfile(context.Background(), pool, username)
+	if err != nil {
+		t.Fatalf("GetPublicProfile: %v", err)
+	}
+	if p.RoundsPlayed != 0 || p.Wins != 0 || p.Losses != 0 {
+		t.Fatalf("expected zero stats, got %+v", p)
+	}
+}
+
+func TestGetPublicProfile_UnknownUser(t *testing.T) {
+	pool := testPool(t)
+
+	_, err := db.GetPublicProfile(context.Background(), pool, "no_such_user_xyz")
+	if !errors.Is(err, pgx.ErrNoRows) {
+		t.Fatalf("expected pgx.ErrNoRows, got %v", err)
 	}
 }
