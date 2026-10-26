@@ -38,7 +38,7 @@
 		<main class="dashboard-main">
 			<BaseAlert v-if="error" size="md">{{ error }}</BaseAlert>
 			<OverviewTab v-else-if="tab === 'overview'" :profile="profile" @switch-tab="tab = $event" />
-			<FriendsTab v-else-if="tab === 'friends'" />
+			<FriendsTab v-else-if="tab === 'friends'" :current-username="profile?.username" />
 		</main>
 
 		<footer class="dashboard-footer">

@@ -1,23 +1,47 @@
 <template>
-	<label v-if="label" class="field">
-		<span class="field-label">{{ label }}</span>
-		<input v-model="model" v-bind="$attrs" class="input" :class="size" />
-	</label>
-	<input v-else v-model="model" v-bind="$attrs" class="input" :class="size" />
+	<div v-if="label" class="field">
+		<label :for="inputId" class="field-label">{{ label }}</label>
+		<input
+			:id="inputId"
+			v-model="model"
+			v-bind="$attrs"
+			class="input"
+			:class="[size, { invalid: !!error }]"
+			:aria-invalid="error ? 'true' : undefined"
+			:aria-describedby="error || hint ? messageId : undefined"
+		/>
+		<span v-if="error" :id="messageId" class="field-error">{{ error }}</span>
+		<span v-else-if="hint" :id="messageId" class="field-hint">{{ hint }}</span>
+	</div>
+	<input
+		v-else
+		v-model="model"
+		v-bind="$attrs"
+		class="input"
+		:class="[size, { invalid: !!error }]"
+		:aria-invalid="error ? 'true' : undefined"
+	/>
 </template>
 
 <script setup lang="ts">
+import { useId } from 'vue';
+
 defineOptions({ inheritAttrs: false });
 
 withDefaults(
 	defineProps<{
 		label?: string;
 		size?: 'sm' | 'md';
+		error?: string;
+		hint?: string;
 	}>(),
 	{ size: 'md' },
 );
 
 const model = defineModel<string>({ default: '' });
+
+const inputId = useId();
+const messageId = `${inputId}-message`;
 </script>
 
 <style scoped>
@@ -47,6 +71,26 @@ const model = defineModel<string>({ default: '' });
 	.input:focus {
 		outline: none;
 		border-color: var(--color-primary);
+	}
+
+	.input.invalid,
+	.input.invalid:focus {
+		border-color: var(--color-error);
+	}
+
+	.field-error,
+	.field-hint {
+		font-size: 12px;
+		line-height: 1.4;
+	}
+
+	.field-error {
+		font-weight: 600;
+		color: var(--color-error);
+	}
+
+	.field-hint {
+		color: var(--color-outline);
 	}
 
 	.md {
