@@ -29,15 +29,7 @@
 				<div class="panel-header">
 					<h2>Recent rounds</h2>
 				</div>
-				<div v-if="recentRounds.length" class="round-list">
-					<div v-for="round in recentRounds" :key="round.sessionId" class="round-row">
-						<div class="round-badge" :class="round.badgeClass">{{ round.badgeLabel }}</div>
-						<div class="round-info">
-							<div class="round-mode">{{ round.modeLabel }}</div>
-							<div class="round-when">{{ round.whenLabel }}</div>
-						</div>
-					</div>
-				</div>
+				<RoundList v-if="recentRounds.length" :matches="recentRounds" />
 				<p v-else class="empty-hint">No rounds played yet - jump into a game to see them here.</p>
 			</BaseCard>
 
@@ -69,6 +61,8 @@ import BaseAvatar from '../base/BaseAvatar.vue';
 import BaseCard from '../base/BaseCard.vue';
 import BaseButton from '../base/BaseButton.vue';
 import BaseEyebrow from '../base/BaseEyebrow.vue';
+import RoundList from './RoundList.vue';
+import { countSince } from '../../utils/matches';
 
 const props = defineProps<{ profile: Profile | null }>();
 
@@ -78,31 +72,9 @@ const error = ref('');
 
 const xpDisplay = computed(() => (props.profile ? props.profile.xp.toLocaleString() : '…'));
 
-const roundsThisWeek = computed(() => {
-	const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-	return matches.value.filter((m) => new Date(m.startedAt).getTime() >= weekAgo).length;
-});
+const roundsThisWeek = computed(() => countSince(matches.value, 7));
 
-function formatMode(mode: string) {
-	return mode.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function formatWhen(iso: string) {
-	const diffDays = Math.floor((Date.now() - new Date(iso).getTime()) / (24 * 60 * 60 * 1000));
-	if (diffDays <= 0) return 'Today';
-	if (diffDays === 1) return 'Yesterday';
-	return `${diffDays} days ago`;
-}
-
-const recentRounds = computed(() =>
-	matches.value.slice(0, 4).map((m) => ({
-		sessionId: m.sessionId,
-		modeLabel: formatMode(m.gameMode),
-		whenLabel: formatWhen(m.startedAt),
-		badgeLabel: m.isWinner === true ? 'Won' : m.isWinner === false ? 'Lost' : '-',
-		badgeClass: m.isWinner === true ? 'won' : m.isWinner === false ? 'lost' : 'pending',
-	})),
-);
+const recentRounds = computed(() => matches.value.slice(0, 4));
 
 const friendsPreview = computed(() => friends.value.slice(0, 3));
 
@@ -220,13 +192,11 @@ onMounted(async () => {
 		font-family: inherit;
 	}
 
-	.round-list,
 	.friend-list {
 		display: grid;
 		gap: 10px;
 	}
 
-	.round-row,
 	.friend-row {
 		display: flex;
 		align-items: center;
@@ -235,46 +205,6 @@ onMounted(async () => {
 		border-radius: 13px;
 		background: var(--color-surface);
 		border: 1px solid rgba(118, 117, 134, 0.12);
-	}
-
-	.round-badge {
-		width: 36px;
-		height: 36px;
-		flex: none;
-		border-radius: 10px;
-		display: grid;
-		place-items: center;
-		font-family: var(--font-mono);
-		font-weight: 700;
-		font-size: 11px;
-		color: var(--color-on-primary);
-	}
-
-	.round-badge.won {
-		background: var(--color-success);
-	}
-
-	.round-badge.lost {
-		background: var(--color-tertiary);
-	}
-
-	.round-badge.pending {
-		background: var(--color-outline);
-	}
-
-	.round-info {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.round-mode {
-		font-size: 14px;
-		font-weight: 700;
-	}
-
-	.round-when {
-		font-size: 12.5px;
-		color: var(--color-outline);
 	}
 
 	.friend-info {
