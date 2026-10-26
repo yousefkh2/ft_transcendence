@@ -9,7 +9,6 @@ import (
 	"transcendence/backend/internal/validate"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -55,16 +54,8 @@ func (h *AuthHandler) HandleRegister(c echo.Context) error {
 	).Scan(&userID)
 
 	if err != nil {
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			switch pgErr.ConstraintName {
-			case "users_username_key":
-				return echo.NewHTTPError(http.StatusConflict, "username already taken")
-			case "users_email_key":
-				return echo.NewHTTPError(http.StatusConflict, "email already registered")
-			default:
-				return echo.NewHTTPError(http.StatusConflict, "user already exists")
-			}
+		if msg := uniqueViolationMessage(err); msg != "" {
+			return echo.NewHTTPError(http.StatusConflict, msg)
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 	}
