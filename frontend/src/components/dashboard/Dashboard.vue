@@ -7,22 +7,9 @@
 			</div>
 
 			<nav class="tabs">
-				<button
-					type="button"
-					class="tab-btn"
-					:class="{ active: tab === 'overview' }"
-					@click="tab = 'overview'"
-				>
-					Overview
-				</button>
-				<button
-					type="button"
-					class="tab-btn"
-					:class="{ active: tab === 'friends' }"
-					@click="tab = 'friends'"
-				>
-					Friends
-				</button>
+				<RouterLink :to="{ name: 'dashboard' }" class="tab-btn" exact-active-class="active">Overview</RouterLink>
+				<RouterLink :to="{ name: 'friends' }" class="tab-btn" exact-active-class="active">Friends</RouterLink>
+				<RouterLink :to="{ name: 'profile' }" class="tab-btn" exact-active-class="active">Profile</RouterLink>
 			</nav>
 
 			<div class="header-right">
@@ -30,15 +17,16 @@
 					<span class="xp-dot"></span>
 					<span class="xp-value">{{ xpLabel }}</span>
 				</div>
-				<BaseAvatar :name="profile?.username" size="md" variant="gradient" />
+				<RouterLink :to="{ name: 'profile' }" class="avatar-link" aria-label="Your profile">
+					<BaseAvatar :name="profile?.username" size="md" variant="gradient" />
+				</RouterLink>
 				<button type="button" class="logout-btn" @click="logout">Log out</button>
 			</div>
 		</header>
 
 		<main class="dashboard-main">
 			<BaseAlert v-if="error" size="md">{{ error }}</BaseAlert>
-			<OverviewTab v-else-if="tab === 'overview'" :profile="profile" @switch-tab="tab = $event" />
-			<FriendsTab v-else-if="tab === 'friends'" :current-username="profile?.username" />
+			<RouterView v-else :profile="profile" />
 		</main>
 
 		<footer class="dashboard-footer">
@@ -54,10 +42,7 @@ import { fetchProfile, type Profile } from '../../api/users';
 import { logout } from '../../auth/logout';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseAvatar from '../base/BaseAvatar.vue';
-import OverviewTab from './OverviewTab.vue';
-import FriendsTab from './FriendsTab.vue';
 
-const tab = ref<'overview' | 'friends'>('overview');
 const profile = ref<Profile | null>(null);
 const error = ref('');
 
@@ -124,6 +109,8 @@ onMounted(async () => {
 	}
 
 	.tab-btn {
+		text-align: center;
+		text-decoration: none;
 		padding: 8px 18px;
 		border: none;
 		border-radius: 10px;
@@ -172,6 +159,17 @@ onMounted(async () => {
 		font-size: 12.5px;
 		font-weight: 700;
 		color: var(--color-on-surface-variant);
+	}
+
+	.avatar-link {
+		display: flex;
+		text-decoration: none;
+		border-radius: var(--radius-pill);
+	}
+
+	.avatar-link:focus-visible {
+		outline: 2px solid var(--color-primary);
+		outline-offset: 2px;
 	}
 
 	.logout-btn {

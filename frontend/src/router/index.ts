@@ -16,9 +16,13 @@ const router = createRouter({
 		{ path: '/landingpage', redirect: '/' },
 		{
 			path: '/dashboard',
-			name: 'dashboard',
 			component: () => import('../components/dashboard/Dashboard.vue'),
 			meta: { requiresAuth: true },
+			children: [
+				{ path: '', name: 'dashboard', component: () => import('../components/dashboard/OverviewTab.vue') },
+				{ path: 'friends', name: 'friends', component: () => import('../components/dashboard/FriendsTab.vue') },
+				{ path: 'profile', name: 'profile', component: () => import('../components/dashboard/ProfileTab.vue') },
+			],
 		},
 		{
 			path: '/play',

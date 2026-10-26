@@ -8,7 +8,7 @@ import { computed } from 'vue';
 const props = withDefaults(
 	defineProps<{
 		name?: string;
-		size?: 'sm' | 'md';
+		size?: 'sm' | 'md' | 'lg';
 		variant?: 'solid' | 'gradient';
 	}>(),
 	{ size: 'sm', variant: 'solid' },
@@ -37,6 +37,12 @@ const initial = computed(() => props.name?.[0]?.toUpperCase() ?? '?');
 		width: 36px;
 		height: 36px;
 		font-size: 14px;
+	}
+
+	.lg {
+		width: 72px;
+		height: 72px;
+		font-size: 28px;
 	}
 
 	.solid {
