@@ -71,14 +71,14 @@ func (h *FriendHandler) HandleListRequests(c echo.Context) error {
 }
 
 func (h *FriendHandler) HandleAcceptRequest(c echo.Context) error {
-	return h.respondToRequest(c, "accepted")
+	return h.respondToRequest(c, true)
 }
 
 func (h *FriendHandler) HandleDeclineRequest(c echo.Context) error {
-	return h.respondToRequest(c, "declined")
+	return h.respondToRequest(c, false)
 }
 
-func (h *FriendHandler) respondToRequest(c echo.Context, targetStatus string) error {
+func (h *FriendHandler) respondToRequest(c echo.Context, accept bool) error {
 	userID := middleware.UserID(c)
 
 	requestID := c.Param("id")
@@ -99,7 +99,12 @@ func (h *FriendHandler) respondToRequest(c echo.Context, targetStatus string) er
 		return echo.NewHTTPError(http.StatusConflict, "friend request already resolved")
 	}
 
-	if err := db.SetFriendRequestStatus(c.Request().Context(), h.DB, requestID, targetStatus);err != nil {
+	if accept {
+		err = db.SetFriendRequestStatus(c.Request().Context(), h.DB, requestID, "accepted")
+	} else {
+		err = db.DeleteFriendRequest(c.Request().Context(), h.DB, requestID)
+	}
+	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 	}
 

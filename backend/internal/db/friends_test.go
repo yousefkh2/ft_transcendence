@@ -97,3 +97,45 @@ func TestRemoveFriend_CanBeAddedAgainAfterwards(t *testing.T) {
 		t.Fatalf("sending a new request after removal should work, got %v", err)
 	}
 }
+
+func TestDeleteFriendRequest_SenderCanAskAgain(t *testing.T) {
+	pool := testPool(t)
+	ctx := context.Background()
+	a, _ := createUser(t, pool)
+	b, _ := createUser(t, pool)
+	id, err := db.CreateFriendRequest(ctx, pool, a, b)
+	if err != nil {
+		t.Fatalf("create request: %v", err)
+	}
+
+	if err := db.DeleteFriendRequest(ctx, pool, id); err != nil {
+		t.Fatalf("decline: %v", err)
+	}
+	if pending, _ := db.ListPendingFriendRequests(ctx, pool, b); len(pending) != 0 {
+		t.Fatalf("declined request should be gone, still %d pending", len(pending))
+	}
+	if _, err := db.CreateFriendRequest(ctx, pool, a, b); err != nil {
+		t.Fatalf("sender should be able to ask again after a decline, got %v", err)
+	}
+}
+
+func TestDeleteFriendRequest_KeepsAcceptedFriendship(t *testing.T) {
+	pool := testPool(t)
+	ctx := context.Background()
+	a, _ := createUser(t, pool)
+	b, _ := createUser(t, pool)
+	id, err := db.CreateFriendRequest(ctx, pool, a, b)
+	if err != nil {
+		t.Fatalf("create request: %v", err)
+	}
+	if err := db.SetFriendRequestStatus(ctx, pool, id, "accepted"); err != nil {
+		t.Fatalf("accept: %v", err)
+	}
+
+	if err := db.DeleteFriendRequest(ctx, pool, id); err != nil {
+		t.Fatalf("delete: %v", err)
+	}
+	if n := friendCount(t, pool, a); n != 1 {
+		t.Fatalf("an accepted friendship must not be deleted as a request, friends: %d", n)
+	}
+}
