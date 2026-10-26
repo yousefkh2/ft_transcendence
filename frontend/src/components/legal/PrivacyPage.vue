@@ -25,6 +25,7 @@
 				nobody on the team can see it.
 			</li>
 			<li>The date your account was created.</li>
+			<li>The language you are learning.</li>
 		</ul>
 		<h3>Game and progress data</h3>
 		<ul>
@@ -85,9 +86,9 @@
 		<ul>
 			<li>Other players can see your username, for example in rounds and friend requests.</li>
 			<li>
-				Logged-in players can open your public profile. It shows your username, XP, the date you joined and
-				your game stats (rounds played, wins and losses). Your email and your detailed match history stay
-				private.
+				Logged-in players can open your public profile. It shows your username, XP, the language you are
+				learning, the date you joined and your game stats (rounds played, wins and losses). Your email and
+				your detailed match history stay private.
 			</li>
 			<li>Your friends can see that you are friends with them.</li>
 			<li>Your email address and password hash are never shown to other players.</li>
