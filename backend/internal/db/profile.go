@@ -93,3 +93,31 @@ func GetMatchHistory(ctx context.Context, pool *pgxpool.Pool, userID string) ([]
 
 	return matches, nil
 }
+
+// DeleteUser deletes an account and everything that belongs to it (friendships, round participations,
+// flashcards cascade). Finished rounds the user hosted are kept, so they stay in the other players'
+// match history: only the host reference is cleared before the user row goes away.
+func DeleteUser(ctx context.Context, pool *pgxpool.Pool, userID string) error {
+	tx, err := pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	if _, err := tx.Exec(ctx,
+		`UPDATE game_sessions SET host_user_id = NULL WHERE host_user_id = $1 AND status = 'completed'`,
+		userID,
+	); err != nil {
+		return err
+	}
+	if _, err := tx.Exec(ctx, `DELETE FROM users WHERE id = $1`, userID); err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
+}
+
+func GetPasswordHash(ctx context.Context, pool *pgxpool.Pool, userID string) (string, error) {
+	var hash string
+	err := pool.QueryRow(ctx, `SELECT password_hash FROM users WHERE id = $1`, userID).Scan(&hash)
+	return hash, err
+}

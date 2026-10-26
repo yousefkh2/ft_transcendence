@@ -38,3 +38,7 @@ export interface PublicProfile {
 export function fetchPublicProfile(username: string): Promise<PublicProfile> {
 	return request<PublicProfile>(`/api/users/${encodeURIComponent(username)}`);
 }
+
+export function deleteAccount(password: string): Promise<void> {
+	return request<void>('/api/users/me', { method: 'DELETE', body: { password } });
+}
