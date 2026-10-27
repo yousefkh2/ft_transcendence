@@ -6,7 +6,8 @@
 		</template>
 
 		<template v-else>
-			<ProfileHead :name="user?.username ?? username">
+			<ProfileHead :name="user?.username ?? username" :status="user ? (user.online ? 'online' : 'offline') : undefined">
+				<p v-if="user" class="presence" :class="{ online: user.online }">{{ formatLastSeen(user.online, user.lastSeenAt) }}</p>
 				<p v-if="user" class="member-since">
 					Learning {{ languageName(user.learningLanguage) }} · Member since {{ formatDate(user.createdAt) }}
 				</p>
@@ -43,7 +44,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { ApiError } from '../../api/client';
 import { fetchFriendRequests, fetchFriends, sendFriendRequest, type Friend, type FriendRequest } from '../../api/friends';
 import { fetchPublicProfile, type Profile, type PublicProfile } from '../../api/users';
-import { formatDate } from '../../utils/format';
+import { formatDate, formatLastSeen } from '../../utils/format';
 import { languageName } from '../../constants/languages';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseButton from '../base/BaseButton.vue';
@@ -120,6 +121,17 @@ watch(
 	.profile {
 		display: grid;
 		gap: 22px;
+	}
+
+	.presence {
+		margin: 0 0 2px;
+		font-size: 13px;
+		font-weight: 700;
+		color: var(--color-outline);
+	}
+
+	.presence.online {
+		color: var(--color-on-success-container);
 	}
 
 	.member-since {

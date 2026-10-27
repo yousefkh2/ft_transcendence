@@ -4,6 +4,8 @@ export interface Friend {
 	friendId: string;
 	friendUsername: string;
 	createdAt: string;
+	online: boolean;
+	lastSeenAt?: string;
 }
 
 export interface FriendRequest {

@@ -1,5 +1,5 @@
 <template>
-	<LegalLayout title="Privacy Policy" updated="October 26, 2026">
+	<LegalLayout title="Privacy Policy" updated="October 27, 2026">
 		<p>
 			This policy explains which personal data LingoDash collects when you use it, why we need it,
 			who it is shared with and what rights you have. We only collect what the game needs to work.
@@ -40,6 +40,13 @@
 		<ul>
 			<li>Friend requests you send or receive, their status and the date they were made.</li>
 		</ul>
+		<h3>Online status</h3>
+		<ul>
+			<li>
+				While LingoDash is open in your browser, it tells our server about every 30 seconds that you are
+				online. We only store the time of the last of these signals, not a history.
+			</li>
+		</ul>
 		<h3>Data stored in your browser</h3>
 		<ul>
 			<li>
@@ -72,7 +79,7 @@
 		<ul>
 			<li>To create your account and log you in.</li>
 			<li>To run game rounds, match you with other players and keep track of your XP and rounds.</li>
-			<li>To let you add friends and see your friends list.</li>
+			<li>To let you add friends, see your friends list and see which friends are online.</li>
 			<li>To turn your speech into text during a round.</li>
 			<li>To keep the service secure, for example by protecting accounts against misuse.</li>
 		</ul>
@@ -87,7 +94,8 @@
 			<li>Other players can see your username, for example in rounds and friend requests.</li>
 			<li>
 				Logged-in players can open your public profile. It shows your username, XP, the language you are
-				learning, the date you joined and your game stats (rounds played, wins and losses). Your email and
+				learning, the date you joined, whether you are online or when you were last online, and your game
+				stats (rounds played, wins and losses). Your email and
 				your detailed match history stay private.
 			</li>
 			<li>Your friends can see that you are friends with them.</li>

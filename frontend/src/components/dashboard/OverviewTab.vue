@@ -40,9 +40,10 @@
 				</div>
 				<div v-if="friends.length" class="friend-list">
 					<div v-for="friend in friendsPreview" :key="friend.friendId" class="friend-row">
-						<BaseAvatar :name="friend.friendUsername" />
+						<BaseAvatar :name="friend.friendUsername" :status="friend.online ? 'online' : 'offline'" />
 						<div class="friend-info">
 							<RouterLink :to="{ name: 'user-profile', params: { username: friend.friendUsername } }" class="friend-name">{{ friend.friendUsername }}</RouterLink>
+							<div class="friend-meta" :class="{ online: friend.online }">{{ formatLastSeen(friend.online, friend.lastSeenAt) }}</div>
 						</div>
 					</div>
 				</div>
@@ -63,6 +64,10 @@ import BaseButton from '../base/BaseButton.vue';
 import BaseEyebrow from '../base/BaseEyebrow.vue';
 import RoundList from './RoundList.vue';
 import { countSince } from '../../utils/matches';
+import { formatLastSeen } from '../../utils/format';
+import { sortByPresence } from '../../utils/friends';
+import { PRESENCE_INTERVAL_MS } from '../../composables/useHeartbeat';
+import { usePolling } from '../../composables/usePolling';
 
 const props = defineProps<{ profile: Profile | null }>();
 
@@ -76,15 +81,23 @@ const roundsThisWeek = computed(() => countSince(matches.value, 7));
 
 const recentRounds = computed(() => matches.value.slice(0, 4));
 
-const friendsPreview = computed(() => friends.value.slice(0, 3));
+const friendsPreview = computed(() => sortByPresence(friends.value).slice(0, 3));
 
 onMounted(async () => {
 	try {
-		[matches.value, friends.value] = await Promise.all([fetchMatchHistory(), fetchFriends()]);
+		matches.value = await fetchMatchHistory();
 	} catch (err) {
 		error.value = err instanceof Error ? err.message : 'Could not load your stats.';
 	}
 });
+
+usePolling(async () => {
+	try {
+		friends.value = await fetchFriends();
+	} catch (err) {
+		error.value = err instanceof Error ? err.message : 'Could not load your friends.';
+	}
+}, PRESENCE_INTERVAL_MS);
 </script>
 
 <style scoped>
@@ -225,6 +238,16 @@ onMounted(async () => {
 
 	.friend-name:hover {
 		text-decoration: underline;
+	}
+
+	.friend-meta {
+		font-size: 11.5px;
+		color: var(--color-outline);
+	}
+
+	.friend-meta.online {
+		color: var(--color-on-success-container);
+		font-weight: 700;
 	}
 
 	.empty-hint {

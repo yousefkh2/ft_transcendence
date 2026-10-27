@@ -46,6 +46,7 @@ func main() {
 	users := e.Group("/api/users", middleware.EchoWithAuth)
 	users.GET("/me", profileHandler.HandleMe, middleware.EchoWithAuth)
 	users.GET("/me/matches", profileHandler.HandleMatchHistory, middleware.EchoWithAuth)
+	users.POST("/me/heartbeat", profileHandler.HandleHeartbeat)
 	users.PATCH("/me", profileHandler.HandleUpdateProfile)
 	users.PATCH("/me/password", profileHandler.HandleChangePassword)
 	users.DELETE("/me", profileHandler.HandleDeleteAccount)

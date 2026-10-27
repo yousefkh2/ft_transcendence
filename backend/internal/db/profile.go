@@ -41,6 +41,8 @@ type PublicProfile struct {
 	XP			int			`json:"xp"`
 	CreatedAt	time.Time	`json:"createdAt"`
 	LearningLanguage	string	`json:"learningLanguage"`
+	LastSeenAt	*time.Time	`json:"lastSeenAt,omitempty"`
+	Online		bool		`json:"online"`
 	RoundsPlayed	int		`json:"roundsPlayed"`
 	Wins		int			`json:"wins"`
 	Losses		int			`json:"losses"`
@@ -49,7 +51,7 @@ type PublicProfile struct {
 func GetPublicProfile(ctx context.Context, pool *pgxpool.Pool, username string) (PublicProfile, error) {
 	var p PublicProfile
 	err := pool.QueryRow(ctx,
-		`SELECT u.username, u.xp, u.created_at, u.learning_lang,
+		`SELECT u.username, u.xp, u.created_at, u.learning_lang, u.last_seen_at,
 			COUNT(gs.id) FILTER (WHERE gs.status = 'completed'),
 			COUNT(gs.id) FILTER (WHERE gs.status = 'completed' AND sp.is_winner),
 			COUNT(gs.id) FILTER (WHERE gs.status = 'completed' AND NOT sp.is_winner)
@@ -59,7 +61,8 @@ func GetPublicProfile(ctx context.Context, pool *pgxpool.Pool, username string) 
 		WHERE u.username = $1
 		GROUP BY u.id`,
 		username,
-	).Scan(&p.Username, &p.XP, &p.CreatedAt, &p.LearningLanguage, &p.RoundsPlayed, &p.Wins, &p.Losses)
+	).Scan(&p.Username, &p.XP, &p.CreatedAt, &p.LearningLanguage, &p.LastSeenAt, &p.RoundsPlayed, &p.Wins, &p.Losses)
+	p.Online = IsOnline(p.LastSeenAt, time.Now())
 	return p, err
 }
 
