@@ -1,6 +1,6 @@
 <template>
 	<div class="profile">
-		<ProfileHead :name="profile?.username">
+		<ProfileHead :name="profile?.username" :src="apiAssetUrl(profile?.avatarUrl)">
 			<p v-if="profile" class="email">
 				{{ profile.email }}
 				<span class="private">Only visible to you</span>
@@ -8,6 +8,9 @@
 			<p v-if="profile" class="member-since">
 				Learning {{ languageName(profile.learningLanguage) }} · Member since {{ formatDate(profile.createdAt) }}
 			</p>
+			<template #actions>
+				<AvatarEditor :profile="profile" @updated="emit('profile-updated', $event)" />
+			</template>
 		</ProfileHead>
 
 		<ProfileStats
@@ -51,6 +54,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import { apiAssetUrl } from '../../api/client';
 import { fetchFriends, type Friend } from '../../api/friends';
 import { fetchMatchHistory, type MatchHistoryEntry, type Profile } from '../../api/users';
 import { countSince, roundResult } from '../../utils/matches';
@@ -59,6 +63,7 @@ import { languageName } from '../../constants/languages';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseButton from '../base/BaseButton.vue';
 import BaseCard from '../base/BaseCard.vue';
+import AvatarEditor from './AvatarEditor.vue';
 import DeleteAccountCard from './DeleteAccountCard.vue';
 import EditProfileCard from './EditProfileCard.vue';
 import ProfileHead from './ProfileHead.vue';

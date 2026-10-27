@@ -3,6 +3,11 @@ import { getToken } from '../auth/session';
 
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
+// Turns a path the API returns (like an avatarUrl) into a full URL for <img src>.
+export function apiAssetUrl(path?: string): string | undefined {
+	return path ? `${apiUrl}${path}` : undefined;
+}
+
 export class ApiError extends Error {
 	constructor(
 		message: string,
@@ -22,12 +27,14 @@ export async function request<T>(path: string, { method = 'GET', body, auth = tr
 	const headers: Record<string, string> = {};
 	const token = auth ? getToken() : null;
 	if (token) headers.Authorization = `Bearer ${token}`;
-	if (body !== undefined) headers['Content-Type'] = 'application/json';
+	// FormData (file uploads) sets its own multipart Content-Type with the boundary.
+	const isForm = body instanceof FormData;
+	if (body !== undefined && !isForm) headers['Content-Type'] = 'application/json';
 
 	const response = await fetch(`${apiUrl}${path}`, {
 		method,
 		headers,
-		body: body === undefined ? undefined : JSON.stringify(body),
+		body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
 	});
 
 	if (!response.ok) {

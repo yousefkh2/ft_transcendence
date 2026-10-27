@@ -18,7 +18,7 @@
 					<span class="xp-value">{{ xpLabel }}</span>
 				</div>
 				<RouterLink :to="{ name: 'profile' }" class="avatar-link" aria-label="Your profile">
-					<BaseAvatar :name="profile?.username" size="md" variant="gradient" />
+					<BaseAvatar :name="profile?.username" :src="apiAssetUrl(profile?.avatarUrl)" size="md" variant="gradient" />
 				</RouterLink>
 				<button type="button" class="logout-btn" @click="logout">Log out</button>
 			</div>
@@ -38,6 +38,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import { apiAssetUrl } from '../../api/client';
 import { fetchProfile, type Profile } from '../../api/users';
 import { logout } from '../../auth/logout';
 import { useHeartbeat } from '../../composables/useHeartbeat';
