@@ -32,6 +32,8 @@ export interface PublicProfile {
 	xp: number;
 	createdAt: string;
 	learningLanguage: string;
+	online: boolean;
+	lastSeenAt?: string;
 	roundsPlayed: number;
 	wins: number;
 	losses: number;
@@ -58,4 +60,8 @@ export function updateProfile(changes: ProfileChanges): Promise<Profile> {
 
 export function changePassword(currentPassword: string, newPassword: string): Promise<void> {
 	return request<void>('/api/users/me/password', { method: 'PATCH', body: { currentPassword, newPassword } });
+}
+
+export function sendHeartbeat(): Promise<void> {
+	return request<void>('/api/users/me/heartbeat', { method: 'POST' });
 }

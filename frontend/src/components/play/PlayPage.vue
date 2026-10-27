@@ -30,8 +30,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import logo from '../../images/logo-transparent.png';
+import { useHeartbeat } from '../../composables/useHeartbeat';
 import BaseButton from '../base/BaseButton.vue';
 import BrandBolt from '../base/BrandBolt.vue';
+
+useHeartbeat();
 
 const gameFrame = ref<HTMLIFrameElement | null>(null);
 const loaded = ref(false);

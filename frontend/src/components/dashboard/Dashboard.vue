@@ -40,8 +40,11 @@
 import { computed, onMounted, ref } from 'vue';
 import { fetchProfile, type Profile } from '../../api/users';
 import { logout } from '../../auth/logout';
+import { useHeartbeat } from '../../composables/useHeartbeat';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseAvatar from '../base/BaseAvatar.vue';
+
+useHeartbeat();
 
 const profile = ref<Profile | null>(null);
 const error = ref('');

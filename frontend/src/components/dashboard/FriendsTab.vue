@@ -36,10 +36,13 @@
 			<h2 class="panel-title">Your friends</h2>
 			<div v-if="friends.length" class="friend-list">
 				<div v-for="friend in friends" :key="friend.friendId" class="row">
-					<BaseAvatar :name="friend.friendUsername" />
+					<BaseAvatar :name="friend.friendUsername" :status="friend.online ? 'online' : 'offline'" />
 					<div class="row-info">
 						<RouterLink :to="{ name: 'user-profile', params: { username: friend.friendUsername } }" class="row-name">{{ friend.friendUsername }}</RouterLink>
-						<div class="row-meta">Friends since {{ formatDate(friend.createdAt) }}</div>
+						<div class="row-meta">
+							<span :class="{ online: friend.online }">{{ formatLastSeen(friend.online, friend.lastSeenAt) }}</span>
+							· Friends since {{ formatDate(friend.createdAt) }}
+						</div>
 					</div>
 					<div class="row-actions">
 						<template v-if="confirmingId === friend.friendId">
@@ -69,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import {
 	fetchFriends,
 	fetchFriendRequests,
@@ -81,7 +84,10 @@ import {
 	type FriendRequest,
 } from '../../api/friends';
 import type { Profile } from '../../api/users';
-import { formatDate } from '../../utils/format';
+import { PRESENCE_INTERVAL_MS } from '../../composables/useHeartbeat';
+import { usePolling } from '../../composables/usePolling';
+import { formatDate, formatLastSeen } from '../../utils/format';
+import { sortByPresence } from '../../utils/friends';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseAvatar from '../base/BaseAvatar.vue';
 import BaseCard from '../base/BaseCard.vue';
@@ -101,7 +107,10 @@ const addNotice = ref('');
 
 async function loadFriendsAndRequests() {
 	try {
-		[friends.value, requests.value] = await Promise.all([fetchFriends(), fetchFriendRequests()]);
+		const [friendList, requestList] = await Promise.all([fetchFriends(), fetchFriendRequests()]);
+		friends.value = sortByPresence(friendList);
+		requests.value = requestList;
+		loadError.value = '';
 	} catch (err) {
 		loadError.value = err instanceof Error ? err.message : 'Could not load your friends.';
 	}
@@ -171,7 +180,8 @@ async function respond(id: string, action: 'accept' | 'decline') {
 	}
 }
 
-onMounted(loadFriendsAndRequests);
+// Polling keeps the online status and new requests up to date.
+usePolling(loadFriendsAndRequests, PRESENCE_INTERVAL_MS);
 </script>
 
 <style scoped>
@@ -256,6 +266,11 @@ onMounted(loadFriendsAndRequests);
 	.row-meta {
 		font-size: 11.5px;
 		color: var(--color-outline);
+	}
+
+	.row-meta .online {
+		color: var(--color-on-success-container);
+		font-weight: 700;
 	}
 
 	.row-actions {
