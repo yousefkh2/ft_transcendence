@@ -1,16 +1,19 @@
 <template>
 	<div class="avatar" :class="[size, variant]" :title="name">
-		{{ initial }}
+		<img v-if="src && !failed" :src="src" alt="" class="picture" @error="failed = true" />
+		<template v-else>{{ initial }}</template>
 		<span v-if="status" class="status" :class="status" aria-hidden="true"></span>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const props = withDefaults(
 	defineProps<{
 		name?: string;
+		// Profile picture URL. The initial is shown without one or when it fails to load.
+		src?: string;
 		size?: 'sm' | 'md' | 'lg';
 		variant?: 'solid' | 'gradient';
 		// Only a visual hint: show the status as text next to the avatar for screen readers.
@@ -20,6 +23,12 @@ const props = withDefaults(
 );
 
 const initial = computed(() => props.name?.[0]?.toUpperCase() ?? '?');
+
+const failed = ref(false);
+watch(
+	() => props.src,
+	() => (failed.value = false),
+);
 </script>
 
 <style scoped>
@@ -57,6 +66,13 @@ const initial = computed(() => props.name?.[0]?.toUpperCase() ?? '?');
 
 	.gradient {
 		background: linear-gradient(135deg, var(--color-primary), var(--color-primary-container));
+	}
+
+	.picture {
+		width: 100%;
+		height: 100%;
+		border-radius: inherit;
+		object-fit: cover;
 	}
 
 	.status {
