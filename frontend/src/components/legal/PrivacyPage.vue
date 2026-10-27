@@ -58,6 +58,10 @@
 				After you log in, a login token is saved in your browser's local storage so you stay logged in. It
 				expires after 24 hours and is removed when you log out.
 			</li>
+			<li>
+				The interface language you choose, so LingoDash opens in it next time. It stays in your browser and
+				is never sent to our server.
+			</li>
 		</ul>
 		<p>
 			LingoDash does <strong>not</strong> use cookies, analytics, advertising or any other tracking tools.
