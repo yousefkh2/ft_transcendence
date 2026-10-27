@@ -10,17 +10,26 @@
 			</div>
 		</section>
 
-		<BaseAlert v-if="error" size="md">{{ error }}</BaseAlert>
-
-		<section v-else class="stat-grid">
+		<section class="stat-grid" aria-label="Stats">
 			<BaseCard size="sm">
 				<span class="stat-label">Total XP</span>
-				<div class="stat-value">{{ xpDisplay }}</div>
+				<div v-if="profile" class="stat-value">{{ profile.xp.toLocaleString() }}</div>
+				<BaseSkeleton v-else class="value-skeleton" shape="block" width="70px" height="30px" />
 			</BaseCard>
 			<BaseCard size="sm">
 				<span class="stat-label">Rounds played</span>
-				<div class="stat-value">{{ matches.length }}</div>
-				<p class="stat-sub">{{ roundsThisWeek }} this week</p>
+				<template v-if="matchesStatus === 'ready'">
+					<div class="stat-value">{{ matches.length }}</div>
+					<p class="stat-sub">{{ roundsThisWeek }} this week</p>
+				</template>
+				<template v-else-if="matchesStatus === 'error'">
+					<div class="stat-value">-</div>
+					<p class="stat-sub">not available right now</p>
+				</template>
+				<template v-else>
+					<BaseSkeleton class="value-skeleton" shape="block" width="70px" height="30px" />
+					<BaseSkeleton width="90px" height="0.75em" />
+				</template>
 			</BaseCard>
 		</section>
 
@@ -29,7 +38,11 @@
 				<div class="panel-header">
 					<h2>Recent rounds</h2>
 				</div>
-				<RoundList v-if="recentRounds.length" :matches="recentRounds" />
+				<ListSkeleton v-if="matchesStatus === 'loading'" label="Loading recent rounds" />
+				<BaseAlert v-else-if="matchesStatus === 'error'" @retry="loadMatches">
+					Your rounds could not be loaded right now.
+				</BaseAlert>
+				<RoundList v-else-if="recentRounds.length" :matches="recentRounds" />
 				<p v-else class="empty-hint">No rounds played yet - jump into a game to see them here.</p>
 			</BaseCard>
 
@@ -38,7 +51,11 @@
 					<h2>Friends</h2>
 					<RouterLink :to="{ name: 'friends' }" class="link-btn">See all</RouterLink>
 				</div>
-				<div v-if="friends.length" class="friend-list">
+				<ListSkeleton v-if="friendsStatus === 'loading'" label="Loading friends" avatar />
+				<BaseAlert v-else-if="friendsStatus === 'error'" @retry="loadFriends">
+					Your friends could not be loaded right now.
+				</BaseAlert>
+				<div v-else-if="friends.length" class="friend-list">
 					<div v-for="friend in friendsPreview" :key="friend.friendId" class="friend-row">
 						<BaseAvatar :name="friend.friendUsername" :src="apiAssetUrl(friend.avatarUrl)" :status="friend.online ? 'online' : 'offline'" />
 						<div class="friend-info">
@@ -54,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted } from 'vue';
 import { apiAssetUrl } from '../../api/client';
 import { fetchFriends, type Friend } from '../../api/friends';
 import { fetchMatchHistory, type MatchHistoryEntry, type Profile } from '../../api/users';
@@ -63,20 +80,21 @@ import BaseAvatar from '../base/BaseAvatar.vue';
 import BaseCard from '../base/BaseCard.vue';
 import BaseButton from '../base/BaseButton.vue';
 import BaseEyebrow from '../base/BaseEyebrow.vue';
+import BaseSkeleton from '../base/BaseSkeleton.vue';
+import ListSkeleton from './ListSkeleton.vue';
 import RoundList from './RoundList.vue';
 import { countSince } from '../../utils/matches';
 import { formatLastSeen } from '../../utils/format';
 import { sortByPresence } from '../../utils/friends';
 import { PRESENCE_INTERVAL_MS } from '../../composables/useHeartbeat';
 import { usePolling } from '../../composables/usePolling';
+import { useLoader } from '../../composables/useLoader';
 
-const props = defineProps<{ profile: Profile | null }>();
+defineProps<{ profile: Profile | null }>();
 
-const matches = ref<MatchHistoryEntry[]>([]);
-const friends = ref<Friend[]>([]);
-const error = ref('');
-
-const xpDisplay = computed(() => (props.profile ? props.profile.xp.toLocaleString() : '…'));
+// Rounds and friends load independently, so one failing request does not hide the other card.
+const { data: matches, status: matchesStatus, load: loadMatches } = useLoader(fetchMatchHistory, [] as MatchHistoryEntry[]);
+const { data: friends, status: friendsStatus, load: loadFriends } = useLoader(fetchFriends, [] as Friend[]);
 
 const roundsThisWeek = computed(() => countSince(matches.value, 7));
 
@@ -84,21 +102,8 @@ const recentRounds = computed(() => matches.value.slice(0, 4));
 
 const friendsPreview = computed(() => sortByPresence(friends.value).slice(0, 3));
 
-onMounted(async () => {
-	try {
-		matches.value = await fetchMatchHistory();
-	} catch (err) {
-		error.value = err instanceof Error ? err.message : 'Could not load your stats.';
-	}
-});
-
-usePolling(async () => {
-	try {
-		friends.value = await fetchFriends();
-	} catch (err) {
-		error.value = err instanceof Error ? err.message : 'Could not load your friends.';
-	}
-}, PRESENCE_INTERVAL_MS);
+onMounted(loadMatches);
+usePolling(loadFriends, PRESENCE_INTERVAL_MS);
 </script>
 
 <style scoped>
@@ -167,6 +172,10 @@ usePolling(async () => {
 		font-weight: 800;
 		margin: 8px 0 2px;
 		letter-spacing: -0.02em;
+	}
+
+	.value-skeleton {
+		margin: 10px 0 8px;
 	}
 
 	.stat-sub {

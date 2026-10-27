@@ -1,11 +1,21 @@
 <template>
 	<BaseCard class="profile-head">
-		<BaseAvatar :name="name" :src="src" size="lg" variant="gradient" :status="status" />
-		<div class="identity">
-			<h1>{{ name ?? '…' }}</h1>
-			<slot />
-		</div>
-		<div v-if="$slots.actions" class="actions">
+		<template v-if="name">
+			<BaseAvatar :name="name" :src="src" size="lg" variant="gradient" :status="status" />
+			<div class="identity">
+				<h1>{{ name }}</h1>
+				<slot />
+			</div>
+		</template>
+		<template v-else>
+			<BaseSkeleton shape="circle" width="72px" height="72px" />
+			<div class="identity" role="status">
+				<h1 class="visually-hidden">Loading profile</h1>
+				<BaseSkeleton width="180px" height="26px" class="name-skeleton" />
+				<BaseSkeleton width="240px" height="0.8em" />
+			</div>
+		</template>
+		<div v-if="name && $slots.actions" class="actions">
 			<slot name="actions" />
 		</div>
 	</BaseCard>
@@ -14,6 +24,7 @@
 <script setup lang="ts">
 import BaseAvatar from '../base/BaseAvatar.vue';
 import BaseCard from '../base/BaseCard.vue';
+import BaseSkeleton from '../base/BaseSkeleton.vue';
 
 defineProps<{ name?: string; src?: string; status?: 'online' | 'offline' }>();
 </script>
@@ -38,6 +49,11 @@ defineProps<{ name?: string; src?: string; status?: 'online' | 'offline' }>();
 		letter-spacing: -0.02em;
 		overflow: hidden;
 		text-overflow: ellipsis;
+	}
+
+	.name-skeleton {
+		margin-bottom: 10px;
+		max-width: 100%;
 	}
 
 	.actions {

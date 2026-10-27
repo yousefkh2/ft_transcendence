@@ -15,17 +15,19 @@
 			<div class="header-right">
 				<div class="xp-badge">
 					<span class="xp-dot"></span>
-					<span class="xp-value">{{ xpLabel }}</span>
+					<span v-if="profile" class="xp-value">{{ profile.xp.toLocaleString() }} XP</span>
+					<BaseSkeleton v-else width="44px" height="0.8em" />
 				</div>
 				<RouterLink :to="{ name: 'profile' }" class="avatar-link" aria-label="Your profile">
-					<BaseAvatar :name="profile?.username" :src="apiAssetUrl(profile?.avatarUrl)" size="md" variant="gradient" />
+					<BaseAvatar v-if="profile" :name="profile.username" :src="apiAssetUrl(profile.avatarUrl)" size="md" variant="gradient" />
+					<BaseSkeleton v-else shape="circle" width="36px" height="36px" />
 				</RouterLink>
 				<button type="button" class="logout-btn" @click="logout">Log out</button>
 			</div>
 		</header>
 
 		<main class="dashboard-main">
-			<BaseAlert v-if="error" size="md">{{ error }}</BaseAlert>
+			<BaseAlert v-if="error" size="md" @retry="loadProfile">{{ error }}</BaseAlert>
 			<RouterView v-else :profile="profile" @profile-updated="profile = $event" />
 		</main>
 
@@ -37,28 +39,30 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { apiAssetUrl } from '../../api/client';
 import { fetchProfile, type Profile } from '../../api/users';
 import { logout } from '../../auth/logout';
 import { useHeartbeat } from '../../composables/useHeartbeat';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseAvatar from '../base/BaseAvatar.vue';
+import BaseSkeleton from '../base/BaseSkeleton.vue';
 
 useHeartbeat();
 
 const profile = ref<Profile | null>(null);
 const error = ref('');
 
-const xpLabel = computed(() => (profile.value ? `${profile.value.xp.toLocaleString()} XP` : '… XP'));
-
-onMounted(async () => {
+async function loadProfile() {
+	error.value = '';
 	try {
 		profile.value = await fetchProfile();
-	} catch (err) {
-		error.value = err instanceof Error ? err.message : 'Could not load your profile.';
+	} catch {
+		error.value = 'Your profile could not be loaded right now.';
 	}
-});
+}
+
+onMounted(loadProfile);
 </script>
 
 <style scoped>
