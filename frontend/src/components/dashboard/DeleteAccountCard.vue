@@ -1,27 +1,25 @@
 <template>
 	<BaseCard tag="section" class="delete-card" aria-labelledby="delete-account-title">
-		<h2 id="delete-account-title">Delete account</h2>
-		<p class="text">
-			This permanently deletes your account, your friends list and your stats. It cannot be undone.
-		</p>
+		<h2 id="delete-account-title">{{ t('deleteAccount.title') }}</h2>
+		<p class="text">{{ t('deleteAccount.text') }}</p>
 
 		<BaseButton v-if="!open" variant="outline" size="sm" pill class="start" @click="open = true">
-			Delete my account
+			{{ t('deleteAccount.start') }}
 		</BaseButton>
 
 		<form v-else class="confirm" novalidate @submit.prevent="submit">
 			<BaseInput
 				v-model="password"
-				label="Confirm with your password"
+				:label="t('deleteAccount.confirmLabel')"
 				type="password"
 				autocomplete="current-password"
 				:error="error"
 			/>
 			<div class="buttons">
 				<BaseButton type="submit" variant="danger" size="sm" pill :disabled="deleting">
-					{{ deleting ? 'Deleting…' : 'Delete account forever' }}
+					{{ deleting ? t('deleteAccount.deleting') : t('deleteAccount.confirm') }}
 				</BaseButton>
-				<BaseButton variant="outline" size="sm" pill :disabled="deleting" @click="cancel">Cancel</BaseButton>
+				<BaseButton variant="outline" size="sm" pill :disabled="deleting" @click="cancel">{{ t('common.cancel') }}</BaseButton>
 			</div>
 		</form>
 	</BaseCard>
@@ -35,6 +33,7 @@ import { logout } from '../../auth/logout';
 import BaseButton from '../base/BaseButton.vue';
 import BaseCard from '../base/BaseCard.vue';
 import BaseInput from '../base/BaseInput.vue';
+import { t } from '../../i18n';
 
 const open = ref(false);
 const password = ref('');
@@ -49,7 +48,7 @@ function cancel() {
 
 async function submit() {
 	if (!password.value) {
-		error.value = 'Please enter your password.';
+		error.value = t('validation.enterPassword');
 		return;
 	}
 	deleting.value = true;
@@ -59,7 +58,7 @@ async function submit() {
 		await logout();
 	} catch (err) {
 		error.value =
-			err instanceof ApiError && err.status === 403 ? 'Incorrect password.' : 'Your account could not be deleted right now.';
+			err instanceof ApiError && err.status === 403 ? t('apiErrors.incorrectPassword') : t('deleteAccount.error');
 	} finally {
 		deleting.value = false;
 	}

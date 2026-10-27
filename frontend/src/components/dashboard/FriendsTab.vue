@@ -2,12 +2,12 @@
 	<div class="friends">
 		<div class="friends-toolbar">
 			<div>
-				<h1>Friends</h1>
-				<p class="subtitle">Play with people you know.</p>
+				<h1>{{ t('friends.title') }}</h1>
+				<p class="subtitle">{{ t('friends.subtitle') }}</p>
 			</div>
 			<form class="add-form" @submit.prevent="addFriend">
-				<BaseInput v-model="newUsername" size="sm" class="add-input" :error="addError" type="text" placeholder="Add by username" aria-label="Username to add as friend" :disabled="sending" />
-				<BaseButton type="submit" :disabled="sending || !newUsername.trim()"><BaseIcon name="user-plus" :size="16" />Add</BaseButton>
+				<BaseInput v-model="newUsername" size="sm" class="add-input" :error="addError" type="text" :placeholder="t('friends.addPlaceholder')" :aria-label="t('friends.addLabel')" :disabled="sending" />
+				<BaseButton type="submit" :disabled="sending || !newUsername.trim()"><BaseIcon name="user-plus" :size="16" />{{ t('friends.add') }}</BaseButton>
 			</form>
 		</div>
 
@@ -16,27 +16,27 @@
 		<BaseAlert v-if="actionError">{{ actionError }}</BaseAlert>
 
 		<BaseCard v-if="requests.length" tag="section">
-			<h2 class="panel-title">Pending requests</h2>
+			<h2 class="panel-title">{{ t('friends.pending') }}</h2>
 			<div class="request-list">
 				<div v-for="request in requests" :key="request.id" class="row">
 					<BaseAvatar :name="request.requesterUsername" :src="apiAssetUrl(request.requesterAvatarUrl)" />
 					<div class="row-info">
 						<RouterLink :to="{ name: 'user-profile', params: { username: request.requesterUsername } }" class="row-name">{{ request.requesterUsername }}</RouterLink>
-						<div class="row-meta">Sent {{ formatDate(request.createdAt) }}</div>
+						<div class="row-meta">{{ t('friends.sent', { date: formatDate(request.createdAt) }) }}</div>
 					</div>
 					<div class="row-actions">
-						<BaseButton size="sm" pill @click="respond(request.id, 'accept')">Accept</BaseButton>
-						<BaseButton variant="outline" size="sm" pill @click="respond(request.id, 'decline')">Ignore</BaseButton>
+						<BaseButton size="sm" pill @click="respond(request.id, 'accept')">{{ t('friends.accept') }}</BaseButton>
+						<BaseButton variant="outline" size="sm" pill @click="respond(request.id, 'decline')">{{ t('friends.ignore') }}</BaseButton>
 					</div>
 				</div>
 			</div>
 		</BaseCard>
 
 		<BaseCard tag="section">
-			<h2 class="panel-title">Your friends</h2>
-			<ListSkeleton v-if="status === 'loading'" label="Loading friends" avatar />
+			<h2 class="panel-title">{{ t('friends.yours') }}</h2>
+			<ListSkeleton v-if="status === 'loading'" :label="t('friends.loading')" avatar />
 			<BaseAlert v-else-if="status === 'error'" @retry="loadFriendsAndRequests">
-				Your friends could not be loaded right now.
+				{{ t('friends.loadError') }}
 			</BaseAlert>
 			<div v-else-if="friends.length" class="friend-list">
 				<div v-for="friend in friends" :key="friend.friendId" class="row">
@@ -45,16 +45,16 @@
 						<RouterLink :to="{ name: 'user-profile', params: { username: friend.friendUsername } }" class="row-name">{{ friend.friendUsername }}</RouterLink>
 						<div class="row-meta">
 							<span :class="{ online: friend.online }">{{ formatLastSeen(friend.online, friend.lastSeenAt) }}</span>
-							· Friends since {{ formatDate(friend.createdAt) }}
+							· {{ t('friends.since', { date: formatDate(friend.createdAt) }) }}
 						</div>
 					</div>
 					<div class="row-actions">
 						<template v-if="confirmingId === friend.friendId">
 							<BaseButton variant="danger" size="sm" pill :disabled="removing" @click="remove(friend)">
-								Remove friend
+								{{ t('friends.removeConfirm') }}
 							</BaseButton>
 							<BaseButton variant="outline" size="sm" pill :disabled="removing" @click="confirmingId = ''">
-								Cancel
+								{{ t('common.cancel') }}
 							</BaseButton>
 						</template>
 						<BaseButton
@@ -62,15 +62,15 @@
 							variant="ghost"
 							size="sm"
 							pill
-							:aria-label="`Remove ${friend.friendUsername} from your friends`"
+							:aria-label="t('friends.removeLabel', { name: friend.friendUsername })"
 							@click="confirmingId = friend.friendId"
 						>
-							Remove
+							{{ t('friends.remove') }}
 						</BaseButton>
 					</div>
 				</div>
 			</div>
-			<p v-else class="empty-hint">No friends yet - add someone above.</p>
+			<p v-else class="empty-hint">{{ t('friends.none') }}</p>
 		</BaseCard>
 	</div>
 </template>
@@ -100,6 +100,7 @@ import BaseCard from '../base/BaseCard.vue';
 import BaseInput from '../base/BaseInput.vue';
 import BaseButton from '../base/BaseButton.vue';
 import BaseIcon from '../base/BaseIcon.vue';
+import { t } from '../../i18n';
 import ListSkeleton from './ListSkeleton.vue';
 
 const props = defineProps<{ profile: Profile | null }>();
@@ -131,10 +132,10 @@ watch(newUsername, () => {
 
 // Catches requests the backend would reject anyway, so they never leave the browser.
 function checkNewFriend(username: string): string {
-	if (username === props.profile?.username) return "You can't add yourself as a friend.";
-	if (friends.value.some((f) => f.friendUsername === username)) return `${username} is already your friend.`;
+	if (username === props.profile?.username) return t('friends.self');
+	if (friends.value.some((f) => f.friendUsername === username)) return t('friends.already', { name: username });
 	if (requests.value.some((r) => r.requesterUsername === username)) {
-		return `${username} already sent you a request. You can accept it below.`;
+		return t('friends.incoming', { name: username });
 	}
 	return '';
 }
@@ -149,10 +150,10 @@ async function addFriend() {
 	sending.value = true;
 	try {
 		await sendFriendRequest(username);
-		addNotice.value = `Friend request sent to ${username}.`;
+		addNotice.value = t('friends.requestSent', { name: username });
 		newUsername.value = '';
 	} catch (err) {
-		addError.value = err instanceof Error ? err.message : 'Could not send that friend request.';
+		addError.value = err instanceof Error ? err.message : t('friends.sendError');
 	} finally {
 		sending.value = false;
 	}
@@ -167,11 +168,11 @@ async function remove(friend: Friend) {
 	actionError.value = '';
 	try {
 		await removeFriend(friend.friendId);
-		addNotice.value = `${friend.friendUsername} was removed from your friends.`;
+		addNotice.value = t('friends.removed', { name: friend.friendUsername });
 		confirmingId.value = '';
 		await loadFriendsAndRequests();
 	} catch (err) {
-		actionError.value = err instanceof Error ? err.message : 'Could not remove that friend.';
+		actionError.value = err instanceof Error ? err.message : t('friends.removeError');
 	} finally {
 		removing.value = false;
 	}
@@ -187,7 +188,7 @@ async function respond(id: string, action: 'accept' | 'decline') {
 		}
 		await loadFriendsAndRequests();
 	} catch (err) {
-		actionError.value = err instanceof Error ? err.message : 'Could not update that request.';
+		actionError.value = err instanceof Error ? err.message : t('friends.respondError');
 	}
 }
 
@@ -198,6 +199,8 @@ usePolling(loadFriendsAndRequests, PRESENCE_INTERVAL_MS);
 <style scoped>
 	.friends {
 		display: grid;
+		/* minmax(0, ...) lets the column shrink below its content, so long text wraps instead of overflowing. */
+		grid-template-columns: minmax(0, 1fr);
 		gap: 22px;
 	}
 

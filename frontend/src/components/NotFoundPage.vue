@@ -2,15 +2,16 @@
 	<main id="main" class="not-found" tabindex="-1">
 		<BrandBolt class="bolt-mark" />
 		<span class="code">404</span>
-		<h1>Page not found</h1>
-		<p>The page you're looking for doesn't exist or has moved.</p>
-		<BaseButton to="/" class="home-btn">Back to home</BaseButton>
+		<h1>{{ t('notFound.title') }}</h1>
+		<p>{{ t('notFound.text') }}</p>
+		<BaseButton to="/" class="home-btn">{{ t('notFound.home') }}</BaseButton>
 	</main>
 </template>
 
 <script setup lang="ts">
 import BaseButton from './base/BaseButton.vue';
 import BrandBolt from './base/BrandBolt.vue';
+import { t } from '../i18n';
 </script>
 
 <style scoped>

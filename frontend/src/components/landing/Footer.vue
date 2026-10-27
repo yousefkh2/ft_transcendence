@@ -7,24 +7,21 @@
 						<img :src="logo" alt="LingoDash Logo" class="brand-logo" />
 						<span class="brand-name">LingoDash</span>
 					</div>
-					<p class="brand-desc">
-						Real conversation, real pressure. Available now: German, English,
-						Polish and Turkish.
-					</p>
+					<p class="brand-desc">{{ t('landing.footer.text') }}</p>
 				</div>
 
-				<nav class="links" aria-label="Footer">
-					<a href="#how-it-works">How it Works</a>
-					<a href="#game-modes">Game Modes</a>
-					<a href="#gamification">Gamification</a>
+				<nav class="links" :aria-label="t('landing.nav.footer')">
+					<a href="#how-it-works">{{ t('landing.nav.howItWorks') }}</a>
+					<a href="#game-modes">{{ t('landing.nav.gameModes') }}</a>
+					<a href="#gamification">{{ t('landing.nav.gamification') }}</a>
 				</nav>
 			</div>
 
 			<div class="bottom">
-				<span class="copyright">© 2026 LingoDash. All rights reserved.</span>
-				<nav class="legal-links" aria-label="Legal">
-					<RouterLink to="/privacy">Privacy Policy</RouterLink>
-					<RouterLink to="/terms">Terms of Service</RouterLink>
+				<span class="copyright">{{ t('landing.footer.rights') }}</span>
+				<nav class="legal-links" :aria-label="t('landing.nav.legal')">
+					<RouterLink to="/privacy">{{ t('common.privacyPolicy') }}</RouterLink>
+					<RouterLink to="/terms">{{ t('common.termsOfService') }}</RouterLink>
 				</nav>
 			</div>
 		</div>
@@ -33,6 +30,7 @@
 
 <script setup lang="ts">
 import logo from '../../images/logo-transparent.png';
+import { t } from '../../i18n';
 </script>
 
 <style scoped>
@@ -110,7 +108,8 @@ import logo from '../../images/logo-transparent.png';
 
 	.legal-links {
 		display: flex;
-		gap: 20px;
+		flex-wrap: wrap;
+		gap: 8px 20px;
 	}
 
 	.legal-links a {

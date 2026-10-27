@@ -36,6 +36,7 @@ const ICONS = {
 	trash: ['M4 7h16', 'M9 7V4h6v3', 'M6 7l1 13h10l1-13', 'M10 11v6', 'M14 11v6'],
 	'user-plus': ['M9 4a4 4 0 1 0 0 8a4 4 0 1 0 0-8z', 'M2 20a7 7 0 0 1 14 0', 'M19 8v6', 'M16 11h6'],
 	lock: ['M6 11h12v9H6z', 'M8.5 11V8a3.5 3.5 0 0 1 7 0v3'],
+	globe: ['M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18z', 'M3 12h18', 'M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9', 'M12 3c-2.5 2.5-3.8 5.5-3.8 9s1.3 6.5 3.8 9'],
 } as const;
 
 export type IconName = keyof typeof ICONS;

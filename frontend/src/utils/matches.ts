@@ -1,4 +1,5 @@
 import type { MatchHistoryEntry } from '../api/users';
+import { locale } from '../i18n';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -6,11 +7,11 @@ export function formatLabel(value: string) {
 	return value.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+// "Today", "Yesterday", "3 days ago" in the current language.
 export function formatWhen(iso: string) {
-	const diffDays = Math.floor((Date.now() - new Date(iso).getTime()) / DAY_MS);
-	if (diffDays <= 0) return 'Today';
-	if (diffDays === 1) return 'Yesterday';
-	return `${diffDays} days ago`;
+	const diffDays = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / DAY_MS));
+	const text = new Intl.RelativeTimeFormat(locale.value, { numeric: 'auto' }).format(-diffDays, 'day');
+	return text.charAt(0).toLocaleUpperCase(locale.value) + text.slice(1);
 }
 
 export function roundResult(match: MatchHistoryEntry): 'won' | 'lost' | 'pending' {

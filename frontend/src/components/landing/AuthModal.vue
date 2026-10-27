@@ -6,13 +6,9 @@
 		<div ref="modalEl" class="modal-content">
 			<div class="header">
 				<BrandBolt class="bolt-mark" />
-				<h2 :id="titleId" class="title">{{ tab === 'login' ? 'Welcome back' : 'Create your account' }}</h2>
+				<h2 :id="titleId" class="title">{{ tab === 'login' ? t('auth.loginTitle') : t('auth.registerTitle') }}</h2>
 				<p class="subtitle">
-					{{
-						tab === 'login'
-							? 'Log in to keep your streak going.'
-							: 'Start learning through play - free forever.'
-					}}
+					{{ tab === 'login' ? t('auth.loginSubtitle') : t('auth.registerSubtitle') }}
 				</p>
 			</div>
 
@@ -25,7 +21,7 @@
 					:aria-pressed="tab === 'login'"
 					@click="switchTab('login')"
 				>
-					Log In
+					{{ t('auth.logIn') }}
 				</button>
 				<button
 					type="button"
@@ -34,7 +30,7 @@
 					:aria-pressed="tab === 'register'"
 					@click="switchTab('register')"
 				>
-					Sign Up
+					{{ t('auth.signUp') }}
 				</button>
 			</div>
 
@@ -44,76 +40,76 @@
 						<BaseAlert v-if="loginError">{{ loginError }}</BaseAlert>
 						<BaseInput
 							v-model="loginForm.email"
-							label="Email"
+							:label="t('common.email')"
 							type="email"
 							autocomplete="email"
 							required
-							placeholder="you@example.com"
+							:placeholder="t('auth.emailPlaceholder')"
 							:error="loginErrors.email"
 						/>
 						<BaseInput
 							v-model="loginForm.password"
-							label="Password"
+							:label="t('common.password')"
 							type="password"
 							autocomplete="current-password"
 							required
 							placeholder="••••••••"
 							:error="loginErrors.password"
 						/>
-						<a href="#" class="forgot-link" @click.prevent="showForgotNotice = true">Forgot password?</a>
+						<a href="#" class="forgot-link" @click.prevent="showForgotNotice = true">{{ t('auth.forgotPassword') }}</a>
 						<BaseAlert v-if="showForgotNotice" variant="info" class="forgot-notice">
-							Password reset isn't available yet - hang tight, it's coming soon.
+							{{ t('auth.forgotNotice') }}
 						</BaseAlert>
 						<BaseButton type="submit" variant="gradient" size="lg" block class="submit-btn" :disabled="loginLoading">
-							{{ loginLoading ? 'Logging in…' : 'Log In' }}
+							{{ loginLoading ? t('auth.loggingIn') : t('auth.logIn') }}
 						</BaseButton>
 						<p class="switch-line">
-							Don't have an account?
-							<a href="#" @click.prevent="switchTab('register')">Sign Up</a>
+							{{ t('auth.noAccount') }}
+							<a href="#" @click.prevent="switchTab('register')">{{ t('auth.signUp') }}</a>
 						</p>
 					</form>
 					<form v-else key="register" class="auth-form" novalidate @submit.prevent="handleRegister">
 						<BaseAlert v-if="registerError">{{ registerError }}</BaseAlert>
 						<BaseInput
 							v-model="registerForm.username"
-							label="Username"
+							:label="t('common.username')"
 							type="text"
 							autocomplete="username"
 							required
-							placeholder="yourname"
+:placeholder="t('auth.usernamePlaceholder')"
 							:error="registerErrors.username"
 						/>
 						<BaseInput
 							v-model="registerForm.email"
-							label="Email"
+							:label="t('common.email')"
 							type="email"
 							autocomplete="email"
 							required
-							placeholder="you@example.com"
+							:placeholder="t('auth.emailPlaceholder')"
 							:error="registerErrors.email"
 						/>
 						<BaseInput
 							v-model="registerForm.password"
-							label="Password"
+							:label="t('common.password')"
 							type="password"
 							autocomplete="new-password"
 							required
 							placeholder="••••••••"
-							:hint="PASSWORD_HINT"
+							:hint="passwordHint()"
 							:error="registerErrors.password"
 						/>
-						<BaseSelect v-model="registerForm.language" label="Learning language" :options="LEARNING_LANGUAGES" />
+						<BaseSelect v-model="registerForm.language" :label="t('common.learningLanguage')" :options="languageOptions" />
 						<BaseButton type="submit" variant="gradient" size="lg" block class="submit-btn" :disabled="registerLoading">
-							{{ registerLoading ? 'Creating account…' : 'Create Account' }}
+							{{ registerLoading ? t('auth.creatingAccount') : t('auth.createAccount') }}
 						</BaseButton>
 						<p class="legal-note">
-							By creating an account, you agree to our
-							<RouterLink to="/terms">Terms of Service</RouterLink> and
-							<RouterLink to="/privacy">Privacy Policy</RouterLink>.
+							{{ t('auth.legalBefore') }}
+							<RouterLink to="/terms">{{ t('auth.legalTerms') }}</RouterLink> {{ t('auth.legalAnd') }}
+							<RouterLink to="/privacy">{{ t('auth.legalPrivacy') }}</RouterLink>{{ t('auth.legalAfter') }}
 						</p>
 						<p class="switch-line">
-							Already have an account?
-							<a href="#" @click.prevent="switchTab('login')">Log In</a>
+							{{ t('auth.haveAccount') }}
+							<a href="#" @click.prevent="switchTab('login')">{{ t('auth.logIn') }}</a>
 						</p>
 					</form>
 				</Transition>
@@ -123,11 +119,11 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, reactive, ref, useId, watch } from 'vue';
+import { computed, nextTick, reactive, ref, useId, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { login, register } from '../../api/auth';
 import {
-	PASSWORD_HINT,
+	passwordHint,
 	validateEmail,
 	validateLoginPassword,
 	validateNewPassword,
@@ -136,7 +132,8 @@ import {
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseInput from '../base/BaseInput.vue';
 import BaseSelect from '../base/BaseSelect.vue';
-import { DEFAULT_LEARNING_LANGUAGE, LEARNING_LANGUAGES } from '../../constants/languages';
+import { DEFAULT_LEARNING_LANGUAGE, learningLanguageOptions } from '../../constants/languages';
+import { t } from '../../i18n';
 import BaseButton from '../base/BaseButton.vue';
 import BaseModal from '../base/BaseModal.vue';
 import BrandBolt from '../base/BrandBolt.vue';
@@ -151,6 +148,7 @@ const showForgotNotice = ref(false);
 
 const modalEl = ref<HTMLElement | null>(null);
 const titleId = useId();
+const languageOptions = computed(learningLanguageOptions);
 
 const loginForm = reactive({ email: '', password: '' });
 const loginErrors = reactive({ email: '', password: '' });
@@ -228,7 +226,7 @@ async function handleLogin() {
 		close();
 		router.push('/dashboard');
 	} catch (err) {
-		loginError.value = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+		loginError.value = err instanceof Error ? err.message : t('common.somethingWentWrong');
 	} finally {
 		loginLoading.value = false;
 	}
@@ -250,7 +248,7 @@ async function handleRegister() {
 		close();
 		router.push('/dashboard');
 	} catch (err) {
-		registerError.value = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+		registerError.value = err instanceof Error ? err.message : t('common.somethingWentWrong');
 	} finally {
 		registerLoading.value = false;
 	}

@@ -4,13 +4,13 @@
 		<div class="buttons">
 			<BaseButton size="sm" pill :disabled="busy" @click="fileInput?.click()">
 				<BaseIcon name="upload" :size="14" />
-				{{ profile?.avatarUrl ? 'Change picture' : 'Upload picture' }}
+				{{ profile?.avatarUrl ? t('avatar.change') : t('avatar.upload') }}
 			</BaseButton>
-			<BaseButton v-if="profile?.avatarUrl" variant="ghost" size="sm" pill :disabled="busy" aria-label="Remove profile picture" @click="remove">
-				Remove
+			<BaseButton v-if="profile?.avatarUrl" variant="ghost" size="sm" pill :disabled="busy" :aria-label="t('avatar.removeLabel')" @click="remove">
+				{{ t('avatar.remove') }}
 			</BaseButton>
 		</div>
-		<p class="status" role="status" aria-live="polite">{{ busy ? 'Saving picture...' : '' }}</p>
+		<p class="status" role="status" aria-live="polite">{{ busy ? t('avatar.saving') : '' }}</p>
 		<BaseAlert v-if="error">{{ error }}</BaseAlert>
 	</div>
 </template>
@@ -21,6 +21,7 @@ import { deleteAvatar, uploadAvatar, type Profile } from '../../api/users';
 import { MAX_PICTURE_BYTES, toSquareJpeg } from '../../utils/image';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseButton from '../base/BaseButton.vue';
+import { t } from '../../i18n';
 import BaseIcon from '../base/BaseIcon.vue';
 
 defineProps<{ profile: Profile | null }>();
@@ -49,21 +50,21 @@ async function onFileChosen() {
 	if (!file) return;
 
 	if (file.size > MAX_PICTURE_BYTES) {
-		error.value = 'This file is too big. Please choose a picture under 15 MB.';
+		error.value = t('avatar.tooBig');
 		return;
 	}
 	let picture: Blob;
 	try {
 		picture = await toSquareJpeg(file);
 	} catch {
-		error.value = 'This file could not be read as a picture. Try a JPEG or PNG.';
+		error.value = t('avatar.unreadable');
 		return;
 	}
-	await save(() => uploadAvatar(picture), 'Could not upload your picture.');
+	await save(() => uploadAvatar(picture), t('avatar.uploadError'));
 }
 
 function remove() {
-	save(deleteAvatar, 'Could not remove your picture.');
+	save(deleteAvatar, t('avatar.removeError'));
 }
 </script>
 

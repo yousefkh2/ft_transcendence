@@ -3,28 +3,28 @@
 		<section class="hero">
 			<div class="hero-glow"></div>
 			<div class="hero-copy">
-				<BaseEyebrow variant="chip">Next up · Apartment Setup</BaseEyebrow>
-				<h1>Ready for a round?</h1>
-				<p>Jump into the live game and get matched with a partner for the next scenario.</p>
-				<BaseButton to="/play" variant="gradient" size="lg"><BaseIcon name="play" />Play now</BaseButton>
+				<BaseEyebrow variant="chip">{{ t('overview.nextUp') }}</BaseEyebrow>
+				<h1>{{ t('overview.heroTitle') }}</h1>
+				<p>{{ t('overview.heroText') }}</p>
+				<BaseButton to="/play" variant="gradient" size="lg"><BaseIcon name="play" />{{ t('overview.playNow') }}</BaseButton>
 			</div>
 		</section>
 
-		<section class="stat-grid" aria-label="Stats">
+		<section class="stat-grid" :aria-label="t('overview.stats')">
 			<BaseCard size="sm">
-				<span class="stat-label">Total XP</span>
-				<div v-if="profile" class="stat-value">{{ profile.xp.toLocaleString() }}</div>
+				<span class="stat-label">{{ t('overview.totalXp') }}</span>
+				<div v-if="profile" class="stat-value">{{ formatNumber(profile.xp) }}</div>
 				<BaseSkeleton v-else class="value-skeleton" shape="block" width="70px" height="30px" />
 			</BaseCard>
 			<BaseCard size="sm">
-				<span class="stat-label">Rounds played</span>
+				<span class="stat-label">{{ t('overview.roundsPlayed') }}</span>
 				<template v-if="matchesStatus === 'ready'">
 					<div class="stat-value">{{ matches.length }}</div>
-					<p class="stat-sub">{{ roundsThisWeek }} this week</p>
+					<p class="stat-sub">{{ t('overview.thisWeek', { n: roundsThisWeek }) }}</p>
 				</template>
 				<template v-else-if="matchesStatus === 'error'">
 					<div class="stat-value">-</div>
-					<p class="stat-sub">not available right now</p>
+					<p class="stat-sub">{{ t('overview.notAvailable') }}</p>
 				</template>
 				<template v-else>
 					<BaseSkeleton class="value-skeleton" shape="block" width="70px" height="30px" />
@@ -36,24 +36,24 @@
 		<section class="panels">
 			<BaseCard>
 				<div class="panel-header">
-					<h2>Recent rounds</h2>
+					<h2>{{ t('overview.recentRounds') }}</h2>
 				</div>
-				<ListSkeleton v-if="matchesStatus === 'loading'" label="Loading recent rounds" />
+				<ListSkeleton v-if="matchesStatus === 'loading'" :label="t('overview.loadingRounds')" />
 				<BaseAlert v-else-if="matchesStatus === 'error'" @retry="loadMatches">
-					Your rounds could not be loaded right now.
+					{{ t('overview.roundsError') }}
 				</BaseAlert>
 				<RoundList v-else-if="recentRounds.length" :matches="recentRounds" />
-				<p v-else class="empty-hint">No rounds played yet - jump into a game to see them here.</p>
+				<p v-else class="empty-hint">{{ t('overview.noRounds') }}</p>
 			</BaseCard>
 
 			<BaseCard>
 				<div class="panel-header">
-					<h2>Friends</h2>
-					<RouterLink :to="{ name: 'friends' }" class="link-btn">See all</RouterLink>
+					<h2>{{ t('overview.friends') }}</h2>
+					<RouterLink :to="{ name: 'friends' }" class="link-btn">{{ t('overview.seeAll') }}</RouterLink>
 				</div>
-				<ListSkeleton v-if="friendsStatus === 'loading'" label="Loading friends" avatar />
+				<ListSkeleton v-if="friendsStatus === 'loading'" :label="t('overview.loadingFriends')" avatar />
 				<BaseAlert v-else-if="friendsStatus === 'error'" @retry="loadFriends">
-					Your friends could not be loaded right now.
+					{{ t('overview.friendsError') }}
 				</BaseAlert>
 				<div v-else-if="friends.length" class="friend-list">
 					<div v-for="friend in friendsPreview" :key="friend.friendId" class="friend-row">
@@ -64,7 +64,7 @@
 						</div>
 					</div>
 				</div>
-				<p v-else class="empty-hint">No friends yet - add someone from the Friends tab.</p>
+				<p v-else class="empty-hint">{{ t('overview.noFriends') }}</p>
 			</BaseCard>
 		</section>
 	</div>
@@ -81,11 +81,12 @@ import BaseCard from '../base/BaseCard.vue';
 import BaseButton from '../base/BaseButton.vue';
 import BaseEyebrow from '../base/BaseEyebrow.vue';
 import BaseIcon from '../base/BaseIcon.vue';
+import { t } from '../../i18n';
 import BaseSkeleton from '../base/BaseSkeleton.vue';
 import ListSkeleton from './ListSkeleton.vue';
 import RoundList from './RoundList.vue';
 import { countSince } from '../../utils/matches';
-import { formatLastSeen } from '../../utils/format';
+import { formatLastSeen, formatNumber } from '../../utils/format';
 import { sortByPresence } from '../../utils/friends';
 import { PRESENCE_INTERVAL_MS } from '../../composables/useHeartbeat';
 import { usePolling } from '../../composables/usePolling';

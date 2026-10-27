@@ -10,7 +10,7 @@
 		<template v-else>
 			<BaseSkeleton shape="circle" width="72px" height="72px" />
 			<div class="identity" role="status">
-				<h1 class="visually-hidden">Loading profile</h1>
+				<h1 class="visually-hidden">{{ t('profile.loading') }}</h1>
 				<BaseSkeleton width="180px" height="26px" class="name-skeleton" />
 				<BaseSkeleton width="240px" height="0.8em" />
 			</div>
@@ -25,6 +25,7 @@
 import BaseAvatar from '../base/BaseAvatar.vue';
 import BaseCard from '../base/BaseCard.vue';
 import BaseSkeleton from '../base/BaseSkeleton.vue';
+import { t } from '../../i18n';
 
 defineProps<{ name?: string; src?: string; status?: 'online' | 'offline' }>();
 </script>
@@ -63,6 +64,11 @@ defineProps<{ name?: string; src?: string; status?: 'online' | 'offline' }>();
 	@media (max-width: 720px) {
 		.profile-head {
 			flex-wrap: wrap;
+		}
+
+		/* Buttons get their own line, so name and email keep the full width in every language. */
+		.actions {
+			flex-basis: 100%;
 		}
 
 		h1 {

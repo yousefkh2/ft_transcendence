@@ -1,7 +1,11 @@
 <template>
 	<div class="round-list">
 		<div v-for="round in rows" :key="round.sessionId" class="round-row">
-			<div class="round-badge" :class="round.result">{{ BADGE_LABELS[round.result] }}</div>
+			<div class="round-badge" :class="round.result" :title="resultLabel(round.result)">
+				<BaseIcon v-if="round.result !== 'pending'" :name="round.result === 'won' ? 'check' : 'close'" :size="16" />
+				<span v-else aria-hidden="true">-</span>
+				<span class="visually-hidden">{{ resultLabel(round.result) }}</span>
+			</div>
 			<div class="round-info">
 				<div class="round-mode">{{ round.mode }}</div>
 				<div class="round-when">{{ round.details }}</div>
@@ -14,10 +18,15 @@
 import { computed } from 'vue';
 import type { MatchHistoryEntry } from '../../api/users';
 import { formatLabel, formatWhen, roundResult } from '../../utils/matches';
+import { t } from '../../i18n';
+import BaseIcon from '../base/BaseIcon.vue';
 
 const props = defineProps<{ matches: MatchHistoryEntry[]; showRole?: boolean }>();
 
-const BADGE_LABELS = { won: 'Won', lost: 'Lost', pending: '-' } as const;
+// The badge shows a language-neutral icon; the word is for screen readers and the tooltip.
+function resultLabel(result: 'won' | 'lost' | 'pending') {
+	return result === 'pending' ? t('rounds.pending') : t(result === 'won' ? 'rounds.won' : 'rounds.lost');
+}
 
 const rows = computed(() =>
 	props.matches.map((m) => ({

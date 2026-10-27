@@ -4,12 +4,13 @@
 			<BaseIcon :name="ICONS[variant]" :size="size === 'md' ? 18 : 16" class="message-icon" />
 			<span><slot /></span>
 		</p>
-		<button v-if="onRetry" type="button" class="retry" @click="onRetry">Try again</button>
+		<button v-if="onRetry" type="button" class="retry" @click="onRetry">{{ t('common.tryAgain') }}</button>
 	</div>
 </template>
 
 <script setup lang="ts">
 import BaseIcon from './BaseIcon.vue';
+import { t } from '../../i18n';
 
 const ICONS = { error: 'alert-circle', success: 'check-circle', info: 'info' } as const;
 

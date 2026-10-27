@@ -1,34 +1,34 @@
 <template>
 	<div class="profile">
 		<template v-if="notFound">
-			<BaseAlert size="md">There is no player called "{{ username }}".</BaseAlert>
-			<BaseButton :to="{ name: 'friends' }" variant="outline" size="sm" pill class="back">Back to friends</BaseButton>
+			<BaseAlert size="md">{{ t('profile.notFound', { name: username }) }}</BaseAlert>
+			<BaseButton :to="{ name: 'friends' }" variant="outline" size="sm" pill class="back">{{ t('profile.backToFriends') }}</BaseButton>
 		</template>
 
 		<template v-else>
 			<ProfileHead :name="user?.username ?? username" :src="apiAssetUrl(user?.avatarUrl)" :status="user ? (user.online ? 'online' : 'offline') : undefined">
 				<p v-if="user" class="presence" :class="{ online: user.online }">{{ formatLastSeen(user.online, user.lastSeenAt) }}</p>
 				<p v-if="user" class="member-since">
-					Learning {{ languageName(user.learningLanguage) }} · Member since {{ formatDate(user.createdAt) }}
+					{{ t('profile.learning', { language: languageName(user.learningLanguage), date: formatDate(user.createdAt) }) }}
 				</p>
 				<div v-else-if="!loadError" class="head-skeleton" role="status">
-					<span class="visually-hidden">Loading profile</span>
+					<span class="visually-hidden">{{ t('profile.loading') }}</span>
 					<BaseSkeleton width="110px" height="0.8em" />
 					<BaseSkeleton width="240px" height="0.8em" />
 				</div>
 				<template #actions>
-					<BaseBadge v-if="relation === 'friend'" variant="success" icon="check">Friends</BaseBadge>
-					<BaseBadge v-else-if="relation === 'sent'">Request sent</BaseBadge>
+					<BaseBadge v-if="relation === 'friend'" variant="success" icon="check">{{ t('profile.isFriend') }}</BaseBadge>
+					<BaseBadge v-else-if="relation === 'sent'">{{ t('profile.requestSent') }}</BaseBadge>
 					<BaseButton v-else-if="relation === 'incoming'" :to="{ name: 'friends' }" size="sm" pill>
-						Answer friend request
+						{{ t('profile.answerRequest') }}
 					</BaseButton>
 					<BaseButton v-else-if="relation === 'none'" size="sm" pill :disabled="sending" @click="addFriend">
-						Add friend
+						{{ t('profile.addFriend') }}
 					</BaseButton>
 				</template>
 			</ProfileHead>
 
-			<BaseAlert v-if="loadError" size="md" @retry="load(username)">This profile could not be loaded right now.</BaseAlert>
+			<BaseAlert v-if="loadError" size="md" @retry="load(username)">{{ t('profile.loadError') }}</BaseAlert>
 			<BaseAlert v-if="actionError">{{ actionError }}</BaseAlert>
 
 			<ProfileStats
@@ -37,7 +37,7 @@
 				:rounds="user.roundsPlayed"
 				:wins="user.wins"
 				:losses="user.losses"
-				rounds-sub="completed rounds"
+				:rounds-sub="t('profile.completedRounds')"
 			/>
 			<ProfileStats v-else-if="!loadError" :xp="null" :rounds="0" :wins="0" :losses="0" rounds-sub="" loading />
 		</template>
@@ -54,6 +54,7 @@ import { formatDate, formatLastSeen } from '../../utils/format';
 import { languageName } from '../../constants/languages';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseBadge from '../base/BaseBadge.vue';
+import { t } from '../../i18n';
 import BaseButton from '../base/BaseButton.vue';
 import BaseSkeleton from '../base/BaseSkeleton.vue';
 import ProfileHead from './ProfileHead.vue';
@@ -108,7 +109,7 @@ async function addFriend() {
 		await sendFriendRequest(user.value.username);
 		requestSent.value = true;
 	} catch (err) {
-		actionError.value = err instanceof Error ? err.message : 'Could not send that friend request.';
+		actionError.value = err instanceof Error ? err.message : t('friends.sendError');
 	} finally {
 		sending.value = false;
 	}

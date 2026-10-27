@@ -1,21 +1,18 @@
 <template>
 	<section id="gamification" class="gamification">
 		<div class="header">
-			<BaseEyebrow>Gamification</BaseEyebrow>
-			<h2 class="title">Progress you can feel every round</h2>
+			<BaseEyebrow>{{ t('landing.gamification.eyebrow') }}</BaseEyebrow>
+			<h2 class="title">{{ t('landing.gamification.title') }}</h2>
 		</div>
 
 		<div class="grid">
 			<BaseCard size="lg">
-				<h3 class="card-title">XP &amp; levels</h3>
-				<p class="card-desc">
-					Every round you finish earns XP. Win, lose, or run out the clock -
-					you always walk away a little further along.
-				</p>
+				<h3 class="card-title">{{ t('landing.gamification.xpTitle') }}</h3>
+				<p class="card-desc">{{ t('landing.gamification.xpText') }}</p>
 				<div class="xp-widget">
 					<div class="xp-row">
-						<span class="xp-level">Level 7</span>
-						<span class="xp-amount">2,140 / 3,000 XP</span>
+						<span class="xp-level">{{ t('landing.gamification.level', { level: 7 }) }}</span>
+						<span class="xp-amount">{{ formatNumber(2140) }} / {{ t('common.xp', { xp: formatNumber(3000) }) }}</span>
 					</div>
 					<div class="xp-track">
 						<div class="xp-fill" style="width: 71%"></div>
@@ -24,32 +21,23 @@
 			</BaseCard>
 
 			<BaseCard size="lg">
-				<h3 class="card-title">AI-reviewed flashcards</h3>
-				<p class="card-desc">
-					Slip-ups from the round get turned into flashcards, each with a
-					plain-language explanation of what to say instead.
-				</p>
+				<h3 class="card-title">{{ t('landing.gamification.flashcardsTitle') }}</h3>
+				<p class="card-desc">{{ t('landing.gamification.flashcardsText') }}</p>
 				<div class="flashcard">
 					<span class="flashcard-wrong">Ich habe gegeht nach Hause.</span>
 					<span class="flashcard-correct">Ich bin nach Hause gegangen.</span>
-					<p class="flashcard-explanation">
-						Movement verbs like "gehen" use "sein", not "haben", as the
-						auxiliary in the perfect tense.
-					</p>
+					<p class="flashcard-explanation">{{ t('landing.gamification.flashcardExplanation') }}</p>
 				</div>
 			</BaseCard>
 
 			<BaseCard size="lg">
-				<h3 class="card-title">Friends</h3>
-				<p class="card-desc">
-					Add friends and see who's climbing fastest. Send a request, get
-					accepted, and play together whenever you're both online.
-				</p>
+				<h3 class="card-title">{{ t('landing.gamification.friendsTitle') }}</h3>
+				<p class="card-desc">{{ t('landing.gamification.friendsText') }}</p>
 				<ul class="friends-list">
-					<li v-for="(friend, index) in friends" :key="friend.name" class="friend-row">
+					<li v-for="(friend, index) in friends" :key="friend.xp" class="friend-row">
 						<span class="friend-rank">{{ index + 1 }}</span>
-						<span class="friend-name">{{ friend.name }}</span>
-						<span class="friend-xp">{{ friend.xp.toLocaleString() }} XP</span>
+						<span class="friend-name">{{ friend.name ?? t('landing.gamification.you') }}</span>
+						<span class="friend-xp">{{ t('common.xp', { xp: formatNumber(friend.xp) }) }}</span>
 					</li>
 				</ul>
 			</BaseCard>
@@ -60,10 +48,13 @@
 <script setup lang="ts">
 import BaseEyebrow from '../base/BaseEyebrow.vue';
 import BaseCard from '../base/BaseCard.vue';
+import { t } from '../../i18n';
+import { formatNumber } from '../../utils/format';
 const friends = [
 	{ name: 'jonas.k', xp: 5820 },
 	{ name: 'mei_learns', xp: 4390 },
-	{ name: 'you', xp: 2140 },
+	// The demo player shown as "you" in the current language.
+	{ name: undefined, xp: 2140 },
 ];
 </script>
 

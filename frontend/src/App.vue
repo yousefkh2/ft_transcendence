@@ -1,13 +1,15 @@
 <template>
-	<a href="#main" class="skip-link" @click.prevent="skipToContent">Skip to content</a>
+	<a href="#main" class="skip-link" @click.prevent="skipToContent">{{ t('common.skipToContent') }}</a>
 	<RouterView />
 	<!-- Single-page navigation does not load a new page, so screen readers would not notice it otherwise. -->
 	<p class="visually-hidden" aria-live="polite">{{ announcement }}</p>
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { nextTick, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { locale, t } from './i18n';
+import { updateTitle } from './router';
 
 const announcement = ref('');
 
@@ -15,6 +17,10 @@ const announcement = ref('');
 function skipToContent() {
 	document.getElementById('main')?.focus();
 }
+
+// The browser tab title follows a language switch too.
+const route = useRoute();
+watch(locale, () => updateTitle(route));
 
 useRouter().afterEach((_to, from) => {
 	// The first page load is announced by the browser itself.
