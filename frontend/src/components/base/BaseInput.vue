@@ -71,11 +71,16 @@ const messageId = `${inputId}-message`;
 	.input:focus {
 		outline: none;
 		border-color: var(--color-primary);
+		box-shadow: 0 0 0 3px rgba(70, 72, 212, 0.18);
 	}
 
 	.input.invalid,
 	.input.invalid:focus {
 		border-color: var(--color-error);
+	}
+
+	.input.invalid:focus {
+		box-shadow: 0 0 0 3px rgba(209, 53, 43, 0.15);
 	}
 
 	.field-error,

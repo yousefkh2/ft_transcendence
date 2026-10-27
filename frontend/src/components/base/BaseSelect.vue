@@ -52,5 +52,6 @@ const selectId = useId();
 	.select:focus {
 		outline: none;
 		border-color: var(--color-primary);
+		box-shadow: 0 0 0 3px rgba(70, 72, 212, 0.18);
 	}
 </style>

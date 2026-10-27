@@ -10,7 +10,8 @@
   --color-surface-inverse: #111c2d;
   --color-on-surface: #111c2d;
   --color-on-surface-variant: #464554;
-  --color-outline: #767586;
+  /* Muted text. Dark enough for 4.5:1 contrast (WCAG AA) on all light backgrounds, also on gray chips and tabs. */
+  --color-outline: #666576;
   --color-error: #d1352b;
   --color-success: #22c55e;
   --color-on-success-container: #15803d;
@@ -68,4 +69,15 @@ body {
 
 a {
   color: inherit;
+}
+
+/* Fallback focus ring for keyboard users. Components may replace it with their own visible style. */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Areas that only take focus from code (like <main> after "Skip to content") need no ring. */
+[tabindex="-1"]:focus {
+  outline: none;
 }
