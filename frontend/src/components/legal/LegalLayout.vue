@@ -8,7 +8,7 @@
 			<BaseButton to="/" variant="ghost" pill>Back to LingoDash</BaseButton>
 		</header>
 
-		<main class="legal-main">
+		<main id="main" class="legal-main" tabindex="-1">
 			<BaseEyebrow>Legal</BaseEyebrow>
 			<h1>{{ title }}</h1>
 			<p class="updated">Last updated: {{ updated }}</p>

@@ -26,7 +26,7 @@
 			</div>
 		</header>
 
-		<main class="dashboard-main">
+		<main id="main" class="dashboard-main" tabindex="-1">
 			<BaseAlert v-if="error" size="md" @retry="loadProfile">{{ error }}</BaseAlert>
 			<RouterView v-else :profile="profile" @profile-updated="profile = $event" />
 		</main>
@@ -128,7 +128,8 @@ onMounted(loadProfile);
 		font-weight: 700;
 		font-size: 13.5px;
 		cursor: pointer;
-		transition: all 0.15s ease;
+		/* Only these, so the keyboard focus ring appears instantly instead of being animated. */
+		transition: color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 	}
 
 	.tab-btn.active {

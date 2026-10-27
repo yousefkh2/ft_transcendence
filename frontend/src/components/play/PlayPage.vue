@@ -11,7 +11,8 @@
 			</div>
 		</header>
 
-		<main class="stage">
+		<main id="main" class="stage" tabindex="-1">
+			<h1 class="visually-hidden">Play LingoDash</h1>
 			<iframe
 				ref="gameFrame"
 				src="/game.html"

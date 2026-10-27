@@ -5,7 +5,7 @@
 			<span class="brand-name">LingoDash</span>
 		</div>
 
-		<nav class="nav-links">
+		<nav class="nav-links" aria-label="Main">
 			<a href="#how-it-works">How it Works</a>
 			<a href="#game-modes">Games</a>
 		</nav>
