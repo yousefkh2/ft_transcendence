@@ -26,6 +26,11 @@
 			</li>
 			<li>The date your account was created.</li>
 			<li>The language you are learning.</li>
+			<li>
+				Your profile picture, if you upload one. Your browser shrinks it to a small square before the upload,
+				and our server saves it again without metadata such as the location where a photo was taken. You can
+				remove it at any time on your profile page.
+			</li>
 		</ul>
 		<h3>Game and progress data</h3>
 		<ul>
@@ -91,7 +96,11 @@
 
 		<h2>5. Who can see your data</h2>
 		<ul>
-			<li>Other players can see your username, for example in rounds and friend requests.</li>
+			<li>
+				Other players can see your username and your profile picture, for example in rounds, friend lists and
+				friend requests. The picture has its own web address so it can be shown on pages, which means anyone who
+				has that address can open it.
+			</li>
 			<li>
 				Logged-in players can open your public profile. It shows your username, XP, the language you are
 				learning, the date you joined, whether you are online or when you were last online, and your game
