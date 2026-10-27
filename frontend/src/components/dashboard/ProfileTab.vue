@@ -14,30 +14,41 @@
 		</ProfileHead>
 
 		<ProfileStats
-			v-if="!historyError"
+			v-if="historyStatus !== 'error'"
 			:xp="profile?.xp ?? null"
 			:rounds="matches.length"
 			:wins="wins"
 			:losses="losses"
 			:rounds-sub="`${countSince(matches, 7)} this week`"
+			:loading="historyStatus === 'loading'"
 		/>
 
 		<section class="panels">
 			<BaseCard>
 				<div class="panel-header">
 					<h2>Match history</h2>
-					<span v-if="!historyError" class="count">
+					<span v-if="historyStatus === 'ready'" class="count">
 						{{ matches.length }} {{ matches.length === 1 ? 'round' : 'rounds' }}
 					</span>
 				</div>
-				<BaseAlert v-if="historyError">Your match history could not be loaded right now.</BaseAlert>
+				<ListSkeleton v-if="historyStatus === 'loading'" label="Loading match history" />
+				<BaseAlert v-else-if="historyStatus === 'error'" @retry="loadHistory">
+					Your match history could not be loaded right now.
+				</BaseAlert>
 				<RoundList v-else-if="matches.length" :matches="matches" show-role />
 				<p v-else class="empty-hint">No rounds played yet - jump into a game to see them here.</p>
 			</BaseCard>
 
 			<BaseCard class="friends-card">
 				<h2>Friends</h2>
-				<BaseAlert v-if="friendsError">Your friends could not be loaded right now.</BaseAlert>
+				<div v-if="friendsStatus === 'loading'" class="friends-skeleton" role="status">
+					<span class="visually-hidden">Loading friends</span>
+					<BaseSkeleton shape="block" width="40px" height="30px" />
+					<BaseSkeleton width="50px" height="0.75em" />
+				</div>
+				<BaseAlert v-else-if="friendsStatus === 'error'" @retry="loadFriends">
+					Your friends could not be loaded right now.
+				</BaseAlert>
 				<template v-else>
 					<div class="friends-count">{{ friends.length }}</div>
 					<p class="stat-sub">{{ friends.length === 1 ? 'friend' : 'friends' }}</p>
@@ -46,26 +57,29 @@
 			</BaseCard>
 		</section>
 
-		<EditProfileCard :profile="profile" @updated="emit('profile-updated', $event)" />
+		<EditProfileCard v-if="profile" :profile="profile" @updated="emit('profile-updated', $event)" />
 
 		<DeleteAccountCard />
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted } from 'vue';
 import { apiAssetUrl } from '../../api/client';
 import { fetchFriends, type Friend } from '../../api/friends';
 import { fetchMatchHistory, type MatchHistoryEntry, type Profile } from '../../api/users';
+import { useLoader } from '../../composables/useLoader';
 import { countSince, roundResult } from '../../utils/matches';
 import { formatDate } from '../../utils/format';
 import { languageName } from '../../constants/languages';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseButton from '../base/BaseButton.vue';
 import BaseCard from '../base/BaseCard.vue';
+import BaseSkeleton from '../base/BaseSkeleton.vue';
 import AvatarEditor from './AvatarEditor.vue';
 import DeleteAccountCard from './DeleteAccountCard.vue';
 import EditProfileCard from './EditProfileCard.vue';
+import ListSkeleton from './ListSkeleton.vue';
 import ProfileHead from './ProfileHead.vue';
 import ProfileStats from './ProfileStats.vue';
 import RoundList from './RoundList.vue';
@@ -73,21 +87,16 @@ import RoundList from './RoundList.vue';
 defineProps<{ profile: Profile | null }>();
 const emit = defineEmits<{ 'profile-updated': [profile: Profile] }>();
 
-const matches = ref<MatchHistoryEntry[]>([]);
-const friends = ref<Friend[]>([]);
-const historyError = ref(false);
-const friendsError = ref(false);
+// Loaded independently, so one failing request does not hide the rest of the profile.
+const { data: matches, status: historyStatus, load: loadHistory } = useLoader(fetchMatchHistory, [] as MatchHistoryEntry[]);
+const { data: friends, status: friendsStatus, load: loadFriends } = useLoader(fetchFriends, [] as Friend[]);
 
 const wins = computed(() => matches.value.filter((m) => roundResult(m) === 'won').length);
 const losses = computed(() => matches.value.filter((m) => roundResult(m) === 'lost').length);
 
-// Loaded independently, so one failing request does not hide the rest of the profile.
-onMounted(async () => {
-	const [history, friendList] = await Promise.allSettled([fetchMatchHistory(), fetchFriends()]);
-	if (history.status === 'fulfilled') matches.value = history.value;
-	else historyError.value = true;
-	if (friendList.status === 'fulfilled') friends.value = friendList.value;
-	else friendsError.value = true;
+onMounted(() => {
+	loadHistory();
+	loadFriends();
 });
 </script>
 
@@ -165,6 +174,12 @@ onMounted(async () => {
 		font-size: 30px;
 		font-weight: 800;
 		letter-spacing: -0.02em;
+	}
+
+	.friends-skeleton {
+		display: grid;
+		gap: 8px;
+		margin: 14px 0 18px;
 	}
 
 	.friends-card .stat-sub {

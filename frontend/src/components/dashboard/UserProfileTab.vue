@@ -11,6 +11,11 @@
 				<p v-if="user" class="member-since">
 					Learning {{ languageName(user.learningLanguage) }} · Member since {{ formatDate(user.createdAt) }}
 				</p>
+				<div v-else-if="!loadError" class="head-skeleton" role="status">
+					<span class="visually-hidden">Loading profile</span>
+					<BaseSkeleton width="110px" height="0.8em" />
+					<BaseSkeleton width="240px" height="0.8em" />
+				</div>
 				<template #actions>
 					<span v-if="relation === 'friend'" class="badge">Friends</span>
 					<span v-else-if="relation === 'sent'" class="badge">Request sent</span>
@@ -23,7 +28,7 @@
 				</template>
 			</ProfileHead>
 
-			<BaseAlert v-if="loadError" size="md">This profile could not be loaded right now.</BaseAlert>
+			<BaseAlert v-if="loadError" size="md" @retry="load(username)">This profile could not be loaded right now.</BaseAlert>
 			<BaseAlert v-if="actionError">{{ actionError }}</BaseAlert>
 
 			<ProfileStats
@@ -34,6 +39,7 @@
 				:losses="user.losses"
 				rounds-sub="completed rounds"
 			/>
+			<ProfileStats v-else-if="!loadError" :xp="null" :rounds="0" :wins="0" :losses="0" rounds-sub="" loading />
 		</template>
 	</div>
 </template>
@@ -48,6 +54,7 @@ import { formatDate, formatLastSeen } from '../../utils/format';
 import { languageName } from '../../constants/languages';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseButton from '../base/BaseButton.vue';
+import BaseSkeleton from '../base/BaseSkeleton.vue';
 import ProfileHead from './ProfileHead.vue';
 import ProfileStats from './ProfileStats.vue';
 
@@ -138,6 +145,12 @@ watch(
 		margin: 0;
 		font-size: 13px;
 		color: var(--color-outline);
+	}
+
+	.head-skeleton {
+		display: grid;
+		gap: 8px;
+		max-width: 100%;
 	}
 
 	.badge {

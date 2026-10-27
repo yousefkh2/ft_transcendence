@@ -13,7 +13,7 @@
 
 		<BaseAlert v-if="addError">{{ addError }}</BaseAlert>
 		<BaseAlert v-if="addNotice" variant="success">{{ addNotice }}</BaseAlert>
-		<BaseAlert v-if="loadError">{{ loadError }}</BaseAlert>
+		<BaseAlert v-if="actionError">{{ actionError }}</BaseAlert>
 
 		<BaseCard v-if="requests.length" tag="section">
 			<h2 class="panel-title">Pending requests</h2>
@@ -34,7 +34,11 @@
 
 		<BaseCard tag="section">
 			<h2 class="panel-title">Your friends</h2>
-			<div v-if="friends.length" class="friend-list">
+			<ListSkeleton v-if="status === 'loading'" label="Loading friends" avatar />
+			<BaseAlert v-else-if="status === 'error'" @retry="loadFriendsAndRequests">
+				Your friends could not be loaded right now.
+			</BaseAlert>
+			<div v-else-if="friends.length" class="friend-list">
 				<div v-for="friend in friends" :key="friend.friendId" class="row">
 					<BaseAvatar :name="friend.friendUsername" :src="apiAssetUrl(friend.avatarUrl)" :status="friend.online ? 'online' : 'offline'" />
 					<div class="row-info">
@@ -72,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { apiAssetUrl } from '../../api/client';
 import {
 	fetchFriends,
@@ -87,6 +91,7 @@ import {
 import type { Profile } from '../../api/users';
 import { PRESENCE_INTERVAL_MS } from '../../composables/useHeartbeat';
 import { usePolling } from '../../composables/usePolling';
+import { useLoader } from '../../composables/useLoader';
 import { formatDate, formatLastSeen } from '../../utils/format';
 import { sortByPresence } from '../../utils/friends';
 import BaseAlert from '../base/BaseAlert.vue';
@@ -94,28 +99,30 @@ import BaseAvatar from '../base/BaseAvatar.vue';
 import BaseCard from '../base/BaseCard.vue';
 import BaseInput from '../base/BaseInput.vue';
 import BaseButton from '../base/BaseButton.vue';
+import ListSkeleton from './ListSkeleton.vue';
 
 const props = defineProps<{ profile: Profile | null }>();
 
-const friends = ref<Friend[]>([]);
-const requests = ref<FriendRequest[]>([]);
-const loadError = ref('');
+// Friends and requests load together: both lists are needed to check a new friend request.
+const {
+	data,
+	status,
+	load: loadFriendsAndRequests,
+} = useLoader(
+	async () => {
+		const [friendList, requests] = await Promise.all([fetchFriends(), fetchFriendRequests()]);
+		return { friends: sortByPresence(friendList), requests };
+	},
+	{ friends: [] as Friend[], requests: [] as FriendRequest[] },
+);
+const friends = computed(() => data.value.friends);
+const requests = computed(() => data.value.requests);
+const actionError = ref('');
 
 const newUsername = ref('');
 const sending = ref(false);
 const addError = ref('');
 const addNotice = ref('');
-
-async function loadFriendsAndRequests() {
-	try {
-		const [friendList, requestList] = await Promise.all([fetchFriends(), fetchFriendRequests()]);
-		friends.value = sortByPresence(friendList);
-		requests.value = requestList;
-		loadError.value = '';
-	} catch (err) {
-		loadError.value = err instanceof Error ? err.message : 'Could not load your friends.';
-	}
-}
 
 watch(newUsername, () => {
 	addError.value = '';
@@ -156,19 +163,21 @@ const removing = ref(false);
 async function remove(friend: Friend) {
 	removing.value = true;
 	addError.value = '';
+	actionError.value = '';
 	try {
 		await removeFriend(friend.friendId);
 		addNotice.value = `${friend.friendUsername} was removed from your friends.`;
 		confirmingId.value = '';
 		await loadFriendsAndRequests();
 	} catch (err) {
-		loadError.value = err instanceof Error ? err.message : 'Could not remove that friend.';
+		actionError.value = err instanceof Error ? err.message : 'Could not remove that friend.';
 	} finally {
 		removing.value = false;
 	}
 }
 
 async function respond(id: string, action: 'accept' | 'decline') {
+	actionError.value = '';
 	try {
 		if (action === 'accept') {
 			await acceptFriendRequest(id);
@@ -177,7 +186,7 @@ async function respond(id: string, action: 'accept' | 'decline') {
 		}
 		await loadFriendsAndRequests();
 	} catch (err) {
-		loadError.value = err instanceof Error ? err.message : 'Could not update that request.';
+		actionError.value = err instanceof Error ? err.message : 'Could not update that request.';
 	}
 }
 
