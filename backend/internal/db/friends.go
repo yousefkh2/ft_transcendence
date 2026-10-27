@@ -18,6 +18,8 @@ type Friend struct {
 	FriendID		string		`json:"friendId"`
 	FriendUsername	string		`json:"friendUsername"`
 	CreatedAt		time.Time	`json:"createdAt"`
+	LastSeenAt		*time.Time	`json:"lastSeenAt,omitempty"`
+	Online			bool		`json:"online"`
 }
 
 func ResolveUserID(ctx context.Context, pool *pgxpool.Pool, username string) (string, error) {
@@ -95,7 +97,8 @@ func ListFriends(ctx context.Context, pool *pgxpool.Pool, userID string) ([]Frie
 		`SELECT
 			CASE WHEN f.requester_id = $1 THEN f.addressee_id ELSE f.requester_id END,
 			CASE WHEN f.requester_id = $1 THEN ua.username ELSE ur.username END,
-			f.created_at
+			f.created_at,
+			CASE WHEN f.requester_id = $1 THEN ua.last_seen_at ELSE ur.last_seen_at END
 		FROM friendships f
 		JOIN users ur ON ur.id = f.requester_id
 		JOIN users ua ON ua.id = f.addressee_id
@@ -108,12 +111,14 @@ func ListFriends(ctx context.Context, pool *pgxpool.Pool, userID string) ([]Frie
 	}
 	defer rows.Close()
 
+	now := time.Now()
 	friends := make([]Friend, 0)
 	for rows.Next() {
 		var entry Friend
-		if err := rows.Scan(&entry.FriendID, &entry.FriendUsername, &entry.CreatedAt); err != nil {
+		if err := rows.Scan(&entry.FriendID, &entry.FriendUsername, &entry.CreatedAt, &entry.LastSeenAt); err != nil {
 			return nil, err
 		}
+		entry.Online = IsOnline(entry.LastSeenAt, now)
 		friends = append(friends, entry)
 	}
 	if err := rows.Err(); err != nil {

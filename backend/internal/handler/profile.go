@@ -194,3 +194,11 @@ func (h *ProfileHandler) checkPassword(c echo.Context, userID, password string) 
 	}
 	return nil
 }
+
+// HandleHeartbeat is called regularly by the open app, so friends can see the user as online.
+func (h *ProfileHandler) HandleHeartbeat(c echo.Context) error {
+	if err := db.TouchLastSeen(c.Request().Context(), h.DB, middleware.UserID(c)); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	return c.NoContent(http.StatusNoContent)
+}
