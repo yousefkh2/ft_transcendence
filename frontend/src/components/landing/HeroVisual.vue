@@ -57,7 +57,7 @@ withDefaults(defineProps<{ languages?: string[] }>(), {
 		box-shadow: 0 8px 20px rgba(17, 28, 45, 0.14);
 		font-family: var(--font-mono);
 		font-weight: 700;
-		font-size: 14px;
+		font-size: var(--text-md);
 		color: var(--color-primary);
 		animation: chip-bob 3.6s ease-in-out infinite;
 	}

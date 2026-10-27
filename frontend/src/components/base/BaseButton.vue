@@ -55,13 +55,13 @@ const classes = computed(() => [props.variant, props.size, { pill: props.pill, b
 	.sm {
 		height: 30px;
 		padding: 0 14px;
-		font-size: 12px;
+		font-size: var(--text-xs);
 	}
 
 	.md {
 		height: 44px;
 		padding: 0 20px;
-		font-size: 14px;
+		font-size: var(--text-md);
 	}
 
 	.lg {

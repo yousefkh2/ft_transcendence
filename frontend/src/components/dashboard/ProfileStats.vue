@@ -62,7 +62,7 @@ const stats = computed(() => {
 	}
 
 	.stat-value {
-		font-size: 30px;
+		font-size: var(--text-2xl);
 		font-weight: 800;
 		margin: 8px 0 2px;
 		letter-spacing: -0.02em;

@@ -45,13 +45,13 @@ watch(
 	.sm {
 		width: 34px;
 		height: 34px;
-		font-size: 13px;
+		font-size: var(--text-sm);
 	}
 
 	.md {
 		width: 36px;
 		height: 36px;
-		font-size: 14px;
+		font-size: var(--text-md);
 	}
 
 	.lg {

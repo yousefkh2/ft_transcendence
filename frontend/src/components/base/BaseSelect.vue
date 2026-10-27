@@ -32,7 +32,7 @@ const selectId = useId();
 	}
 
 	.field-label {
-		font-size: 13px;
+		font-size: var(--text-sm);
 		font-weight: 600;
 		color: var(--color-on-surface-variant);
 	}
@@ -41,10 +41,10 @@ const selectId = useId();
 		height: 47px;
 		padding: 0 14px;
 		border-radius: 12px;
-		border: 1px solid rgba(118, 117, 134, 0.18);
+		border: 1px solid var(--color-border-strong);
 		background: var(--color-surface-raised);
 		font-family: var(--font-display);
-		font-size: 14px;
+		font-size: var(--text-md);
 		color: var(--color-on-surface);
 		transition: border-color 0.2s ease;
 	}
@@ -52,6 +52,6 @@ const selectId = useId();
 	.select:focus {
 		outline: none;
 		border-color: var(--color-primary);
-		box-shadow: 0 0 0 3px rgba(70, 72, 212, 0.18);
+		box-shadow: 0 0 0 3px var(--color-focus-ring);
 	}
 </style>

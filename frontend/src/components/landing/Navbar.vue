@@ -37,7 +37,7 @@ const emit = defineEmits<{ 'open-auth': [tab: 'login' | 'register'] }>();
 		background: rgba(249, 249, 255, 0.72);
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
-		border-bottom: 1px solid rgba(118, 117, 134, 0.15);
+		border-bottom: 1px solid var(--color-border);
 		width: 80vw;
 		margin: auto;
 	}
@@ -73,7 +73,7 @@ const emit = defineEmits<{ 'open-auth': [tab: 'login' | 'register'] }>();
 		color: var(--color-on-surface-variant);
 		text-decoration: none;
 		font-weight: 600;
-		font-size: 14px;
+		font-size: var(--text-md);
 		padding: 4px 0;
 		transition: color 0.2s ease;
 	}

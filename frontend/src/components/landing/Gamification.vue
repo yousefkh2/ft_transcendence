@@ -122,12 +122,12 @@ const friends = [
 
 	.xp-level {
 		font-weight: 700;
-		font-size: 14px;
+		font-size: var(--text-md);
 		color: var(--color-on-surface);
 	}
 
 	.xp-amount {
-		font-size: 12px;
+		font-size: var(--text-xs);
 		color: var(--color-on-surface-variant);
 	}
 
@@ -135,7 +135,7 @@ const friends = [
 		width: 100%;
 		height: 10px;
 		border-radius: var(--radius-pill);
-		background: rgba(118, 117, 134, 0.15);
+		background: var(--color-border);
 		overflow: hidden;
 	}
 
@@ -152,11 +152,11 @@ const friends = [
 		padding: 16px;
 		border-radius: 12px;
 		background: var(--color-surface);
-		border: 1px solid rgba(118, 117, 134, 0.18);
+		border: 1px solid var(--color-border-strong);
 	}
 
 	.flashcard-wrong {
-		font-size: 14px;
+		font-size: var(--text-md);
 		color: var(--color-on-surface-variant);
 		text-decoration: line-through;
 		text-decoration-color: var(--color-error);
@@ -169,7 +169,7 @@ const friends = [
 	}
 
 	.flashcard-explanation {
-		font-size: 13px;
+		font-size: var(--text-sm);
 		line-height: 1.5;
 		color: var(--color-on-surface-variant);
 		margin: 4px 0 0;
@@ -199,7 +199,7 @@ const friends = [
 	.friend-rank {
 		font-family: var(--font-mono);
 		font-weight: 700;
-		font-size: 13px;
+		font-size: var(--text-sm);
 		color: var(--color-primary-container);
 		width: 16px;
 	}
@@ -207,7 +207,7 @@ const friends = [
 	.friend-name {
 		flex: 1;
 		font-weight: 600;
-		font-size: 14px;
+		font-size: var(--text-md);
 		color: var(--color-on-surface);
 	}
 

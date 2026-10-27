@@ -3,7 +3,7 @@
 		<ProfileHead :name="profile?.username" :src="apiAssetUrl(profile?.avatarUrl)">
 			<p v-if="profile" class="email">
 				{{ profile.email }}
-				<span class="private">Only visible to you</span>
+				<BaseBadge icon="lock">Only visible to you</BaseBadge>
 			</p>
 			<p v-if="profile" class="member-since">
 				Learning {{ languageName(profile.learningLanguage) }} · Member since {{ formatDate(profile.createdAt) }}
@@ -73,6 +73,7 @@ import { countSince, roundResult } from '../../utils/matches';
 import { formatDate } from '../../utils/format';
 import { languageName } from '../../constants/languages';
 import BaseAlert from '../base/BaseAlert.vue';
+import BaseBadge from '../base/BaseBadge.vue';
 import BaseButton from '../base/BaseButton.vue';
 import BaseCard from '../base/BaseCard.vue';
 import BaseSkeleton from '../base/BaseSkeleton.vue';
@@ -112,7 +113,7 @@ onMounted(() => {
 		align-items: center;
 		gap: 8px;
 		margin: 0;
-		font-size: 14px;
+		font-size: var(--text-md);
 		color: var(--color-on-surface-variant);
 		overflow-wrap: anywhere;
 	}
@@ -120,15 +121,6 @@ onMounted(() => {
 	.member-since {
 		margin: 6px 0 0;
 		font-size: 12.5px;
-		color: var(--color-outline);
-	}
-
-	.private {
-		padding: 2px 8px;
-		border-radius: var(--radius-pill);
-		background: rgba(118, 117, 134, 0.1);
-		font-size: 11.5px;
-		font-weight: 600;
 		color: var(--color-outline);
 	}
 
@@ -154,7 +146,7 @@ onMounted(() => {
 
 	h2 {
 		margin: 0;
-		font-size: 17px;
+		font-size: var(--text-lg);
 		font-weight: 800;
 	}
 
@@ -171,7 +163,7 @@ onMounted(() => {
 
 	.friends-count {
 		margin: 12px 0 2px;
-		font-size: 30px;
+		font-size: var(--text-2xl);
 		font-weight: 800;
 		letter-spacing: -0.02em;
 	}
@@ -192,7 +184,7 @@ onMounted(() => {
 
 	.empty-hint {
 		margin: 0;
-		font-size: 13px;
+		font-size: var(--text-sm);
 		color: var(--color-outline);
 	}
 

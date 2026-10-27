@@ -160,13 +160,13 @@ async function savePassword() {
 <style scoped>
 	h2 {
 		margin: 0 0 16px;
-		font-size: 17px;
+		font-size: var(--text-lg);
 		font-weight: 800;
 	}
 
 	h3 {
 		margin: 0;
-		font-size: 14px;
+		font-size: var(--text-md);
 		font-weight: 700;
 	}
 

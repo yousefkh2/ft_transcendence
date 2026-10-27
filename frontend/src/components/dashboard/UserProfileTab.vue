@@ -17,8 +17,8 @@
 					<BaseSkeleton width="240px" height="0.8em" />
 				</div>
 				<template #actions>
-					<span v-if="relation === 'friend'" class="badge">Friends</span>
-					<span v-else-if="relation === 'sent'" class="badge">Request sent</span>
+					<BaseBadge v-if="relation === 'friend'" variant="success" icon="check">Friends</BaseBadge>
+					<BaseBadge v-else-if="relation === 'sent'">Request sent</BaseBadge>
 					<BaseButton v-else-if="relation === 'incoming'" :to="{ name: 'friends' }" size="sm" pill>
 						Answer friend request
 					</BaseButton>
@@ -53,6 +53,7 @@ import { fetchPublicProfile, type Profile, type PublicProfile } from '../../api/
 import { formatDate, formatLastSeen } from '../../utils/format';
 import { languageName } from '../../constants/languages';
 import BaseAlert from '../base/BaseAlert.vue';
+import BaseBadge from '../base/BaseBadge.vue';
 import BaseButton from '../base/BaseButton.vue';
 import BaseSkeleton from '../base/BaseSkeleton.vue';
 import ProfileHead from './ProfileHead.vue';
@@ -132,7 +133,7 @@ watch(
 
 	.presence {
 		margin: 0 0 2px;
-		font-size: 13px;
+		font-size: var(--text-sm);
 		font-weight: 700;
 		color: var(--color-outline);
 	}
@@ -143,7 +144,7 @@ watch(
 
 	.member-since {
 		margin: 0;
-		font-size: 13px;
+		font-size: var(--text-sm);
 		color: var(--color-outline);
 	}
 
@@ -151,16 +152,6 @@ watch(
 		display: grid;
 		gap: 8px;
 		max-width: 100%;
-	}
-
-	.badge {
-		display: inline-flex;
-		padding: 6px 12px;
-		border-radius: var(--radius-pill);
-		background: rgba(34, 197, 94, 0.12);
-		color: var(--color-on-success-container);
-		font-size: 12.5px;
-		font-weight: 700;
 	}
 
 	.back {
