@@ -1,7 +1,7 @@
 <template>
 	<Transition name="overlay">
 		<div v-if="open" class="overlay" @click.self="close">
-			<div ref="modalEl" class="modal">
+			<div ref="modalEl" class="modal" role="dialog" aria-modal="true" :aria-labelledby="titleId">
 				<div class="glow glow-top"></div>
 				<div class="glow glow-bottom"></div>
 
@@ -10,7 +10,7 @@
 				<div class="modal-content">
 					<div class="header">
 						<BrandBolt class="bolt-mark" />
-						<h2 class="title">{{ tab === 'login' ? 'Welcome back' : 'Create your account' }}</h2>
+						<h2 :id="titleId" class="title">{{ tab === 'login' ? 'Welcome back' : 'Create your account' }}</h2>
 						<p class="subtitle">
 							{{
 								tab === 'login'
@@ -26,6 +26,7 @@
 							type="button"
 							class="tab-btn"
 							:class="{ active: tab === 'login' }"
+							:aria-pressed="tab === 'login'"
 							@click="switchTab('login')"
 						>
 							Log In
@@ -34,6 +35,7 @@
 							type="button"
 							class="tab-btn"
 							:class="{ active: tab === 'register' }"
+							:aria-pressed="tab === 'register'"
 							@click="switchTab('register')"
 						>
 							Sign Up
@@ -127,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, reactive, ref, watch } from 'vue';
+import { nextTick, reactive, ref, useId, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { login, register } from '../../api/auth';
 import {
@@ -143,6 +145,7 @@ import BaseSelect from '../base/BaseSelect.vue';
 import { DEFAULT_LEARNING_LANGUAGE, LEARNING_LANGUAGES } from '../../constants/languages';
 import BaseButton from '../base/BaseButton.vue';
 import BrandBolt from '../base/BrandBolt.vue';
+import { useDialog } from '../../composables/useDialog';
 
 const router = useRouter();
 
@@ -153,6 +156,7 @@ const direction = ref<'forward' | 'backward'>('forward');
 const showForgotNotice = ref(false);
 
 const modalEl = ref<HTMLElement | null>(null);
+const titleId = useId();
 
 const loginForm = reactive({ email: '', password: '' });
 const loginErrors = reactive({ email: '', password: '' });
@@ -211,6 +215,8 @@ function close() {
 	resetValidation();
 	open.value = false;
 }
+
+useDialog(open, modalEl, close);
 
 async function handleLogin() {
 	loginError.value = '';

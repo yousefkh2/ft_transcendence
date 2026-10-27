@@ -13,7 +13,7 @@
 					</p>
 				</div>
 
-				<nav class="links">
+				<nav class="links" aria-label="Footer">
 					<a href="#how-it-works">How it Works</a>
 					<a href="#game-modes">Game Modes</a>
 					<a href="#gamification">Gamification</a>

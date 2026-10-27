@@ -1,13 +1,15 @@
 <template>
-	<main class="landing">
+	<div class="landing">
 		<Navbar @open-auth="openAuth" />
-		<Hero @open-auth="openAuth" />
-		<HowItWorks />
-		<GameModesPreview />
-		<Gamification />
+		<main id="main" tabindex="-1">
+			<Hero @open-auth="openAuth" />
+			<HowItWorks />
+			<GameModesPreview />
+			<Gamification />
+		</main>
 		<Footer />
 		<AuthModal v-model:open="authOpen" v-model:tab="authTab" />
-	</main>
+	</div>
 </template>
 
 <script setup lang="ts">
