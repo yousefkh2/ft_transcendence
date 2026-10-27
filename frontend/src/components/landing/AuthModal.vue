@@ -1,131 +1,125 @@
 <template>
-	<Transition name="overlay">
-		<div v-if="open" class="overlay" @click.self="close">
-			<div ref="modalEl" class="modal" role="dialog" aria-modal="true" :aria-labelledby="titleId">
-				<div class="glow glow-top"></div>
-				<div class="glow glow-bottom"></div>
+	<BaseModal v-model:open="open" :labelledby="titleId">
+		<div class="glow glow-top"></div>
+		<div class="glow glow-bottom"></div>
 
-				<button type="button" class="close-btn" aria-label="Close" @click="close">×</button>
+		<div ref="modalEl" class="modal-content">
+			<div class="header">
+				<BrandBolt class="bolt-mark" />
+				<h2 :id="titleId" class="title">{{ tab === 'login' ? 'Welcome back' : 'Create your account' }}</h2>
+				<p class="subtitle">
+					{{
+						tab === 'login'
+							? 'Log in to keep your streak going.'
+							: 'Start learning through play - free forever.'
+					}}
+				</p>
+			</div>
 
-				<div class="modal-content">
-					<div class="header">
-						<BrandBolt class="bolt-mark" />
-						<h2 :id="titleId" class="title">{{ tab === 'login' ? 'Welcome back' : 'Create your account' }}</h2>
-						<p class="subtitle">
-							{{
-								tab === 'login'
-									? 'Log in to keep your streak going.'
-									: 'Start learning through play - free forever.'
-							}}
+			<div class="tab-switcher">
+				<div class="tab-indicator" :class="{ 'is-register': tab === 'register' }"></div>
+				<button
+					type="button"
+					class="tab-btn"
+					:class="{ active: tab === 'login' }"
+					:aria-pressed="tab === 'login'"
+					@click="switchTab('login')"
+				>
+					Log In
+				</button>
+				<button
+					type="button"
+					class="tab-btn"
+					:class="{ active: tab === 'register' }"
+					:aria-pressed="tab === 'register'"
+					@click="switchTab('register')"
+				>
+					Sign Up
+				</button>
+			</div>
+
+			<div class="form-area">
+				<Transition :name="direction === 'forward' ? 'slide-fwd' : 'slide-back'">
+					<form v-if="tab === 'login'" key="login" class="auth-form" novalidate @submit.prevent="handleLogin">
+						<BaseAlert v-if="loginError">{{ loginError }}</BaseAlert>
+						<BaseInput
+							v-model="loginForm.email"
+							label="Email"
+							type="email"
+							autocomplete="email"
+							required
+							placeholder="you@example.com"
+							:error="loginErrors.email"
+						/>
+						<BaseInput
+							v-model="loginForm.password"
+							label="Password"
+							type="password"
+							autocomplete="current-password"
+							required
+							placeholder="••••••••"
+							:error="loginErrors.password"
+						/>
+						<a href="#" class="forgot-link" @click.prevent="showForgotNotice = true">Forgot password?</a>
+						<BaseAlert v-if="showForgotNotice" variant="info" class="forgot-notice">
+							Password reset isn't available yet - hang tight, it's coming soon.
+						</BaseAlert>
+						<BaseButton type="submit" variant="gradient" size="lg" block class="submit-btn" :disabled="loginLoading">
+							{{ loginLoading ? 'Logging in…' : 'Log In' }}
+						</BaseButton>
+						<p class="switch-line">
+							Don't have an account?
+							<a href="#" @click.prevent="switchTab('register')">Sign Up</a>
 						</p>
-					</div>
-
-					<div class="tab-switcher">
-						<div class="tab-indicator" :class="{ 'is-register': tab === 'register' }"></div>
-						<button
-							type="button"
-							class="tab-btn"
-							:class="{ active: tab === 'login' }"
-							:aria-pressed="tab === 'login'"
-							@click="switchTab('login')"
-						>
-							Log In
-						</button>
-						<button
-							type="button"
-							class="tab-btn"
-							:class="{ active: tab === 'register' }"
-							:aria-pressed="tab === 'register'"
-							@click="switchTab('register')"
-						>
-							Sign Up
-						</button>
-					</div>
-
-					<div class="form-area">
-						<Transition :name="direction === 'forward' ? 'slide-fwd' : 'slide-back'">
-							<form v-if="tab === 'login'" key="login" class="auth-form" novalidate @submit.prevent="handleLogin">
-								<BaseAlert v-if="loginError">{{ loginError }}</BaseAlert>
-								<BaseInput
-									v-model="loginForm.email"
-									label="Email"
-									type="email"
-									autocomplete="email"
-									required
-									placeholder="you@example.com"
-									:error="loginErrors.email"
-								/>
-								<BaseInput
-									v-model="loginForm.password"
-									label="Password"
-									type="password"
-									autocomplete="current-password"
-									required
-									placeholder="••••••••"
-									:error="loginErrors.password"
-								/>
-								<a href="#" class="forgot-link" @click.prevent="showForgotNotice = true">Forgot password?</a>
-								<BaseAlert v-if="showForgotNotice" variant="info" class="forgot-notice">
-									Password reset isn't available yet - hang tight, it's coming soon.
-								</BaseAlert>
-								<BaseButton type="submit" variant="gradient" size="lg" block class="submit-btn" :disabled="loginLoading">
-									{{ loginLoading ? 'Logging in…' : 'Log In' }}
-								</BaseButton>
-								<p class="switch-line">
-									Don't have an account?
-									<a href="#" @click.prevent="switchTab('register')">Sign Up</a>
-								</p>
-							</form>
-							<form v-else key="register" class="auth-form" novalidate @submit.prevent="handleRegister">
-								<BaseAlert v-if="registerError">{{ registerError }}</BaseAlert>
-								<BaseInput
-									v-model="registerForm.username"
-									label="Username"
-									type="text"
-									autocomplete="username"
-									required
-									placeholder="yourname"
-									:error="registerErrors.username"
-								/>
-								<BaseInput
-									v-model="registerForm.email"
-									label="Email"
-									type="email"
-									autocomplete="email"
-									required
-									placeholder="you@example.com"
-									:error="registerErrors.email"
-								/>
-								<BaseInput
-									v-model="registerForm.password"
-									label="Password"
-									type="password"
-									autocomplete="new-password"
-									required
-									placeholder="••••••••"
-									:hint="PASSWORD_HINT"
-									:error="registerErrors.password"
-								/>
-								<BaseSelect v-model="registerForm.language" label="Learning language" :options="LEARNING_LANGUAGES" />
-								<BaseButton type="submit" variant="gradient" size="lg" block class="submit-btn" :disabled="registerLoading">
-									{{ registerLoading ? 'Creating account…' : 'Create Account' }}
-								</BaseButton>
-								<p class="legal-note">
-									By creating an account, you agree to our
-									<RouterLink to="/terms">Terms of Service</RouterLink> and
-									<RouterLink to="/privacy">Privacy Policy</RouterLink>.
-								</p>
-								<p class="switch-line">
-									Already have an account?
-									<a href="#" @click.prevent="switchTab('login')">Log In</a>
-								</p>
-							</form>
-						</Transition>
-					</div>
-				</div>
+					</form>
+					<form v-else key="register" class="auth-form" novalidate @submit.prevent="handleRegister">
+						<BaseAlert v-if="registerError">{{ registerError }}</BaseAlert>
+						<BaseInput
+							v-model="registerForm.username"
+							label="Username"
+							type="text"
+							autocomplete="username"
+							required
+							placeholder="yourname"
+							:error="registerErrors.username"
+						/>
+						<BaseInput
+							v-model="registerForm.email"
+							label="Email"
+							type="email"
+							autocomplete="email"
+							required
+							placeholder="you@example.com"
+							:error="registerErrors.email"
+						/>
+						<BaseInput
+							v-model="registerForm.password"
+							label="Password"
+							type="password"
+							autocomplete="new-password"
+							required
+							placeholder="••••••••"
+							:hint="PASSWORD_HINT"
+							:error="registerErrors.password"
+						/>
+						<BaseSelect v-model="registerForm.language" label="Learning language" :options="LEARNING_LANGUAGES" />
+						<BaseButton type="submit" variant="gradient" size="lg" block class="submit-btn" :disabled="registerLoading">
+							{{ registerLoading ? 'Creating account…' : 'Create Account' }}
+						</BaseButton>
+						<p class="legal-note">
+							By creating an account, you agree to our
+							<RouterLink to="/terms">Terms of Service</RouterLink> and
+							<RouterLink to="/privacy">Privacy Policy</RouterLink>.
+						</p>
+						<p class="switch-line">
+							Already have an account?
+							<a href="#" @click.prevent="switchTab('login')">Log In</a>
+						</p>
+					</form>
+				</Transition>
 			</div>
 		</div>
-	</Transition>
+	</BaseModal>
 </template>
 
 <script setup lang="ts">
@@ -144,8 +138,8 @@ import BaseInput from '../base/BaseInput.vue';
 import BaseSelect from '../base/BaseSelect.vue';
 import { DEFAULT_LEARNING_LANGUAGE, LEARNING_LANGUAGES } from '../../constants/languages';
 import BaseButton from '../base/BaseButton.vue';
+import BaseModal from '../base/BaseModal.vue';
 import BrandBolt from '../base/BrandBolt.vue';
-import { useDialog } from '../../composables/useDialog';
 
 const router = useRouter();
 
@@ -209,14 +203,17 @@ function switchTab(next: 'login' | 'register') {
 }
 
 function close() {
+	open.value = false;
+}
+
+// However the dialog was closed (button, Escape, click outside, success), it opens clean next time.
+watch(open, (isOpen) => {
+	if (isOpen) return;
 	loginError.value = '';
 	registerError.value = '';
 	showForgotNotice.value = false;
 	resetValidation();
-	open.value = false;
-}
-
-useDialog(open, modalEl, close);
+});
 
 async function handleLogin() {
 	loginError.value = '';
@@ -261,38 +258,6 @@ async function handleRegister() {
 </script>
 
 <style scoped>
-	.overlay {
-		position: fixed;
-		inset: 0;
-		z-index: 200;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 16px;
-		background: rgba(10, 12, 28, 0.6);
-		backdrop-filter: blur(6px);
-		-webkit-backdrop-filter: blur(6px);
-	}
-
-	.overlay-enter-active {
-		animation: overlay-in 0.22s ease;
-	}
-
-	.modal {
-		position: relative;
-		width: 100%;
-		max-width: 400px;
-		padding: 40px 36px;
-		border-radius: 28px;
-		overflow: hidden;
-		background: rgba(255, 255, 255, 0.86);
-		backdrop-filter: blur(20px);
-		-webkit-backdrop-filter: blur(20px);
-		border: 1px solid rgba(255, 255, 255, 0.5);
-		box-shadow: 0 50px 100px rgba(17, 28, 45, 0.4);
-		animation: modal-in 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-	}
-
 	.glow {
 		position: absolute;
 		width: 55%;
@@ -317,30 +282,6 @@ async function handleRegister() {
 		animation-delay: 3s;
 	}
 
-	.close-btn {
-		position: absolute;
-		top: 16px;
-		right: 16px;
-		z-index: 2;
-		width: 32px;
-		height: 32px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border: none;
-		border-radius: 50%;
-		background: rgba(17, 28, 45, 0.06);
-		color: var(--color-on-surface-variant);
-		font-size: 18px;
-		line-height: 1;
-		cursor: pointer;
-		transition: background 0.15s ease;
-	}
-
-	.close-btn:hover {
-		background: rgba(17, 28, 45, 0.12);
-	}
-
 	.modal-content {
 		position: relative;
 		z-index: 1;
@@ -357,14 +298,14 @@ async function handleRegister() {
 	}
 
 	.title {
-		font-size: 24px;
+		font-size: var(--text-xl);
 		font-weight: 800;
 		color: var(--color-on-surface);
 		margin: 0 0 6px;
 	}
 
 	.subtitle {
-		font-size: 14px;
+		font-size: var(--text-md);
 		color: var(--color-on-surface-variant);
 		margin: 0;
 	}
@@ -375,7 +316,7 @@ async function handleRegister() {
 		padding: 4px;
 		margin-bottom: 24px;
 		border-radius: 13px;
-		background: rgba(118, 117, 134, 0.1);
+		background: var(--color-fill-muted);
 	}
 
 	.tab-indicator {
@@ -386,7 +327,7 @@ async function handleRegister() {
 		height: calc(100% - 8px);
 		border-radius: 10px;
 		background: var(--color-surface-raised);
-		box-shadow: 0 1px 3px rgba(17, 28, 45, 0.12);
+		box-shadow: var(--shadow-sm);
 		transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);
 	}
 
@@ -404,7 +345,7 @@ async function handleRegister() {
 		background: transparent;
 		font-family: var(--font-display);
 		font-weight: 700;
-		font-size: 14px;
+		font-size: var(--text-md);
 		color: var(--color-on-surface-variant);
 		cursor: pointer;
 		transition: color 0.2s ease;
@@ -434,7 +375,7 @@ async function handleRegister() {
 	.forgot-link {
 		align-self: flex-end;
 		margin-top: -4px;
-		font-size: 13px;
+		font-size: var(--text-sm);
 		font-weight: 600;
 		color: var(--color-primary);
 		text-decoration: none;
@@ -451,7 +392,7 @@ async function handleRegister() {
 	.legal-note {
 		margin: 0;
 		text-align: center;
-		font-size: 12px;
+		font-size: var(--text-xs);
 		line-height: 1.5;
 		color: var(--color-outline);
 	}
@@ -498,26 +439,6 @@ async function handleRegister() {
 		opacity: 0;
 	}
 
-	@keyframes overlay-in {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-		}
-	}
-
-	@keyframes modal-in {
-		from {
-			opacity: 0;
-			transform: translateY(24px) scale(0.96);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0) scale(1);
-		}
-	}
-
 	@keyframes glow-pulse {
 		0%, 100% {
 			transform: scale(1);
@@ -530,11 +451,6 @@ async function handleRegister() {
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.overlay-enter-active,
-		.modal {
-			animation: none;
-		}
-
 		.glow {
 			animation-play-state: paused;
 		}
