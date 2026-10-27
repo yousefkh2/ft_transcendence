@@ -1,28 +1,35 @@
 <template>
 	<div class="legal">
 		<header class="legal-header">
-			<RouterLink to="/" class="brand" aria-label="LingoDash home">
+			<RouterLink to="/" class="brand" :aria-label="t('legal.home')">
 				<img :src="logo" alt="" class="brand-logo" />
 				<span class="brand-name">LingoDash</span>
 			</RouterLink>
-			<BaseButton to="/" variant="ghost" pill>Back to LingoDash</BaseButton>
+			<div class="header-actions">
+				<LanguageSwitcher />
+				<BaseButton to="/" variant="ghost" pill>{{ t('legal.back') }}</BaseButton>
+			</div>
 		</header>
 
 		<main id="main" class="legal-main" tabindex="-1">
-			<BaseEyebrow>Legal</BaseEyebrow>
-			<h1>{{ title }}</h1>
-			<p class="updated">Last updated: {{ updated }}</p>
-			<div class="legal-content">
-				<slot />
+			<BaseAlert v-if="locale !== 'en'" variant="info" class="english-only">{{ t('legal.englishOnly') }}</BaseAlert>
+			<!-- The legal text itself is English only, so screen readers read it with English pronunciation. -->
+			<div lang="en">
+				<BaseEyebrow>Legal</BaseEyebrow>
+				<h1>{{ title }}</h1>
+				<p class="updated">Last updated: {{ updated }}</p>
+				<div class="legal-content">
+					<slot />
+				</div>
 			</div>
 		</main>
 
 		<footer class="legal-footer">
-			<nav class="legal-links" aria-label="Legal">
-				<RouterLink to="/privacy">Privacy Policy</RouterLink>
-				<RouterLink to="/terms">Terms of Service</RouterLink>
+			<nav class="legal-links" :aria-label="t('landing.nav.legal')">
+				<RouterLink to="/privacy">{{ t('common.privacyPolicy') }}</RouterLink>
+				<RouterLink to="/terms">{{ t('common.termsOfService') }}</RouterLink>
 			</nav>
-			<span class="copyright">© 2026 LingoDash. A student project of the 42 curriculum.</span>
+			<span class="copyright">{{ t('legal.footer') }}</span>
 		</footer>
 	</div>
 </template>
@@ -31,6 +38,9 @@
 import logo from '../../images/logo-transparent.png';
 import BaseButton from '../base/BaseButton.vue';
 import BaseEyebrow from '../base/BaseEyebrow.vue';
+import BaseAlert from '../base/BaseAlert.vue';
+import LanguageSwitcher from '../LanguageSwitcher.vue';
+import { locale, t } from '../../i18n';
 
 defineProps<{ title: string; updated: string }>();
 </script>
@@ -92,6 +102,16 @@ defineProps<{ title: string; updated: string }>();
 		font-weight: 800;
 		letter-spacing: -0.02em;
 		line-height: 1.15;
+	}
+
+	.header-actions {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.english-only {
+		margin-bottom: 28px;
 	}
 
 	.updated {
@@ -156,7 +176,9 @@ defineProps<{ title: string; updated: string }>();
 
 	.legal-links {
 		display: flex;
-		gap: 20px;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 8px 20px;
 	}
 
 	.legal-links a {
@@ -185,6 +207,18 @@ defineProps<{ title: string; updated: string }>();
 
 		.legal-main {
 			padding: 32px 16px 48px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.legal-header {
+			flex-wrap: wrap;
+		}
+
+		.header-actions {
+			flex-wrap: wrap;
+			justify-content: flex-end;
+			margin-left: auto;
 		}
 	}
 

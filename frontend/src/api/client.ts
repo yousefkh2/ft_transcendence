@@ -1,5 +1,7 @@
 import { logout } from '../auth/logout';
 import { getToken } from '../auth/session';
+import { t } from '../i18n';
+import { translateApiError } from '../i18n/apiErrors';
 
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
@@ -8,10 +10,13 @@ export function apiAssetUrl(path?: string): string | undefined {
 	return path ? `${apiUrl}${path}` : undefined;
 }
 
+// message is translated for the user; serverMessage is the backend's original English text, so code
+// can still tell errors apart (status 0 means the server could not be reached at all).
 export class ApiError extends Error {
 	constructor(
 		message: string,
 		readonly status: number,
+		readonly serverMessage = '',
 	) {
 		super(message);
 	}
@@ -31,11 +36,16 @@ export async function request<T>(path: string, { method = 'GET', body, auth = tr
 	const isForm = body instanceof FormData;
 	if (body !== undefined && !isForm) headers['Content-Type'] = 'application/json';
 
-	const response = await fetch(`${apiUrl}${path}`, {
-		method,
-		headers,
-		body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
-	});
+	let response: Response;
+	try {
+		response = await fetch(`${apiUrl}${path}`, {
+			method,
+			headers,
+			body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
+		});
+	} catch {
+		throw new ApiError(t('apiErrors.network'), 0);
+	}
 
 	if (!response.ok) {
 		// Only an authenticated request can mean "session no longer valid"; a failed login is also a 401.
@@ -43,10 +53,8 @@ export async function request<T>(path: string, { method = 'GET', body, auth = tr
 			await logout();
 		}
 		const data = await response.json().catch(() => null);
-		throw new ApiError(
-			typeof data?.message === 'string' ? data.message : `Request failed (${response.status})`,
-			response.status,
-		);
+		const serverMessage = typeof data?.message === 'string' ? data.message : '';
+		throw new ApiError(translateApiError(serverMessage), response.status, serverMessage);
 	}
 
 	if (response.status === 204) {

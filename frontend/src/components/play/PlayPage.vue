@@ -1,28 +1,28 @@
 <template>
 	<div class="play">
 		<header class="play-header">
-			<RouterLink to="/dashboard" class="brand">
+			<RouterLink to="/dashboard" class="brand" aria-label="LingoDash">
 				<img :src="logo" alt="" class="brand-logo" />
 				<span class="brand-name">LingoDash</span>
 			</RouterLink>
 			<div class="actions">
-				<BaseButton variant="ghost" pill @click="enterFullscreen"><BaseIcon name="maximize" :size="16" />Fullscreen</BaseButton>
-				<BaseButton to="/dashboard" variant="outline" pill><BaseIcon name="arrow-left" :size="16" />Back to dashboard</BaseButton>
+				<BaseButton variant="ghost" pill @click="enterFullscreen"><BaseIcon name="maximize" :size="16" /><span class="btn-text">{{ t('play.fullscreen') }}</span></BaseButton>
+				<BaseButton to="/dashboard" variant="outline" pill><BaseIcon name="arrow-left" :size="16" /><span class="btn-text">{{ t('play.back') }}</span></BaseButton>
 			</div>
 		</header>
 
 		<main id="main" class="stage" tabindex="-1">
-			<h1 class="visually-hidden">Play LingoDash</h1>
+			<h1 class="visually-hidden">{{ t('play.heading') }}</h1>
 			<iframe
 				ref="gameFrame"
 				src="/game.html"
-				title="LingoDash game"
+				:title="t('play.gameTitle')"
 				allow="autoplay; fullscreen; microphone"
 				@load="loaded = true"
 			></iframe>
 			<div v-if="!loaded" class="loading" role="status">
 				<BrandBolt />
-				<span>Loading game...</span>
+				<span>{{ t('play.loading') }}</span>
 			</div>
 		</main>
 	</div>
@@ -34,6 +34,7 @@ import logo from '../../images/logo-transparent.png';
 import { useHeartbeat } from '../../composables/useHeartbeat';
 import BaseButton from '../base/BaseButton.vue';
 import BaseIcon from '../base/BaseIcon.vue';
+import { t } from '../../i18n';
 import BrandBolt from '../base/BrandBolt.vue';
 
 useHeartbeat();
@@ -128,13 +129,23 @@ function enterFullscreen() {
 		}
 	}
 
-	@media (max-width: 400px) {
+	/* Small phones: icon-only buttons; the text stays for screen readers. */
+	@media (max-width: 480px) {
 		.actions {
 			gap: 6px;
 		}
 
 		.actions .btn {
 			padding: 0 12px;
+		}
+
+		.btn-text {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			overflow: hidden;
+			clip: rect(0 0 0 0);
+			white-space: nowrap;
 		}
 	}
 </style>

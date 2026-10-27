@@ -2,15 +2,15 @@
 	<section class="hero">
 		<div class="hero-copy">
 			<h1 class="headline">
-				Learn Languages
-				<span class="accent">Through Play.</span>
+				{{ t('landing.hero.headline') }}
+				<span class="accent">{{ t('landing.hero.headlineAccent') }}</span>
 			</h1>
 			<p class="subtext">
-				Jump into fast-paced multiplayer games built to get you speaking from day one. Describe, argue, guess, and race the clock - whichever language you're learning.
+				{{ t('landing.hero.text') }}
 			</p>
 			<div class="cta-row">
-				<BaseButton size="lg" pill @click="emit('open-auth', 'register')">Play Now</BaseButton>
-				<BaseButton variant="outline" size="lg" pill @click="scrollToHowItWorks">How It Works</BaseButton>
+				<BaseButton size="lg" pill @click="emit('open-auth', 'register')">{{ t('landing.hero.playNow') }}</BaseButton>
+				<BaseButton variant="outline" size="lg" pill @click="scrollToHowItWorks">{{ t('landing.hero.howItWorks') }}</BaseButton>
 			</div>
 		</div>
 		<HeroVisual class="hero-visual" />
@@ -19,6 +19,7 @@
 
 <script setup lang="ts">
 import BaseButton from '../base/BaseButton.vue';
+import { t } from '../../i18n';
 import HeroVisual from './HeroVisual.vue';
 
 const emit = defineEmits<{ 'open-auth': [tab: 'login' | 'register'] }>();

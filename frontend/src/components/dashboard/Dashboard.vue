@@ -6,23 +6,27 @@
 				<span class="brand-name">LingoDash</span>
 			</div>
 
-			<nav class="tabs">
-				<RouterLink :to="{ name: 'dashboard' }" class="tab-btn" exact-active-class="active">Overview</RouterLink>
-				<RouterLink :to="{ name: 'friends' }" class="tab-btn" exact-active-class="active">Friends</RouterLink>
-				<RouterLink :to="{ name: 'profile' }" class="tab-btn" exact-active-class="active">Profile</RouterLink>
+			<nav class="tabs" :aria-label="t('dashboard.tabs')">
+				<RouterLink :to="{ name: 'dashboard' }" class="tab-btn" exact-active-class="active">{{ t('titles.overview') }}</RouterLink>
+				<RouterLink :to="{ name: 'friends' }" class="tab-btn" exact-active-class="active">{{ t('titles.friends') }}</RouterLink>
+				<RouterLink :to="{ name: 'profile' }" class="tab-btn" exact-active-class="active">{{ t('dashboard.profileTab') }}</RouterLink>
 			</nav>
 
 			<div class="header-right">
+				<LanguageSwitcher />
 				<div class="xp-badge">
 					<span class="xp-dot"></span>
-					<span v-if="profile" class="xp-value">{{ profile.xp.toLocaleString() }} XP</span>
+					<span v-if="profile" class="xp-value">{{ t('common.xp', { xp: formatNumber(profile.xp) }) }}</span>
 					<BaseSkeleton v-else width="44px" height="0.8em" />
 				</div>
-				<RouterLink :to="{ name: 'profile' }" class="avatar-link" aria-label="Your profile">
+				<RouterLink :to="{ name: 'profile' }" class="avatar-link" :aria-label="t('dashboard.yourProfile')">
 					<BaseAvatar v-if="profile" :name="profile.username" :src="apiAssetUrl(profile.avatarUrl)" size="md" variant="gradient" />
 					<BaseSkeleton v-else shape="circle" width="36px" height="36px" />
 				</RouterLink>
-				<button type="button" class="logout-btn" @click="logout"><BaseIcon name="logout" :size="16" />Log out</button>
+				<button type="button" class="logout-btn" @click="logout">
+					<BaseIcon name="logout" :size="16" />
+					<span class="logout-text">{{ t('dashboard.logout') }}</span>
+				</button>
 			</div>
 		</header>
 
@@ -32,8 +36,8 @@
 		</main>
 
 		<footer class="dashboard-footer">
-			<RouterLink to="/privacy">Privacy Policy</RouterLink>
-			<RouterLink to="/terms">Terms of Service</RouterLink>
+			<RouterLink to="/privacy">{{ t('common.privacyPolicy') }}</RouterLink>
+			<RouterLink to="/terms">{{ t('common.termsOfService') }}</RouterLink>
 		</footer>
 	</div>
 </template>
@@ -47,6 +51,9 @@ import { useHeartbeat } from '../../composables/useHeartbeat';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseAvatar from '../base/BaseAvatar.vue';
 import BaseIcon from '../base/BaseIcon.vue';
+import LanguageSwitcher from '../LanguageSwitcher.vue';
+import { t } from '../../i18n';
+import { formatNumber } from '../../utils/format';
 import BaseSkeleton from '../base/BaseSkeleton.vue';
 
 useHeartbeat();
@@ -59,7 +66,7 @@ async function loadProfile() {
 	try {
 		profile.value = await fetchProfile();
 	} catch {
-		error.value = 'Your profile could not be loaded right now.';
+		error.value = t('dashboard.loadError');
 	}
 }
 
@@ -211,8 +218,9 @@ onMounted(loadProfile);
 
 	.dashboard-footer {
 		display: flex;
+		flex-wrap: wrap;
 		justify-content: center;
-		gap: 20px;
+		gap: 8px 20px;
 		padding: 20px 32px 28px;
 	}
 
@@ -253,6 +261,26 @@ onMounted(loadProfile);
 
 		.dashboard-footer {
 			padding: 16px 16px 24px;
+		}
+	}
+
+	/* Small phones: logo without name, logout as icon only, so the header fits on one line in every language. */
+	@media (max-width: 480px) {
+		.brand-name {
+			display: none;
+		}
+
+		.logout-text {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			overflow: hidden;
+			clip: rect(0 0 0 0);
+			white-space: nowrap;
+		}
+
+		.tab-btn {
+			padding: 8px 6px;
 		}
 	}
 </style>

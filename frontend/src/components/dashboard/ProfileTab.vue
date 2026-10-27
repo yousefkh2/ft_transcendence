@@ -3,10 +3,10 @@
 		<ProfileHead :name="profile?.username" :src="apiAssetUrl(profile?.avatarUrl)">
 			<p v-if="profile" class="email">
 				{{ profile.email }}
-				<BaseBadge icon="lock">Only visible to you</BaseBadge>
+				<BaseBadge icon="lock">{{ t('profile.onlyYou') }}</BaseBadge>
 			</p>
 			<p v-if="profile" class="member-since">
-				Learning {{ languageName(profile.learningLanguage) }} · Member since {{ formatDate(profile.createdAt) }}
+				{{ t('profile.learning', { language: languageName(profile.learningLanguage), date: formatDate(profile.createdAt) }) }}
 			</p>
 			<template #actions>
 				<AvatarEditor :profile="profile" @updated="emit('profile-updated', $event)" />
@@ -19,41 +19,41 @@
 			:rounds="matches.length"
 			:wins="wins"
 			:losses="losses"
-			:rounds-sub="`${countSince(matches, 7)} this week`"
+			:rounds-sub="t('overview.thisWeek', { n: countSince(matches, 7) })"
 			:loading="historyStatus === 'loading'"
 		/>
 
 		<section class="panels">
 			<BaseCard>
 				<div class="panel-header">
-					<h2>Match history</h2>
+					<h2>{{ t('profile.matchHistory') }}</h2>
 					<span v-if="historyStatus === 'ready'" class="count">
-						{{ matches.length }} {{ matches.length === 1 ? 'round' : 'rounds' }}
+						{{ t('profile.rounds', { n: matches.length }) }}
 					</span>
 				</div>
-				<ListSkeleton v-if="historyStatus === 'loading'" label="Loading match history" />
+				<ListSkeleton v-if="historyStatus === 'loading'" :label="t('profile.loadingHistory')" />
 				<BaseAlert v-else-if="historyStatus === 'error'" @retry="loadHistory">
-					Your match history could not be loaded right now.
+					{{ t('profile.historyError') }}
 				</BaseAlert>
 				<RoundList v-else-if="matches.length" :matches="matches" show-role />
-				<p v-else class="empty-hint">No rounds played yet - jump into a game to see them here.</p>
+				<p v-else class="empty-hint">{{ t('overview.noRounds') }}</p>
 			</BaseCard>
 
 			<BaseCard class="friends-card">
-				<h2>Friends</h2>
+				<h2>{{ t('profile.friends') }}</h2>
 				<div v-if="friendsStatus === 'loading'" class="friends-skeleton" role="status">
-					<span class="visually-hidden">Loading friends</span>
+					<span class="visually-hidden">{{ t('friends.loading') }}</span>
 					<BaseSkeleton shape="block" width="40px" height="30px" />
 					<BaseSkeleton width="50px" height="0.75em" />
 				</div>
 				<BaseAlert v-else-if="friendsStatus === 'error'" @retry="loadFriends">
-					Your friends could not be loaded right now.
+					{{ t('profile.friendsError') }}
 				</BaseAlert>
 				<template v-else>
 					<div class="friends-count">{{ friends.length }}</div>
-					<p class="stat-sub">{{ friends.length === 1 ? 'friend' : 'friends' }}</p>
+					<p class="stat-sub">{{ t('profile.friendCount', { n: friends.length }) }}</p>
 				</template>
-				<BaseButton :to="{ name: 'friends' }" variant="outline" size="sm" pill>Manage friends</BaseButton>
+				<BaseButton :to="{ name: 'friends' }" variant="outline" size="sm" pill>{{ t('profile.manageFriends') }}</BaseButton>
 			</BaseCard>
 		</section>
 
@@ -74,6 +74,7 @@ import { formatDate } from '../../utils/format';
 import { languageName } from '../../constants/languages';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseBadge from '../base/BaseBadge.vue';
+import { t } from '../../i18n';
 import BaseButton from '../base/BaseButton.vue';
 import BaseCard from '../base/BaseCard.vue';
 import BaseSkeleton from '../base/BaseSkeleton.vue';

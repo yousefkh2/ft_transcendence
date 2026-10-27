@@ -1,57 +1,57 @@
 <template>
 	<BaseCard tag="section" aria-labelledby="edit-profile-title">
-		<h2 id="edit-profile-title">Edit profile</h2>
+		<h2 id="edit-profile-title">{{ t('editProfile.title') }}</h2>
 
 		<div class="forms">
 			<form class="form" novalidate @submit.prevent="saveDetails">
-				<h3>Account details</h3>
+				<h3>{{ t('editProfile.details') }}</h3>
 				<BaseAlert v-if="detailsNotice" variant="success">{{ detailsNotice }}</BaseAlert>
 				<BaseAlert v-if="detailsError">{{ detailsError }}</BaseAlert>
-				<BaseInput v-model="details.username" label="Username" autocomplete="username" :error="detailsErrors.username" />
-				<BaseInput v-model="details.email" label="Email" type="email" autocomplete="email" :error="detailsErrors.email" />
-				<BaseSelect v-model="details.learningLanguage" label="Learning language" :options="LEARNING_LANGUAGES" />
+				<BaseInput v-model="details.username" :label="t('common.username')" autocomplete="username" :error="detailsErrors.username" />
+				<BaseInput v-model="details.email" :label="t('common.email')" type="email" autocomplete="email" :error="detailsErrors.email" />
+				<BaseSelect v-model="details.learningLanguage" :label="t('common.learningLanguage')" :options="languageOptions" />
 				<BaseInput
 					v-if="emailChanged"
 					v-model="details.currentPassword"
-					label="Current password"
+					:label="t('common.currentPassword')"
 					type="password"
 					autocomplete="current-password"
-					hint="Needed to change your email."
+					:hint="t('editProfile.emailPasswordHint')"
 					:error="detailsErrors.currentPassword"
 				/>
 				<BaseButton type="submit" size="sm" pill class="submit" :disabled="!detailsChanged || savingDetails">
-					{{ savingDetails ? 'Saving…' : 'Save changes' }}
+					{{ savingDetails ? t('common.saving') : t('editProfile.save') }}
 				</BaseButton>
 			</form>
 
 			<form class="form" novalidate @submit.prevent="savePassword">
-				<h3>Change password</h3>
+				<h3>{{ t('editProfile.changePassword') }}</h3>
 				<BaseAlert v-if="passwordNotice" variant="success">{{ passwordNotice }}</BaseAlert>
 				<BaseAlert v-if="passwordError">{{ passwordError }}</BaseAlert>
 				<BaseInput
 					v-model="passwords.current"
-					label="Current password"
+					:label="t('common.currentPassword')"
 					type="password"
 					autocomplete="current-password"
 					:error="passwordErrors.current"
 				/>
 				<BaseInput
 					v-model="passwords.next"
-					label="New password"
+					:label="t('editProfile.newPassword')"
 					type="password"
 					autocomplete="new-password"
-					:hint="PASSWORD_HINT"
+					:hint="passwordHint()"
 					:error="passwordErrors.next"
 				/>
 				<BaseInput
 					v-model="passwords.repeat"
-					label="Repeat new password"
+					:label="t('editProfile.repeatPassword')"
 					type="password"
 					autocomplete="new-password"
 					:error="passwordErrors.repeat"
 				/>
 				<BaseButton type="submit" size="sm" pill class="submit" :disabled="savingPassword">
-					{{ savingPassword ? 'Saving…' : 'Change password' }}
+					{{ savingPassword ? t('common.saving') : t('editProfile.changePassword') }}
 				</BaseButton>
 			</form>
 		</div>
@@ -62,16 +62,19 @@
 import { computed, reactive, ref, watch } from 'vue';
 import { ApiError } from '../../api/client';
 import { changePassword, updateProfile, type Profile, type ProfileChanges } from '../../api/users';
-import { PASSWORD_HINT, validateEmail, validateNewPassword, validateUsername } from '../../validation/rules';
+import { passwordHint, validateEmail, validateNewPassword, validateUsername } from '../../validation/rules';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseButton from '../base/BaseButton.vue';
 import BaseCard from '../base/BaseCard.vue';
 import BaseInput from '../base/BaseInput.vue';
 import BaseSelect from '../base/BaseSelect.vue';
-import { LEARNING_LANGUAGES } from '../../constants/languages';
+import { learningLanguageOptions } from '../../constants/languages';
+import { t } from '../../i18n';
 
 const props = defineProps<{ profile: Profile | null }>();
 const emit = defineEmits<{ updated: [profile: Profile] }>();
+
+const languageOptions = computed(learningLanguageOptions);
 
 const details = reactive({ username: '', email: '', learningLanguage: '', currentPassword: '' });
 const detailsErrors = reactive({ username: '', email: '', currentPassword: '' });
@@ -107,7 +110,7 @@ async function saveDetails() {
 	detailsError.value = '';
 	detailsErrors.username = usernameChanged.value ? validateUsername(details.username) : '';
 	detailsErrors.email = emailChanged.value ? validateEmail(details.email) : '';
-	detailsErrors.currentPassword = emailChanged.value && !details.currentPassword ? 'Please enter your password.' : '';
+	detailsErrors.currentPassword = emailChanged.value && !details.currentPassword ? t('validation.enterPassword') : '';
 	if (detailsErrors.username || detailsErrors.email || detailsErrors.currentPassword) return;
 
 	const changes: ProfileChanges = {};
@@ -122,14 +125,14 @@ async function saveDetails() {
 	try {
 		const updated = await updateProfile(changes);
 		details.currentPassword = '';
-		detailsNotice.value = 'Your profile was updated.';
+		detailsNotice.value = t('editProfile.updated');
 		emit('updated', updated);
 	} catch (err) {
-		const message = err instanceof Error ? err.message : '';
-		if (err instanceof ApiError && err.status === 403) detailsErrors.currentPassword = 'Incorrect password.';
-		else if (message === 'username already taken') detailsErrors.username = 'This username is already taken.';
-		else if (message === 'email already registered') detailsErrors.email = 'This email is already registered.';
-		else detailsError.value = message || 'Your profile could not be updated right now.';
+		const serverMessage = err instanceof ApiError ? err.serverMessage : '';
+		if (err instanceof ApiError && err.status === 403) detailsErrors.currentPassword = t('apiErrors.incorrectPassword');
+		else if (serverMessage === 'username already taken') detailsErrors.username = t('apiErrors.usernameTaken');
+		else if (serverMessage === 'email already registered') detailsErrors.email = t('apiErrors.emailTaken');
+		else detailsError.value = err instanceof Error ? err.message : t('editProfile.updateError');
 	} finally {
 		savingDetails.value = false;
 	}
@@ -138,19 +141,19 @@ async function saveDetails() {
 async function savePassword() {
 	passwordNotice.value = '';
 	passwordError.value = '';
-	passwordErrors.current = passwords.current ? '' : 'Please enter your current password.';
+	passwordErrors.current = passwords.current ? '' : t('validation.enterCurrentPassword');
 	passwordErrors.next = validateNewPassword(passwords.next);
-	passwordErrors.repeat = passwords.repeat === passwords.next ? '' : 'The passwords do not match.';
+	passwordErrors.repeat = passwords.repeat === passwords.next ? '' : t('validation.passwordsDontMatch');
 	if (passwordErrors.current || passwordErrors.next || passwordErrors.repeat) return;
 
 	savingPassword.value = true;
 	try {
 		await changePassword(passwords.current, passwords.next);
 		Object.assign(passwords, { current: '', next: '', repeat: '' });
-		passwordNotice.value = 'Your password was changed.';
+		passwordNotice.value = t('editProfile.passwordChanged');
 	} catch (err) {
-		if (err instanceof ApiError && err.status === 403) passwordErrors.current = 'Incorrect password.';
-		else passwordError.value = err instanceof Error ? err.message : 'Your password could not be changed right now.';
+		if (err instanceof ApiError && err.status === 403) passwordErrors.current = t('apiErrors.incorrectPassword');
+		else passwordError.value = err instanceof Error ? err.message : t('editProfile.passwordError');
 	} finally {
 		savingPassword.value = false;
 	}

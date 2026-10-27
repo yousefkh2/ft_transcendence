@@ -2,7 +2,7 @@
 	<Transition name="modal">
 		<div v-if="open" class="overlay" @click.self="close">
 			<div ref="dialogEl" class="modal" role="dialog" aria-modal="true" :aria-labelledby="labelledby">
-				<button type="button" class="close-btn" aria-label="Close" @click="close">
+				<button type="button" class="close-btn" :aria-label="t('common.close')" @click="close">
 					<BaseIcon name="close" :size="16" />
 				</button>
 				<slot />
@@ -15,6 +15,7 @@
 import { ref } from 'vue';
 import { useDialog } from '../../composables/useDialog';
 import BaseIcon from './BaseIcon.vue';
+import { t } from '../../i18n';
 
 // A centered dialog over a blurred page. Escape, the close button and a click outside close it.
 // labelledby is the id of the dialog's heading, which screen readers read as its name.

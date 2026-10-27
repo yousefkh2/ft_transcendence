@@ -5,20 +5,23 @@
 			<span class="brand-name">LingoDash</span>
 		</div>
 
-		<nav class="nav-links" aria-label="Main">
-			<a href="#how-it-works">How it Works</a>
-			<a href="#game-modes">Games</a>
+		<nav class="nav-links" :aria-label="t('landing.nav.main')">
+			<a href="#how-it-works">{{ t('landing.nav.howItWorks') }}</a>
+			<a href="#game-modes">{{ t('landing.nav.games') }}</a>
 		</nav>
 
 		<div class="auth-buttons">
-			<BaseButton variant="ghost" pill @click="emit('open-auth', 'login')">Login</BaseButton>
-			<BaseButton pill @click="emit('open-auth', 'register')">Sign Up</BaseButton>
+			<LanguageSwitcher />
+			<BaseButton variant="ghost" pill @click="emit('open-auth', 'login')">{{ t('landing.nav.login') }}</BaseButton>
+			<BaseButton pill @click="emit('open-auth', 'register')">{{ t('landing.nav.signUp') }}</BaseButton>
 		</div>
 	</header>
 </template>
 
 <script setup lang="ts">
 import BaseButton from '../base/BaseButton.vue';
+import LanguageSwitcher from '../LanguageSwitcher.vue';
+import { t } from '../../i18n';
 import logo from "../../images/logo-transparent.png"
 
 const emit = defineEmits<{ 'open-auth': [tab: 'login' | 'register'] }>();
@@ -105,6 +108,7 @@ const emit = defineEmits<{ 'open-auth': [tab: 'login' | 'register'] }>();
 
 	@media (max-width: 720px) {
 		.navbar {
+			width: 100%;
 			gap: 12px;
 			padding: 12px 16px;
 		}
@@ -115,6 +119,19 @@ const emit = defineEmits<{ 'open-auth': [tab: 'login' | 'register'] }>();
 
 		.auth-buttons .btn {
 			padding: 0 14px;
+		}
+	}
+
+	/* Language switcher and both buttons no longer fit next to the logo: they move to their own line. */
+	@media (max-width: 560px) {
+		.navbar {
+			flex-wrap: wrap;
+		}
+
+		.auth-buttons {
+			flex-wrap: wrap;
+			justify-content: flex-end;
+			margin-left: auto;
 		}
 	}
 

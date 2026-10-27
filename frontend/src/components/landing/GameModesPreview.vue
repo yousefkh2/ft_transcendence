@@ -1,22 +1,18 @@
 <template>
 	<section id="game-modes" class="game-modes">
 		<div class="header">
-			<BaseEyebrow>Game Modes</BaseEyebrow>
-			<h2 class="title">One scenario live. Many more landing.</h2>
+			<BaseEyebrow>{{ t('landing.modes.eyebrow') }}</BaseEyebrow>
+			<h2 class="title">{{ t('landing.modes.title') }}</h2>
 		</div>
 
 		<div class="card">
 			<div class="copy">
-				<h3 class="mode-title">Apartment Setup</h3>
-				<p class="mode-desc">
-					One player sees the room, the other reads the whiteboard. Move the
-					furniture exactly where the clues say - before the 60-second clock
-					runs out.
-				</p>
+				<h3 class="mode-title">{{ t('landing.modes.apartmentTitle') }}</h3>
+				<p class="mode-desc">{{ t('landing.modes.apartmentText') }}</p>
 				<div class="roles">
 					<div class="role-chip" v-for="role in roles" :key="role.name">
-						<span class="role-name">{{ role.name }}</span>
-						<span class="role-desc">{{ role.description }}</span>
+						<span class="role-name">{{ t(role.name) }}</span>
+						<span class="role-desc">{{ t(role.description) }}</span>
 					</div>
 				</div>
 			</div>
@@ -27,21 +23,21 @@
 					<img :src="lamp" alt="" class="furniture furniture-lamp" />
 					<img :src="sofa" alt="" class="furniture furniture-sofa" />
 					<img :src="plant" alt="" class="furniture furniture-plant" />
-					<span class="pane-label">On-Site</span>
+					<span class="pane-label">{{ t('landing.modes.onSite') }}</span>
 				</div>
 				<div class="divider"></div>
 				<div class="pane pane-mc">
 					<img :src="missionControlBg" alt="" class="pane-bg" />
 					<span class="clue clue-1">plant → right of sofa</span>
 					<span class="clue clue-2">lamp → left of sofa</span>
-					<span class="pane-label">Mission Control</span>
+					<span class="pane-label">{{ t('landing.modes.missionControl') }}</span>
 				</div>
 			</div>
 		</div>
 
 		<div class="future-modes">
 			<span class="soon-chip" v-for="mode in futureModes" :key="mode">
-				{{ mode }} <em>Soon</em>
+				{{ t(mode) }} <em>{{ t('landing.modes.soon') }}</em>
 			</span>
 		</div>
 	</section>
@@ -49,6 +45,7 @@
 
 <script setup lang="ts">
 import BaseEyebrow from '../base/BaseEyebrow.vue';
+import { t } from '../../i18n';
 import livingroomBg from '../../images/livingroom/livingroom_background.png';
 import missionControlBg from '../../images/livingroom/mission_control_background.png';
 import sofa from '../../images/livingroom/sofa.png';
@@ -56,11 +53,11 @@ import plant from '../../images/livingroom/plant.png';
 import lamp from '../../images/livingroom/lamp.png';
 
 const roles = [
-	{ name: 'On-Site', description: 'Sees the room, moves the furniture.' },
-	{ name: 'Mission Control', description: 'Reads the whiteboard, calls out directions.' },
-];
+	{ name: 'landing.modes.onSite', description: 'landing.modes.onSiteText' },
+	{ name: 'landing.modes.missionControl', description: 'landing.modes.missionControlText' },
+] as const;
 
-const futureModes = ['Market Haggling', "Doctor's Visit", 'Job Interview'];
+const futureModes = ['landing.modes.marketHaggling', 'landing.modes.doctorsVisit', 'landing.modes.jobInterview'] as const;
 </script>
 
 <style scoped>

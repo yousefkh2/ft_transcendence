@@ -1,5 +1,5 @@
 <template>
-	<section class="stat-grid" aria-label="Stats" :aria-busy="loading || xp === null">
+	<section class="stat-grid" :aria-label="t('overview.stats')" :aria-busy="loading || xp === null">
 		<BaseCard v-for="stat in stats" :key="stat.label" size="sm">
 			<span class="stat-label">{{ stat.label }}</span>
 			<template v-if="stat.value === null">
@@ -18,6 +18,8 @@
 import { computed } from 'vue';
 import BaseCard from '../base/BaseCard.vue';
 import BaseSkeleton from '../base/BaseSkeleton.vue';
+import { t } from '../../i18n';
+import { formatNumber, formatPercent } from '../../utils/format';
 
 // xp null: still loading the profile. loading: the round stats are still loading.
 const props = defineProps<{
@@ -33,13 +35,13 @@ const stats = computed(() => {
 	const decided = props.wins + props.losses;
 	const round = <T,>(value: T) => (props.loading ? null : value);
 	return [
-		{ label: 'Total XP', value: props.xp === null ? null : props.xp.toLocaleString(), sub: 'earned so far' },
-		{ label: 'Rounds played', value: round(props.rounds), sub: props.roundsSub },
-		{ label: 'Wins', value: round(props.wins), sub: `${props.losses} ${props.losses === 1 ? 'loss' : 'losses'}` },
+		{ label: t('stats.totalXp'), value: props.xp === null ? null : formatNumber(props.xp), sub: t('stats.earned') },
+		{ label: t('stats.roundsPlayed'), value: round(formatNumber(props.rounds)), sub: props.roundsSub },
+		{ label: t('stats.wins'), value: round(formatNumber(props.wins)), sub: t('stats.losses', { n: props.losses }) },
 		{
-			label: 'Win rate',
-			value: round(decided ? `${Math.round((props.wins / decided) * 100)}%` : '-'),
-			sub: decided ? `of ${decided} finished ${decided === 1 ? 'round' : 'rounds'}` : 'no finished rounds yet',
+			label: t('stats.winRate'),
+			value: round(decided ? formatPercent(props.wins / decided) : '-'),
+			sub: decided ? t('stats.ofFinished', { n: decided }) : t('stats.noFinished'),
 		},
 	];
 });

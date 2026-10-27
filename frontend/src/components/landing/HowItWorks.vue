@@ -1,15 +1,15 @@
 <template>
 	<section id="how-it-works" class="how-it-works">
 		<div class="header">
-			<BaseEyebrow>How It Works</BaseEyebrow>
-			<h2 class="title">Four steps to fluency under pressure</h2>
+			<BaseEyebrow>{{ t('landing.steps.eyebrow') }}</BaseEyebrow>
+			<h2 class="title">{{ t('landing.steps.title') }}</h2>
 		</div>
 
 		<div class="grid">
 			<BaseCard v-for="step in steps" :key="step.number" size="lg">
 				<span class="step-number">{{ step.number }}</span>
-				<h3 class="card-title">{{ step.title }}</h3>
-				<p class="card-desc">{{ step.description }}</p>
+				<h3 class="card-title">{{ t(step.title) }}</h3>
+				<p class="card-desc">{{ t(step.description) }}</p>
 			</BaseCard>
 		</div>
 	</section>
@@ -18,28 +18,13 @@
 <script setup lang="ts">
 import BaseEyebrow from '../base/BaseEyebrow.vue';
 import BaseCard from '../base/BaseCard.vue';
+import { t } from '../../i18n';
 const steps = [
-	{
-		number: '01',
-		title: 'Get matched',
-		description: 'Paired live with another learner, anywhere in the world.',
-	},
-	{
-		number: '02',
-		title: 'Get a secret role',
-		description: 'Each player sees different information - nobody has the full picture alone.',
-	},
-	{
-		number: '03',
-		title: 'Speak it out',
-		description: 'Describe, argue, negotiate - out loud, in the target language, before the clock runs out.',
-	},
-	{
-		number: '04',
-		title: 'Review & level up',
-		description: 'Your mistakes become AI flashcards. Clear them to earn XP and climb levels.',
-	},
-];
+	{ number: '01', title: 'landing.steps.matchedTitle', description: 'landing.steps.matchedText' },
+	{ number: '02', title: 'landing.steps.roleTitle', description: 'landing.steps.roleText' },
+	{ number: '03', title: 'landing.steps.speakTitle', description: 'landing.steps.speakText' },
+	{ number: '04', title: 'landing.steps.reviewTitle', description: 'landing.steps.reviewText' },
+] as const;
 </script>
 
 <style scoped>
