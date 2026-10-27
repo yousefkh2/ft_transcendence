@@ -7,6 +7,7 @@ export interface Profile {
 	xp: number;
 	createdAt: string;
 	learningLanguage: string;
+	avatarUrl?: string;
 }
 
 export interface MatchHistoryEntry {
@@ -32,6 +33,7 @@ export interface PublicProfile {
 	xp: number;
 	createdAt: string;
 	learningLanguage: string;
+	avatarUrl?: string;
 	online: boolean;
 	lastSeenAt?: string;
 	roundsPlayed: number;
@@ -64,4 +66,14 @@ export function changePassword(currentPassword: string, newPassword: string): Pr
 
 export function sendHeartbeat(): Promise<void> {
 	return request<void>('/api/users/me/heartbeat', { method: 'POST' });
+}
+
+export function uploadAvatar(picture: Blob): Promise<Profile> {
+	const form = new FormData();
+	form.append('avatar', picture, 'avatar.jpg');
+	return request<Profile>('/api/users/me/avatar', { method: 'PUT', body: form });
+}
+
+export function deleteAvatar(): Promise<Profile> {
+	return request<Profile>('/api/users/me/avatar', { method: 'DELETE' });
 }

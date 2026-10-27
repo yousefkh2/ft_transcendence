@@ -3,6 +3,7 @@ import { request } from './client';
 export interface Friend {
 	friendId: string;
 	friendUsername: string;
+	avatarUrl?: string;
 	createdAt: string;
 	online: boolean;
 	lastSeenAt?: string;
@@ -12,6 +13,7 @@ export interface FriendRequest {
 	id: string;
 	requesterId: string;
 	requesterUsername: string;
+	requesterAvatarUrl?: string;
 	createdAt: string;
 }
 

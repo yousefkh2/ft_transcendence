@@ -2,13 +2,16 @@ package handler
 
 import (
 	"errors"
+	"io"
 	"net/http"
 	"strings"
+	"transcendence/backend/internal/avatar"
 	"transcendence/backend/internal/db"
 	"transcendence/backend/internal/middleware"
 	"transcendence/backend/internal/validate"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -193,6 +196,80 @@ func (h *ProfileHandler) checkPassword(c echo.Context, userID, password string) 
 		return echo.NewHTTPError(http.StatusForbidden, "incorrect password")
 	}
 	return nil
+}
+
+// maxAvatarUploadBytes limits the whole upload request. The frontend sends about 30 KB.
+const maxAvatarUploadBytes = 2 << 20
+
+// HandleUploadAvatar takes a multipart form with the picture in the "avatar" field and answers
+// with the updated profile, which contains the new avatarUrl.
+func (h *ProfileHandler) HandleUploadAvatar(c echo.Context) error {
+	userID := middleware.UserID(c)
+	ctx := c.Request().Context()
+
+	c.Request().Body = http.MaxBytesReader(c.Response(), c.Request().Body, maxAvatarUploadBytes)
+	fileHeader, err := c.FormFile("avatar")
+	if err != nil {
+		var tooBig *http.MaxBytesError
+		if errors.As(err, &tooBig) {
+			return echo.NewHTTPError(http.StatusRequestEntityTooLarge, "The picture must be 2 MB or smaller.")
+		}
+		return echo.NewHTTPError(http.StatusBadRequest, "avatar file is required")
+	}
+	file, err := fileHeader.Open()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "avatar file is required")
+	}
+	defer file.Close()
+	data, err := io.ReadAll(file)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "avatar file is required")
+	}
+
+	image, contentType, err := avatar.Normalize(data)
+	if err != nil {
+		if errors.Is(err, avatar.ErrFormat) || errors.Is(err, avatar.ErrDimensions) {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	if err := db.SetAvatar(ctx, h.DB, userID, image, contentType); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	return h.respondWithProfile(c, userID)
+}
+
+func (h *ProfileHandler) HandleDeleteAvatar(c echo.Context) error {
+	userID := middleware.UserID(c)
+	if err := db.DeleteAvatar(c.Request().Context(), h.DB, userID); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	return h.respondWithProfile(c, userID)
+}
+
+func (h *ProfileHandler) respondWithProfile(c echo.Context, userID string) error {
+	profile, err := db.GetProfile(c.Request().Context(), h.DB, userID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	return c.JSON(http.StatusOK, profile)
+}
+
+// HandleAvatar serves a picture without login, so a plain <img> tag can load it. The URL contains the
+// random user id and a version (see db.avatarURL), so the picture can be cached for a long time.
+func (h *ProfileHandler) HandleAvatar(c echo.Context) error {
+	image, contentType, err := db.GetAvatar(c.Request().Context(), h.DB, c.Param("userId"))
+	if err != nil {
+		var pgErr *pgconn.PgError
+		// 22P02: the id is not a valid UUID, so there is no such picture either.
+		if errors.Is(err, pgx.ErrNoRows) || (errors.As(err, &pgErr) && pgErr.Code == "22P02") {
+			return echo.NewHTTPError(http.StatusNotFound, "avatar not found")
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	c.Response().Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+	c.Response().Header().Set("X-Content-Type-Options", "nosniff")
+	return c.Blob(http.StatusOK, contentType, image)
 }
 
 // HandleHeartbeat is called regularly by the open app, so friends can see the user as online.

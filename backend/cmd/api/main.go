@@ -50,7 +50,12 @@ func main() {
 	users.PATCH("/me", profileHandler.HandleUpdateProfile)
 	users.PATCH("/me/password", profileHandler.HandleChangePassword)
 	users.DELETE("/me", profileHandler.HandleDeleteAccount)
+	users.PUT("/me/avatar", profileHandler.HandleUploadAvatar)
+	users.DELETE("/me/avatar", profileHandler.HandleDeleteAvatar)
 	users.GET("/:username", profileHandler.HandleUserProfile)
+
+	// Public on purpose: <img> tags cannot send the login token.
+	e.GET("/api/avatars/:userId", profileHandler.HandleAvatar)
 
 	friends := e.Group("/api/friends", middleware.EchoWithAuth)
 	friends.POST("/requests", friendHandler.HandleSendRequest)

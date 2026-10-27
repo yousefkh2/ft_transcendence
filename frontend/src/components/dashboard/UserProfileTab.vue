@@ -6,7 +6,7 @@
 		</template>
 
 		<template v-else>
-			<ProfileHead :name="user?.username ?? username" :status="user ? (user.online ? 'online' : 'offline') : undefined">
+			<ProfileHead :name="user?.username ?? username" :src="apiAssetUrl(user?.avatarUrl)" :status="user ? (user.online ? 'online' : 'offline') : undefined">
 				<p v-if="user" class="presence" :class="{ online: user.online }">{{ formatLastSeen(user.online, user.lastSeenAt) }}</p>
 				<p v-if="user" class="member-since">
 					Learning {{ languageName(user.learningLanguage) }} · Member since {{ formatDate(user.createdAt) }}
@@ -41,7 +41,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { ApiError } from '../../api/client';
+import { ApiError, apiAssetUrl } from '../../api/client';
 import { fetchFriendRequests, fetchFriends, sendFriendRequest, type Friend, type FriendRequest } from '../../api/friends';
 import { fetchPublicProfile, type Profile, type PublicProfile } from '../../api/users';
 import { formatDate, formatLastSeen } from '../../utils/format';

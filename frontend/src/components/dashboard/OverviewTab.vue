@@ -40,7 +40,7 @@
 				</div>
 				<div v-if="friends.length" class="friend-list">
 					<div v-for="friend in friendsPreview" :key="friend.friendId" class="friend-row">
-						<BaseAvatar :name="friend.friendUsername" :status="friend.online ? 'online' : 'offline'" />
+						<BaseAvatar :name="friend.friendUsername" :src="apiAssetUrl(friend.avatarUrl)" :status="friend.online ? 'online' : 'offline'" />
 						<div class="friend-info">
 							<RouterLink :to="{ name: 'user-profile', params: { username: friend.friendUsername } }" class="friend-name">{{ friend.friendUsername }}</RouterLink>
 							<div class="friend-meta" :class="{ online: friend.online }">{{ formatLastSeen(friend.online, friend.lastSeenAt) }}</div>
@@ -55,6 +55,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import { apiAssetUrl } from '../../api/client';
 import { fetchFriends, type Friend } from '../../api/friends';
 import { fetchMatchHistory, type MatchHistoryEntry, type Profile } from '../../api/users';
 import BaseAlert from '../base/BaseAlert.vue';

@@ -19,7 +19,7 @@
 			<h2 class="panel-title">Pending requests</h2>
 			<div class="request-list">
 				<div v-for="request in requests" :key="request.id" class="row">
-					<BaseAvatar :name="request.requesterUsername" />
+					<BaseAvatar :name="request.requesterUsername" :src="apiAssetUrl(request.requesterAvatarUrl)" />
 					<div class="row-info">
 						<RouterLink :to="{ name: 'user-profile', params: { username: request.requesterUsername } }" class="row-name">{{ request.requesterUsername }}</RouterLink>
 						<div class="row-meta">Sent {{ formatDate(request.createdAt) }}</div>
@@ -36,7 +36,7 @@
 			<h2 class="panel-title">Your friends</h2>
 			<div v-if="friends.length" class="friend-list">
 				<div v-for="friend in friends" :key="friend.friendId" class="row">
-					<BaseAvatar :name="friend.friendUsername" :status="friend.online ? 'online' : 'offline'" />
+					<BaseAvatar :name="friend.friendUsername" :src="apiAssetUrl(friend.avatarUrl)" :status="friend.online ? 'online' : 'offline'" />
 					<div class="row-info">
 						<RouterLink :to="{ name: 'user-profile', params: { username: friend.friendUsername } }" class="row-name">{{ friend.friendUsername }}</RouterLink>
 						<div class="row-meta">
@@ -73,6 +73,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import { apiAssetUrl } from '../../api/client';
 import {
 	fetchFriends,
 	fetchFriendRequests,

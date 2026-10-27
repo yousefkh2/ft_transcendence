@@ -1,6 +1,6 @@
 <template>
 	<BaseCard class="profile-head">
-		<BaseAvatar :name="name" size="lg" variant="gradient" :status="status" />
+		<BaseAvatar :name="name" :src="src" size="lg" variant="gradient" :status="status" />
 		<div class="identity">
 			<h1>{{ name ?? '…' }}</h1>
 			<slot />
@@ -15,7 +15,7 @@
 import BaseAvatar from '../base/BaseAvatar.vue';
 import BaseCard from '../base/BaseCard.vue';
 
-defineProps<{ name?: string; status?: 'online' | 'offline' }>();
+defineProps<{ name?: string; src?: string; status?: 'online' | 'offline' }>();
 </script>
 
 <style scoped>

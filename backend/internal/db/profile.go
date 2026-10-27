@@ -14,7 +14,11 @@ type Profile struct {
 	XP			int		`json:"xp"`
 	CreatedAt	time.Time	`json:"createdAt"`
 	LearningLanguage	string	`json:"learningLanguage"`
+	AvatarURL	*string	`json:"avatarUrl,omitempty"`
 }
+
+// avatarUpdatedAt is a subquery for the picture version of the user in users.id (NULL without a picture).
+const avatarUpdatedAt = `(SELECT updated_at FROM user_avatars WHERE user_id = users.id)`
 
 type MatchHistoryEntry struct {
 	SessionID	string		`json:"sessionId"`
@@ -28,10 +32,12 @@ type MatchHistoryEntry struct {
 
 func GetProfile(ctx context.Context, pool *pgxpool.Pool, userID string) (Profile, error) {
 	p := Profile{ID: userID}
+	var avatarAt *time.Time
 	err := pool.QueryRow(ctx,
-		`SELECT username, email, xp, created_at, learning_lang FROM users WHERE id = $1`,
+		`SELECT username, email, xp, created_at, learning_lang, `+avatarUpdatedAt+` FROM users WHERE id = $1`,
 		userID,
-	).Scan(&p.Username, &p.Email, &p.XP, &p.CreatedAt, &p.LearningLanguage)
+	).Scan(&p.Username, &p.Email, &p.XP, &p.CreatedAt, &p.LearningLanguage, &avatarAt)
+	p.AvatarURL = avatarURL(userID, avatarAt)
 	return p, err
 }
 
@@ -41,6 +47,7 @@ type PublicProfile struct {
 	XP			int			`json:"xp"`
 	CreatedAt	time.Time	`json:"createdAt"`
 	LearningLanguage	string	`json:"learningLanguage"`
+	AvatarURL	*string		`json:"avatarUrl,omitempty"`
 	LastSeenAt	*time.Time	`json:"lastSeenAt,omitempty"`
 	Online		bool		`json:"online"`
 	RoundsPlayed	int		`json:"roundsPlayed"`
@@ -50,8 +57,11 @@ type PublicProfile struct {
 
 func GetPublicProfile(ctx context.Context, pool *pgxpool.Pool, username string) (PublicProfile, error) {
 	var p PublicProfile
+	var userID string
+	var avatarAt *time.Time
 	err := pool.QueryRow(ctx,
-		`SELECT u.username, u.xp, u.created_at, u.learning_lang, u.last_seen_at,
+		`SELECT u.id, u.username, u.xp, u.created_at, u.learning_lang, u.last_seen_at,
+			(SELECT updated_at FROM user_avatars WHERE user_id = u.id),
 			COUNT(gs.id) FILTER (WHERE gs.status = 'completed'),
 			COUNT(gs.id) FILTER (WHERE gs.status = 'completed' AND sp.is_winner),
 			COUNT(gs.id) FILTER (WHERE gs.status = 'completed' AND NOT sp.is_winner)
@@ -61,8 +71,10 @@ func GetPublicProfile(ctx context.Context, pool *pgxpool.Pool, username string) 
 		WHERE u.username = $1
 		GROUP BY u.id`,
 		username,
-	).Scan(&p.Username, &p.XP, &p.CreatedAt, &p.LearningLanguage, &p.LastSeenAt, &p.RoundsPlayed, &p.Wins, &p.Losses)
+	).Scan(&userID, &p.Username, &p.XP, &p.CreatedAt, &p.LearningLanguage, &p.LastSeenAt, &avatarAt,
+		&p.RoundsPlayed, &p.Wins, &p.Losses)
 	p.Online = IsOnline(p.LastSeenAt, time.Now())
+	p.AvatarURL = avatarURL(userID, avatarAt)
 	return p, err
 }
 
@@ -130,13 +142,15 @@ func GetPasswordHash(ctx context.Context, pool *pgxpool.Pool, userID string) (st
 // UpdateProfile changes username, email and/or learning language. A nil value keeps the current one.
 func UpdateProfile(ctx context.Context, pool *pgxpool.Pool, userID string, username, email, learningLang *string) (Profile, error) {
 	p := Profile{ID: userID}
+	var avatarAt *time.Time
 	err := pool.QueryRow(ctx,
 		`UPDATE users SET username = COALESCE($2, username), email = COALESCE($3, email),
 			learning_lang = COALESCE($4, learning_lang)
 		WHERE id = $1
-		RETURNING username, email, xp, created_at, learning_lang`,
+		RETURNING username, email, xp, created_at, learning_lang, `+avatarUpdatedAt,
 		userID, username, email, learningLang,
-	).Scan(&p.Username, &p.Email, &p.XP, &p.CreatedAt, &p.LearningLanguage)
+	).Scan(&p.Username, &p.Email, &p.XP, &p.CreatedAt, &p.LearningLanguage, &avatarAt)
+	p.AvatarURL = avatarURL(userID, avatarAt)
 	return p, err
 }
 

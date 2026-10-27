@@ -11,12 +11,14 @@ type FriendRequest struct {
 	ID					string		`json:"id"`
 	RequesterID			string		`json:"requesterId"`
 	RequesterUsername	string		`json:"requesterUsername"`
+	RequesterAvatarURL	*string		`json:"requesterAvatarUrl,omitempty"`
 	CreatedAt			time.Time	`json:"createdAt"`
 }
 
 type Friend struct {
 	FriendID		string		`json:"friendId"`
 	FriendUsername	string		`json:"friendUsername"`
+	AvatarURL		*string		`json:"avatarUrl,omitempty"`
 	CreatedAt		time.Time	`json:"createdAt"`
 	LastSeenAt		*time.Time	`json:"lastSeenAt,omitempty"`
 	Online			bool		`json:"online"`
@@ -44,7 +46,8 @@ func CreateFriendRequest(ctx context.Context, pool *pgxpool.Pool, requesterID, a
 
 func ListPendingFriendRequests(ctx context.Context, pool *pgxpool.Pool, userID string) ([]FriendRequest, error) {
 	rows, err := pool.Query(ctx,
-		`SELECT f.id, f.requester_id, u.username, f.created_at
+		`SELECT f.id, f.requester_id, u.username, f.created_at,
+			(SELECT updated_at FROM user_avatars WHERE user_id = f.requester_id)
 		FROM friendships f
 		JOIN users u ON u.id = f.requester_id
 		WHERE f.addressee_id = $1 AND f.status = 'pending'
@@ -59,9 +62,11 @@ func ListPendingFriendRequests(ctx context.Context, pool *pgxpool.Pool, userID s
 	requests := make([]FriendRequest, 0)
 	for rows.Next() {
 		var entry FriendRequest
-		if err := rows.Scan(&entry.ID, &entry.RequesterID, &entry.RequesterUsername, &entry.CreatedAt); err != nil {
+		var avatarAt *time.Time
+		if err := rows.Scan(&entry.ID, &entry.RequesterID, &entry.RequesterUsername, &entry.CreatedAt, &avatarAt); err != nil {
 			return nil, err
 		}
+		entry.RequesterAvatarURL = avatarURL(entry.RequesterID, avatarAt)
 		requests = append(requests, entry)
 	}
 	if err := rows.Err(); err != nil {
@@ -98,7 +103,9 @@ func ListFriends(ctx context.Context, pool *pgxpool.Pool, userID string) ([]Frie
 			CASE WHEN f.requester_id = $1 THEN f.addressee_id ELSE f.requester_id END,
 			CASE WHEN f.requester_id = $1 THEN ua.username ELSE ur.username END,
 			f.created_at,
-			CASE WHEN f.requester_id = $1 THEN ua.last_seen_at ELSE ur.last_seen_at END
+			CASE WHEN f.requester_id = $1 THEN ua.last_seen_at ELSE ur.last_seen_at END,
+			(SELECT updated_at FROM user_avatars
+				WHERE user_id = CASE WHEN f.requester_id = $1 THEN f.addressee_id ELSE f.requester_id END)
 		FROM friendships f
 		JOIN users ur ON ur.id = f.requester_id
 		JOIN users ua ON ua.id = f.addressee_id
@@ -115,9 +122,11 @@ func ListFriends(ctx context.Context, pool *pgxpool.Pool, userID string) ([]Frie
 	friends := make([]Friend, 0)
 	for rows.Next() {
 		var entry Friend
-		if err := rows.Scan(&entry.FriendID, &entry.FriendUsername, &entry.CreatedAt, &entry.LastSeenAt); err != nil {
+		var avatarAt *time.Time
+		if err := rows.Scan(&entry.FriendID, &entry.FriendUsername, &entry.CreatedAt, &entry.LastSeenAt, &avatarAt); err != nil {
 			return nil, err
 		}
+		entry.AvatarURL = avatarURL(entry.FriendID, avatarAt)
 		entry.Online = IsOnline(entry.LastSeenAt, now)
 		friends = append(friends, entry)
 	}
