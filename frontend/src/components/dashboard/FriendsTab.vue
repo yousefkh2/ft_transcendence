@@ -7,7 +7,7 @@
 			</div>
 			<form class="add-form" @submit.prevent="addFriend">
 				<BaseInput v-model="newUsername" size="sm" class="add-input" :error="addError" type="text" placeholder="Add by username" aria-label="Username to add as friend" :disabled="sending" />
-				<BaseButton type="submit" :disabled="sending || !newUsername.trim()">Add</BaseButton>
+				<BaseButton type="submit" :disabled="sending || !newUsername.trim()"><BaseIcon name="user-plus" :size="16" />Add</BaseButton>
 			</form>
 		</div>
 
@@ -99,6 +99,7 @@ import BaseAvatar from '../base/BaseAvatar.vue';
 import BaseCard from '../base/BaseCard.vue';
 import BaseInput from '../base/BaseInput.vue';
 import BaseButton from '../base/BaseButton.vue';
+import BaseIcon from '../base/BaseIcon.vue';
 import ListSkeleton from './ListSkeleton.vue';
 
 const props = defineProps<{ profile: Profile | null }>();
@@ -232,7 +233,7 @@ usePolling(loadFriendsAndRequests, PRESENCE_INTERVAL_MS);
 	}
 
 	.panel-title {
-		font-size: 17px;
+		font-size: var(--text-lg);
 		font-weight: 800;
 		margin: 0 0 16px;
 	}
@@ -250,7 +251,7 @@ usePolling(loadFriendsAndRequests, PRESENCE_INTERVAL_MS);
 		padding: 12px 14px;
 		border-radius: 13px;
 		background: var(--color-surface);
-		border: 1px solid rgba(118, 117, 134, 0.12);
+		border: 1px solid var(--color-border-subtle);
 	}
 
 	.row-info {
@@ -290,7 +291,7 @@ usePolling(loadFriendsAndRequests, PRESENCE_INTERVAL_MS);
 
 	.empty-hint {
 		margin: 0;
-		font-size: 13px;
+		font-size: var(--text-sm);
 		color: var(--color-outline);
 	}
 

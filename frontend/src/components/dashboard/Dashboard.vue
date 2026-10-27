@@ -22,7 +22,7 @@
 					<BaseAvatar v-if="profile" :name="profile.username" :src="apiAssetUrl(profile.avatarUrl)" size="md" variant="gradient" />
 					<BaseSkeleton v-else shape="circle" width="36px" height="36px" />
 				</RouterLink>
-				<button type="button" class="logout-btn" @click="logout">Log out</button>
+				<button type="button" class="logout-btn" @click="logout"><BaseIcon name="logout" :size="16" />Log out</button>
 			</div>
 		</header>
 
@@ -46,6 +46,7 @@ import { logout } from '../../auth/logout';
 import { useHeartbeat } from '../../composables/useHeartbeat';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseAvatar from '../base/BaseAvatar.vue';
+import BaseIcon from '../base/BaseIcon.vue';
 import BaseSkeleton from '../base/BaseSkeleton.vue';
 
 useHeartbeat();
@@ -87,7 +88,7 @@ onMounted(loadProfile);
 		background: rgba(249, 249, 255, 0.85);
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
-		border-bottom: 1px solid rgba(118, 117, 134, 0.15);
+		border-bottom: 1px solid var(--color-border);
 	}
 
 	.brand {
@@ -104,7 +105,7 @@ onMounted(loadProfile);
 
 	.brand-name {
 		font-weight: 800;
-		font-size: 17px;
+		font-size: var(--text-lg);
 		letter-spacing: -0.01em;
 	}
 
@@ -136,7 +137,7 @@ onMounted(loadProfile);
 		background: var(--color-surface-raised);
 		color: var(--color-primary);
 		font-weight: 800;
-		box-shadow: 0 3px 8px rgba(17, 28, 45, 0.09);
+		box-shadow: var(--shadow-md);
 	}
 
 	.header-right {
@@ -152,7 +153,7 @@ onMounted(loadProfile);
 		padding: 7px 13px;
 		border-radius: 9999px;
 		background: var(--color-surface-raised);
-		border: 1px solid rgba(118, 117, 134, 0.18);
+		border: 1px solid var(--color-border-strong);
 	}
 
 	.xp-dot {
@@ -182,13 +183,16 @@ onMounted(loadProfile);
 	}
 
 	.logout-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
 		white-space: nowrap;
 		border: none;
 		background: none;
 		color: var(--color-outline);
 		font-family: inherit;
 		font-weight: 700;
-		font-size: 13px;
+		font-size: var(--text-sm);
 		cursor: pointer;
 		padding: 0;
 	}

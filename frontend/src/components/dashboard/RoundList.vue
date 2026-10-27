@@ -42,7 +42,7 @@ const rows = computed(() =>
 		padding: 13px 15px;
 		border-radius: 13px;
 		background: var(--color-surface);
-		border: 1px solid rgba(118, 117, 134, 0.12);
+		border: 1px solid var(--color-border-subtle);
 	}
 
 	.round-badge {
@@ -54,7 +54,7 @@ const rows = computed(() =>
 		place-items: center;
 		font-family: var(--font-mono);
 		font-weight: 700;
-		font-size: 11px;
+		font-size: var(--text-2xs);
 		color: var(--color-on-primary);
 	}
 
@@ -76,7 +76,7 @@ const rows = computed(() =>
 	}
 
 	.round-mode {
-		font-size: 14px;
+		font-size: var(--text-md);
 		font-weight: 700;
 	}
 

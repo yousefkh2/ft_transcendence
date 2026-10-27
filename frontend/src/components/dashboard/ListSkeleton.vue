@@ -30,7 +30,7 @@ withDefaults(defineProps<{ label: string; rows?: number; avatar?: boolean }>(), 
 		gap: 12px;
 		padding: 12px 14px;
 		border-radius: 13px;
-		border: 1px solid rgba(118, 117, 134, 0.12);
+		border: 1px solid var(--color-border-subtle);
 	}
 
 	.lines {

@@ -1,11 +1,18 @@
 <template>
 	<div class="alert" :class="[variant, size]" :role="variant === 'error' ? 'alert' : 'status'">
-		<p class="message"><slot /></p>
+		<p class="message">
+			<BaseIcon :name="ICONS[variant]" :size="size === 'md' ? 18 : 16" class="message-icon" />
+			<span><slot /></span>
+		</p>
 		<button v-if="onRetry" type="button" class="retry" @click="onRetry">Try again</button>
 	</div>
 </template>
 
 <script setup lang="ts">
+import BaseIcon from './BaseIcon.vue';
+
+const ICONS = { error: 'alert-circle', success: 'check-circle', info: 'info' } as const;
+
 withDefaults(
 	defineProps<{
 		variant?: 'error' | 'success' | 'info';
@@ -29,33 +36,41 @@ withDefaults(
 	}
 
 	.message {
+		display: flex;
+		align-items: flex-start;
+		gap: 8px;
 		margin: 0;
+	}
+
+	/* Lines the icon up with the first line of text. */
+	.message-icon {
+		margin-top: 1px;
 	}
 
 	.sm {
 		padding: 10px 14px;
 		border-radius: 10px;
-		font-size: 13px;
+		font-size: var(--text-sm);
 	}
 
 	.md {
 		padding: 16px 20px;
 		border-radius: 12px;
-		font-size: 14px;
+		font-size: var(--text-md);
 	}
 
 	.error {
-		background: rgba(209, 53, 43, 0.08);
+		background: var(--color-error-container);
 		color: var(--color-error);
 	}
 
 	.success {
-		background: rgba(34, 197, 94, 0.1);
+		background: var(--color-success-container);
 		color: var(--color-on-success-container);
 	}
 
 	.info {
-		background: rgba(118, 117, 134, 0.1);
+		background: var(--color-fill-muted);
 		color: var(--color-on-surface-variant);
 	}
 
@@ -72,7 +87,7 @@ withDefaults(
 	}
 
 	.retry:hover {
-		background: rgba(209, 53, 43, 0.08);
+		background: var(--color-error-container);
 	}
 
 	.retry:focus-visible {

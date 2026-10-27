@@ -17,7 +17,7 @@ withDefaults(
 <style scoped>
 	.card {
 		background: var(--color-surface-raised);
-		border: 1px solid rgba(118, 117, 134, 0.18);
+		border: 1px solid var(--color-border-strong);
 	}
 
 	.sm {

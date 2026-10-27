@@ -6,8 +6,8 @@
 				<span class="brand-name">LingoDash</span>
 			</RouterLink>
 			<div class="actions">
-				<BaseButton variant="ghost" pill @click="enterFullscreen">Fullscreen</BaseButton>
-				<BaseButton to="/dashboard" variant="outline" pill>Back to dashboard</BaseButton>
+				<BaseButton variant="ghost" pill @click="enterFullscreen"><BaseIcon name="maximize" :size="16" />Fullscreen</BaseButton>
+				<BaseButton to="/dashboard" variant="outline" pill><BaseIcon name="arrow-left" :size="16" />Back to dashboard</BaseButton>
 			</div>
 		</header>
 
@@ -33,6 +33,7 @@ import { ref } from 'vue';
 import logo from '../../images/logo-transparent.png';
 import { useHeartbeat } from '../../composables/useHeartbeat';
 import BaseButton from '../base/BaseButton.vue';
+import BaseIcon from '../base/BaseIcon.vue';
 import BrandBolt from '../base/BrandBolt.vue';
 
 useHeartbeat();
@@ -62,7 +63,7 @@ function enterFullscreen() {
 		gap: 16px;
 		padding: 12px 32px;
 		background: var(--color-surface);
-		border-bottom: 1px solid rgba(118, 117, 134, 0.15);
+		border-bottom: 1px solid var(--color-border);
 	}
 
 	.brand {
@@ -81,7 +82,7 @@ function enterFullscreen() {
 
 	.brand-name {
 		font-weight: 800;
-		font-size: 17px;
+		font-size: var(--text-lg);
 	}
 
 	.actions {
@@ -112,7 +113,7 @@ function enterFullscreen() {
 		justify-content: center;
 		gap: 14px;
 		color: var(--color-on-primary);
-		font-size: 14px;
+		font-size: var(--text-md);
 		font-weight: 600;
 		background: var(--color-surface-inverse);
 	}

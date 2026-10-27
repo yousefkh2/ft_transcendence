@@ -69,7 +69,7 @@ async function submit() {
 <style scoped>
 	h2 {
 		margin: 0 0 6px;
-		font-size: 17px;
+		font-size: var(--text-lg);
 		font-weight: 800;
 	}
 

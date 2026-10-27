@@ -3,6 +3,7 @@
 		<input ref="fileInput" type="file" accept="image/*" class="file-input" tabindex="-1" aria-hidden="true" @change="onFileChosen" />
 		<div class="buttons">
 			<BaseButton size="sm" pill :disabled="busy" @click="fileInput?.click()">
+				<BaseIcon name="upload" :size="14" />
 				{{ profile?.avatarUrl ? 'Change picture' : 'Upload picture' }}
 			</BaseButton>
 			<BaseButton v-if="profile?.avatarUrl" variant="ghost" size="sm" pill :disabled="busy" aria-label="Remove profile picture" @click="remove">
@@ -20,6 +21,7 @@ import { deleteAvatar, uploadAvatar, type Profile } from '../../api/users';
 import { MAX_PICTURE_BYTES, toSquareJpeg } from '../../utils/image';
 import BaseAlert from '../base/BaseAlert.vue';
 import BaseButton from '../base/BaseButton.vue';
+import BaseIcon from '../base/BaseIcon.vue';
 
 defineProps<{ profile: Profile | null }>();
 const emit = defineEmits<{ updated: [profile: Profile] }>();
@@ -83,7 +85,7 @@ function remove() {
 
 	.status {
 		margin: 0;
-		font-size: 12px;
+		font-size: var(--text-xs);
 		color: var(--color-outline);
 	}
 

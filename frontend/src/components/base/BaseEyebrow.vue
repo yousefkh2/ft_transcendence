@@ -17,7 +17,7 @@ withDefaults(defineProps<{ variant?: 'plain' | 'chip' }>(), { variant: 'plain' }
 	.plain {
 		display: inline-block;
 		margin: 0 0 10px;
-		font-size: 13px;
+		font-size: var(--text-sm);
 		color: var(--color-primary);
 	}
 
@@ -27,7 +27,7 @@ withDefaults(defineProps<{ variant?: 'plain' | 'chip' }>(), { variant: 'plain' }
 		padding: 5px 12px;
 		border-radius: var(--radius-pill);
 		background: rgba(255, 255, 255, 0.14);
-		font-size: 11px;
+		font-size: var(--text-2xs);
 		color: var(--color-on-primary);
 	}
 </style>

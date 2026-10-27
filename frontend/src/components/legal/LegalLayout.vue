@@ -57,7 +57,7 @@ defineProps<{ title: string; updated: string }>();
 		background: rgba(249, 249, 255, 0.85);
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
-		border-bottom: 1px solid rgba(118, 117, 134, 0.15);
+		border-bottom: 1px solid var(--color-border);
 	}
 
 	.brand {
@@ -75,7 +75,7 @@ defineProps<{ title: string; updated: string }>();
 
 	.brand-name {
 		font-weight: 800;
-		font-size: 17px;
+		font-size: var(--text-lg);
 	}
 
 	.legal-main {
@@ -151,7 +151,7 @@ defineProps<{ title: string; updated: string }>();
 		justify-content: space-between;
 		gap: 12px;
 		padding: 24px 32px;
-		border-top: 1px solid rgba(118, 117, 134, 0.15);
+		border-top: 1px solid var(--color-border);
 	}
 
 	.legal-links {

@@ -34,7 +34,7 @@ import BrandBolt from './base/BrandBolt.vue';
 
 	.code {
 		font-family: var(--font-mono);
-		font-size: 13px;
+		font-size: var(--text-sm);
 		font-weight: 700;
 		letter-spacing: 0.1em;
 		color: var(--color-primary);

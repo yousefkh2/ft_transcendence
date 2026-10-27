@@ -6,7 +6,7 @@
 				<BaseEyebrow variant="chip">Next up · Apartment Setup</BaseEyebrow>
 				<h1>Ready for a round?</h1>
 				<p>Jump into the live game and get matched with a partner for the next scenario.</p>
-				<BaseButton to="/play" variant="gradient" size="lg">Play now</BaseButton>
+				<BaseButton to="/play" variant="gradient" size="lg"><BaseIcon name="play" />Play now</BaseButton>
 			</div>
 		</section>
 
@@ -80,6 +80,7 @@ import BaseAvatar from '../base/BaseAvatar.vue';
 import BaseCard from '../base/BaseCard.vue';
 import BaseButton from '../base/BaseButton.vue';
 import BaseEyebrow from '../base/BaseEyebrow.vue';
+import BaseIcon from '../base/BaseIcon.vue';
 import BaseSkeleton from '../base/BaseSkeleton.vue';
 import ListSkeleton from './ListSkeleton.vue';
 import RoundList from './RoundList.vue';
@@ -168,7 +169,7 @@ usePolling(loadFriends, PRESENCE_INTERVAL_MS);
 	}
 
 	.stat-value {
-		font-size: 30px;
+		font-size: var(--text-2xl);
 		font-weight: 800;
 		margin: 8px 0 2px;
 		letter-spacing: -0.02em;
@@ -198,7 +199,7 @@ usePolling(loadFriends, PRESENCE_INTERVAL_MS);
 	}
 
 	.panel-header h2 {
-		font-size: 17px;
+		font-size: var(--text-lg);
 		font-weight: 800;
 		margin: 0;
 	}
@@ -210,7 +211,7 @@ usePolling(loadFriends, PRESENCE_INTERVAL_MS);
 		border: none;
 		color: var(--color-primary);
 		font-weight: 700;
-		font-size: 13px;
+		font-size: var(--text-sm);
 		cursor: pointer;
 		font-family: inherit;
 	}
@@ -227,7 +228,7 @@ usePolling(loadFriends, PRESENCE_INTERVAL_MS);
 		padding: 13px 15px;
 		border-radius: 13px;
 		background: var(--color-surface);
-		border: 1px solid rgba(118, 117, 134, 0.12);
+		border: 1px solid var(--color-border-subtle);
 	}
 
 	.friend-info {
@@ -262,7 +263,7 @@ usePolling(loadFriends, PRESENCE_INTERVAL_MS);
 
 	.empty-hint {
 		margin: 0;
-		font-size: 13px;
+		font-size: var(--text-sm);
 		color: var(--color-outline);
 	}
 

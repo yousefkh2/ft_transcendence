@@ -37,7 +37,7 @@ import logo from '../../images/logo-transparent.png';
 
 <style scoped>
 	.footer {
-		border-top: 1px solid rgba(118, 117, 134, 0.15);
+		border-top: 1px solid var(--color-border);
 		padding: 48px 40px;
 	}
 
@@ -105,7 +105,7 @@ import logo from '../../images/logo-transparent.png';
 		gap: 12px;
 		margin-top: 32px;
 		padding-top: 20px;
-		border-top: 1px solid rgba(118, 117, 134, 0.12);
+		border-top: 1px solid var(--color-border-subtle);
 	}
 
 	.legal-links {

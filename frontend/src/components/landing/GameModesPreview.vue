@@ -136,7 +136,7 @@ const futureModes = ['Market Haggling', "Doctor's Visit", 'Job Interview'];
 	.role-name {
 		font-family: var(--font-mono);
 		font-weight: 700;
-		font-size: 13px;
+		font-size: var(--text-sm);
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
 		color: var(--color-secondary-container);
@@ -263,7 +263,7 @@ const futureModes = ['Market Haggling', "Doctor's Visit", 'Job Interview'];
 		border-radius: var(--radius-pill);
 		border: 1.5px dashed var(--color-outline);
 		color: var(--color-on-surface-variant);
-		font-size: 14px;
+		font-size: var(--text-md);
 		font-weight: 600;
 	}
 
