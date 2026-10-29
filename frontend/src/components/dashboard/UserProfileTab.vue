@@ -1,0 +1,161 @@
+<template>
+	<div class="profile">
+		<template v-if="notFound">
+			<BaseAlert size="md">{{ t('profile.notFound', { name: username }) }}</BaseAlert>
+			<BaseButton :to="{ name: 'friends' }" variant="outline" size="sm" pill class="back">{{ t('profile.backToFriends') }}</BaseButton>
+		</template>
+
+		<template v-else>
+			<ProfileHead :name="user?.username ?? username" :src="apiAssetUrl(user?.avatarUrl)" :status="user ? (user.online ? 'online' : 'offline') : undefined">
+				<p v-if="user" class="presence" :class="{ online: user.online }">{{ formatLastSeen(user.online, user.lastSeenAt) }}</p>
+				<p v-if="user" class="member-since">
+					{{ t('profile.learning', { language: languageName(user.learningLanguage), date: formatDate(user.createdAt) }) }}
+				</p>
+				<div v-else-if="!loadError" class="head-skeleton" role="status">
+					<span class="visually-hidden">{{ t('profile.loading') }}</span>
+					<BaseSkeleton width="110px" height="0.8em" />
+					<BaseSkeleton width="240px" height="0.8em" />
+				</div>
+				<template #actions>
+					<BaseBadge v-if="relation === 'friend'" variant="success" icon="check">{{ t('profile.isFriend') }}</BaseBadge>
+					<BaseBadge v-else-if="relation === 'sent'">{{ t('profile.requestSent') }}</BaseBadge>
+					<BaseButton v-else-if="relation === 'incoming'" :to="{ name: 'friends' }" size="sm" pill>
+						{{ t('profile.answerRequest') }}
+					</BaseButton>
+					<BaseButton v-else-if="relation === 'none'" size="sm" pill :disabled="sending" @click="addFriend">
+						{{ t('profile.addFriend') }}
+					</BaseButton>
+				</template>
+			</ProfileHead>
+
+			<BaseAlert v-if="loadError" size="md" @retry="load(username)">{{ t('profile.loadError') }}</BaseAlert>
+			<BaseAlert v-if="actionError">{{ actionError }}</BaseAlert>
+
+			<ProfileStats
+				v-if="user"
+				:xp="user.xp"
+				:rounds="user.roundsPlayed"
+				:wins="user.wins"
+				:losses="user.losses"
+				:rounds-sub="t('profile.completedRounds')"
+			/>
+			<ProfileStats v-else-if="!loadError" :xp="null" :rounds="0" :wins="0" :losses="0" rounds-sub="" loading />
+		</template>
+	</div>
+</template>
+
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { ApiError, apiAssetUrl } from '../../api/client';
+import { fetchFriendRequests, fetchFriends, sendFriendRequest, type Friend, type FriendRequest } from '../../api/friends';
+import { fetchPublicProfile, type Profile, type PublicProfile } from '../../api/users';
+import { formatDate, formatLastSeen } from '../../utils/format';
+import { languageName } from '../../constants/languages';
+import BaseAlert from '../base/BaseAlert.vue';
+import BaseBadge from '../base/BaseBadge.vue';
+import { t } from '../../i18n';
+import BaseButton from '../base/BaseButton.vue';
+import BaseSkeleton from '../base/BaseSkeleton.vue';
+import ProfileHead from './ProfileHead.vue';
+import ProfileStats from './ProfileStats.vue';
+
+const props = defineProps<{ profile: Profile | null }>();
+
+const route = useRoute();
+const router = useRouter();
+
+const username = computed(() => String(route.params.username ?? ''));
+const user = ref<PublicProfile | null>(null);
+const friends = ref<Friend[]>([]);
+const requests = ref<FriendRequest[]>([]);
+const notFound = ref(false);
+const loadError = ref(false);
+const requestSent = ref(false);
+const sending = ref(false);
+const actionError = ref('');
+
+const relation = computed(() => {
+	if (!user.value) return 'unknown';
+	if (friends.value.some((f) => f.friendUsername === user.value?.username)) return 'friend';
+	if (requests.value.some((r) => r.requesterUsername === user.value?.username)) return 'incoming';
+	if (requestSent.value) return 'sent';
+	return 'none';
+});
+
+async function load(name: string) {
+	user.value = null;
+	notFound.value = false;
+	loadError.value = false;
+	requestSent.value = false;
+	actionError.value = '';
+	try {
+		[user.value, friends.value, requests.value] = await Promise.all([
+			fetchPublicProfile(name),
+			fetchFriends(),
+			fetchFriendRequests(),
+		]);
+	} catch (err) {
+		if (err instanceof ApiError && err.status === 404) notFound.value = true;
+		else loadError.value = true;
+	}
+}
+
+async function addFriend() {
+	if (!user.value) return;
+	sending.value = true;
+	actionError.value = '';
+	try {
+		await sendFriendRequest(user.value.username);
+		requestSent.value = true;
+	} catch (err) {
+		actionError.value = err instanceof Error ? err.message : t('friends.sendError');
+	} finally {
+		sending.value = false;
+	}
+}
+
+// Your own name leads to your own profile, which also shows private data like your email.
+watch(
+	[username, () => props.profile?.username],
+	([name, own]) => {
+		if (own && name === own) router.replace({ name: 'profile' });
+		else if (name && name !== user.value?.username) load(name);
+	},
+	{ immediate: true },
+);
+</script>
+
+<style scoped>
+	.profile {
+		display: grid;
+		gap: 22px;
+	}
+
+	.presence {
+		margin: 0 0 2px;
+		font-size: var(--text-sm);
+		font-weight: 700;
+		color: var(--color-outline);
+	}
+
+	.presence.online {
+		color: var(--color-on-success-container);
+	}
+
+	.member-since {
+		margin: 0;
+		font-size: var(--text-sm);
+		color: var(--color-outline);
+	}
+
+	.head-skeleton {
+		display: grid;
+		gap: 8px;
+		max-width: 100%;
+	}
+
+	.back {
+		justify-self: start;
+	}
+</style>

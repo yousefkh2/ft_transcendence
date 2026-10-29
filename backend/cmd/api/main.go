@@ -46,6 +46,16 @@ func main() {
 	users := e.Group("/api/users", middleware.EchoWithAuth)
 	users.GET("/me", profileHandler.HandleMe, middleware.EchoWithAuth)
 	users.GET("/me/matches", profileHandler.HandleMatchHistory, middleware.EchoWithAuth)
+	users.POST("/me/heartbeat", profileHandler.HandleHeartbeat)
+	users.PATCH("/me", profileHandler.HandleUpdateProfile)
+	users.PATCH("/me/password", profileHandler.HandleChangePassword)
+	users.DELETE("/me", profileHandler.HandleDeleteAccount)
+	users.PUT("/me/avatar", profileHandler.HandleUploadAvatar)
+	users.DELETE("/me/avatar", profileHandler.HandleDeleteAvatar)
+	users.GET("/:username", profileHandler.HandleUserProfile)
+
+	// Public on purpose: <img> tags cannot send the login token.
+	e.GET("/api/avatars/:userId", profileHandler.HandleAvatar)
 
 	friends := e.Group("/api/friends", middleware.EchoWithAuth)
 	friends.POST("/requests", friendHandler.HandleSendRequest)
@@ -53,6 +63,7 @@ func main() {
 	friends.POST("/requests/:id/accept", friendHandler.HandleAcceptRequest)
 	friends.POST("/requests/:id/decline", friendHandler.HandleDeclineRequest)
 	friends.GET("", friendHandler.HandleListFriends)
+	friends.DELETE("/:friendId", friendHandler.HandleRemoveFriend)
 
 	lobbies := e.Group("/api/lobbies", middleware.EchoWithAuth)
 	lobbies.POST("", lobbyHandler.HandleCreateLobby)

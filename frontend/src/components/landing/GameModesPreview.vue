@@ -1,22 +1,18 @@
 <template>
 	<section id="game-modes" class="game-modes">
 		<div class="header">
-			<span class="eyebrow">Game Modes</span>
-			<h2 class="title">One scenario live. Many more landing.</h2>
+			<BaseEyebrow>{{ t('landing.modes.eyebrow') }}</BaseEyebrow>
+			<h2 class="title">{{ t('landing.modes.title') }}</h2>
 		</div>
 
 		<div class="card">
 			<div class="copy">
-				<h3 class="mode-title">Apartment Setup</h3>
-				<p class="mode-desc">
-					One player sees the room, the other reads the whiteboard. Move the
-					furniture exactly where the clues say — before the 60-second clock
-					runs out.
-				</p>
+				<h3 class="mode-title">{{ t('landing.modes.apartmentTitle') }}</h3>
+				<p class="mode-desc">{{ t('landing.modes.apartmentText') }}</p>
 				<div class="roles">
 					<div class="role-chip" v-for="role in roles" :key="role.name">
-						<span class="role-name">{{ role.name }}</span>
-						<span class="role-desc">{{ role.description }}</span>
+						<span class="role-name">{{ t(role.name) }}</span>
+						<span class="role-desc">{{ t(role.description) }}</span>
 					</div>
 				</div>
 			</div>
@@ -27,27 +23,29 @@
 					<img :src="lamp" alt="" class="furniture furniture-lamp" />
 					<img :src="sofa" alt="" class="furniture furniture-sofa" />
 					<img :src="plant" alt="" class="furniture furniture-plant" />
-					<span class="pane-label">On-Site</span>
+					<span class="pane-label">{{ t('landing.modes.onSite') }}</span>
 				</div>
 				<div class="divider"></div>
 				<div class="pane pane-mc">
 					<img :src="missionControlBg" alt="" class="pane-bg" />
 					<span class="clue clue-1">plant → right of sofa</span>
 					<span class="clue clue-2">lamp → left of sofa</span>
-					<span class="pane-label">Mission Control</span>
+					<span class="pane-label">{{ t('landing.modes.missionControl') }}</span>
 				</div>
 			</div>
 		</div>
 
 		<div class="future-modes">
 			<span class="soon-chip" v-for="mode in futureModes" :key="mode">
-				{{ mode }} <em>Soon</em>
+				{{ t(mode) }} <em>{{ t('landing.modes.soon') }}</em>
 			</span>
 		</div>
 	</section>
 </template>
 
 <script setup lang="ts">
+import BaseEyebrow from '../base/BaseEyebrow.vue';
+import { t } from '../../i18n';
 import livingroomBg from '../../images/livingroom/livingroom_background.png';
 import missionControlBg from '../../images/livingroom/mission_control_background.png';
 import sofa from '../../images/livingroom/sofa.png';
@@ -55,11 +53,11 @@ import plant from '../../images/livingroom/plant.png';
 import lamp from '../../images/livingroom/lamp.png';
 
 const roles = [
-	{ name: 'On-Site', description: 'Sees the room, moves the furniture.' },
-	{ name: 'Mission Control', description: 'Reads the whiteboard, calls out directions.' },
-];
+	{ name: 'landing.modes.onSite', description: 'landing.modes.onSiteText' },
+	{ name: 'landing.modes.missionControl', description: 'landing.modes.missionControlText' },
+] as const;
 
-const futureModes = ['Market Haggling', "Doctor's Visit", 'Job Interview'];
+const futureModes = ['landing.modes.marketHaggling', 'landing.modes.doctorsVisit', 'landing.modes.jobInterview'] as const;
 </script>
 
 <style scoped>
@@ -75,16 +73,6 @@ const futureModes = ['Market Haggling', "Doctor's Visit", 'Job Interview'];
 		text-align: center;
 	}
 
-	.eyebrow {
-		display: inline-block;
-		font-family: var(--font-mono);
-		font-weight: 700;
-		font-size: 13px;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: var(--color-primary);
-	}
-
 	.title {
 		font-size: clamp(28px, 4vw, 40px);
 		font-weight: 800;
@@ -98,7 +86,7 @@ const futureModes = ['Market Haggling', "Doctor's Visit", 'Job Interview'];
 		grid-template-columns: 1fr 1fr;
 		align-items: center;
 		gap: 40px;
-		background: #111c2d;
+		background: var(--color-surface-inverse);
 		border-radius: 24px;
 		padding: 48px;
 	}
@@ -113,7 +101,7 @@ const futureModes = ['Market Haggling', "Doctor's Visit", 'Job Interview'];
 	.mode-title {
 		font-size: clamp(24px, 3vw, 32px);
 		font-weight: 800;
-		color: #ffffff;
+		color: var(--color-on-primary);
 		margin: 0 0 12px;
 	}
 
@@ -145,7 +133,7 @@ const futureModes = ['Market Haggling', "Doctor's Visit", 'Job Interview'];
 	.role-name {
 		font-family: var(--font-mono);
 		font-weight: 700;
-		font-size: 13px;
+		font-size: var(--text-sm);
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
 		color: var(--color-secondary-container);
@@ -207,7 +195,7 @@ const futureModes = ['Market Haggling', "Doctor's Visit", 'Job Interview'];
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: #ffffff;
+		color: var(--color-on-primary);
 	}
 
 	.furniture {
@@ -245,7 +233,7 @@ const futureModes = ['Market Haggling', "Doctor's Visit", 'Job Interview'];
 	.clue-1 {
 		top: 32%;
 		left: 10%;
-		color: #d1352b;
+		color: var(--color-error);
 		transform: rotate(-3deg);
 	}
 
@@ -272,7 +260,7 @@ const futureModes = ['Market Haggling', "Doctor's Visit", 'Job Interview'];
 		border-radius: var(--radius-pill);
 		border: 1.5px dashed var(--color-outline);
 		color: var(--color-on-surface-variant);
-		font-size: 14px;
+		font-size: var(--text-md);
 		font-weight: 600;
 	}
 

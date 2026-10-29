@@ -11,13 +11,17 @@ type FriendRequest struct {
 	ID					string		`json:"id"`
 	RequesterID			string		`json:"requesterId"`
 	RequesterUsername	string		`json:"requesterUsername"`
+	RequesterAvatarURL	*string		`json:"requesterAvatarUrl,omitempty"`
 	CreatedAt			time.Time	`json:"createdAt"`
 }
 
 type Friend struct {
 	FriendID		string		`json:"friendId"`
 	FriendUsername	string		`json:"friendUsername"`
+	AvatarURL		*string		`json:"avatarUrl,omitempty"`
 	CreatedAt		time.Time	`json:"createdAt"`
+	LastSeenAt		*time.Time	`json:"lastSeenAt,omitempty"`
+	Online			bool		`json:"online"`
 }
 
 func ResolveUserID(ctx context.Context, pool *pgxpool.Pool, username string) (string, error) {
@@ -42,7 +46,8 @@ func CreateFriendRequest(ctx context.Context, pool *pgxpool.Pool, requesterID, a
 
 func ListPendingFriendRequests(ctx context.Context, pool *pgxpool.Pool, userID string) ([]FriendRequest, error) {
 	rows, err := pool.Query(ctx,
-		`SELECT f.id, f.requester_id, u.username, f.created_at
+		`SELECT f.id, f.requester_id, u.username, f.created_at,
+			(SELECT updated_at FROM user_avatars WHERE user_id = f.requester_id)
 		FROM friendships f
 		JOIN users u ON u.id = f.requester_id
 		WHERE f.addressee_id = $1 AND f.status = 'pending'
@@ -57,9 +62,11 @@ func ListPendingFriendRequests(ctx context.Context, pool *pgxpool.Pool, userID s
 	requests := make([]FriendRequest, 0)
 	for rows.Next() {
 		var entry FriendRequest
-		if err := rows.Scan(&entry.ID, &entry.RequesterID, &entry.RequesterUsername, &entry.CreatedAt); err != nil {
+		var avatarAt *time.Time
+		if err := rows.Scan(&entry.ID, &entry.RequesterID, &entry.RequesterUsername, &entry.CreatedAt, &avatarAt); err != nil {
 			return nil, err
 		}
+		entry.RequesterAvatarURL = avatarURL(entry.RequesterID, avatarAt)
 		requests = append(requests, entry)
 	}
 	if err := rows.Err(); err != nil {
@@ -76,6 +83,12 @@ func GetFriendRequest(ctx context.Context, pool *pgxpool.Pool, requestID string)
 	return addresseeID, status, err
 }
 
+// DeleteFriendRequest removes a request instead of keeping it as "declined", so the sender can try again later.
+func DeleteFriendRequest(ctx context.Context, pool *pgxpool.Pool, requestID string) error {
+	_, err := pool.Exec(ctx, `DELETE FROM friendships WHERE id = $1 AND status = 'pending'`, requestID)
+	return err
+}
+
 func SetFriendRequestStatus(ctx context.Context, pool *pgxpool.Pool, requestID, targetStatus string) error {
 	_, err := pool.Exec(ctx,
 		`UPDATE friendships SET status = $1 WHERE id = $2`,
@@ -89,7 +102,10 @@ func ListFriends(ctx context.Context, pool *pgxpool.Pool, userID string) ([]Frie
 		`SELECT
 			CASE WHEN f.requester_id = $1 THEN f.addressee_id ELSE f.requester_id END,
 			CASE WHEN f.requester_id = $1 THEN ua.username ELSE ur.username END,
-			f.created_at
+			f.created_at,
+			CASE WHEN f.requester_id = $1 THEN ua.last_seen_at ELSE ur.last_seen_at END,
+			(SELECT updated_at FROM user_avatars
+				WHERE user_id = CASE WHEN f.requester_id = $1 THEN f.addressee_id ELSE f.requester_id END)
 		FROM friendships f
 		JOIN users ur ON ur.id = f.requester_id
 		JOIN users ua ON ua.id = f.addressee_id
@@ -102,16 +118,35 @@ func ListFriends(ctx context.Context, pool *pgxpool.Pool, userID string) ([]Frie
 	}
 	defer rows.Close()
 
+	now := time.Now()
 	friends := make([]Friend, 0)
 	for rows.Next() {
 		var entry Friend
-		if err := rows.Scan(&entry.FriendID, &entry.FriendUsername, &entry.CreatedAt); err != nil {
+		var avatarAt *time.Time
+		if err := rows.Scan(&entry.FriendID, &entry.FriendUsername, &entry.CreatedAt, &entry.LastSeenAt, &avatarAt); err != nil {
 			return nil, err
 		}
+		entry.AvatarURL = avatarURL(entry.FriendID, avatarAt)
+		entry.Online = IsOnline(entry.LastSeenAt, now)
 		friends = append(friends, entry)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 	return friends, nil
+}
+
+// RemoveFriend deletes an accepted friendship in either direction, so both users can add each other again later.
+// It returns false when the two users are not friends.
+func RemoveFriend(ctx context.Context, pool *pgxpool.Pool, userID, friendID string) (bool, error) {
+	tag, err := pool.Exec(ctx,
+		`DELETE FROM friendships
+		WHERE status = 'accepted'
+		AND ((requester_id = $1 AND addressee_id = $2) OR (requester_id = $2 AND addressee_id = $1))`,
+		userID, friendID,
+	)
+	if err != nil {
+		return false, err
+	}
+	return tag.RowsAffected() > 0, nil
 }

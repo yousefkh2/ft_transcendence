@@ -2,15 +2,15 @@
 	<section class="hero">
 		<div class="hero-copy">
 			<h1 class="headline">
-				Learn Languages
-				<span class="accent">Through Play.</span>
+				{{ t('landing.hero.headline') }}
+				<span class="accent">{{ t('landing.hero.headlineAccent') }}</span>
 			</h1>
 			<p class="subtext">
-				Jump into fast-paced multiplayer games built to get you speaking from day one. Describe, argue, guess, and race the clock - whichever language you're learning.
+				{{ t('landing.hero.text') }}
 			</p>
 			<div class="cta-row">
-				<button class="btn btn-primary">Play Now</button>
-				<button class="btn btn-ghost">How It Works</button>
+				<BaseButton size="lg" pill @click="emit('open-auth', 'register')">{{ t('landing.hero.playNow') }}</BaseButton>
+				<BaseButton variant="outline" size="lg" pill @click="scrollToHowItWorks">{{ t('landing.hero.howItWorks') }}</BaseButton>
 			</div>
 		</div>
 		<HeroVisual class="hero-visual" />
@@ -18,7 +18,15 @@
 </template>
 
 <script setup lang="ts">
+import BaseButton from '../base/BaseButton.vue';
+import { t } from '../../i18n';
 import HeroVisual from './HeroVisual.vue';
+
+const emit = defineEmits<{ 'open-auth': [tab: 'login' | 'register'] }>();
+
+function scrollToHowItWorks() {
+	document.getElementById('how-it-works')?.scrollIntoView();
+}
 </script>
 
 <style scoped>
@@ -32,12 +40,12 @@ import HeroVisual from './HeroVisual.vue';
 		padding: 96px 40px;
 	}
 
-	.headling {
-		font-size: clamp(32px, 5vw, 48px);
-		font-weight: 800;
-		line-height: 1.1;
-		letter-spacing: -0.2em;
-		margin: 0 0 20px;
+	.headline {
+		max-width: 780px;
+		margin: 0;
+		font-size: clamp(42px, 9vw, 84px);
+		line-height: 0.95;
+		letter-spacing: 0;
 	}
 
 	.accent {
@@ -56,33 +64,6 @@ import HeroVisual from './HeroVisual.vue';
 		display: flex;
 		gap: 12px;
 		flex-wrap: wrap;
-	}
-
-	.btn {
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 15px;
-		padding: 14px 24px;
-		border-radius: var(--radius-pill);
-		border: none;
-		cursor: pointer;
-	}
-
-	.btn-primary {
-		background: var(--color-primary);
-		color: var(--color-on-primary);
-		border-bottom: 4px solid #2f2ebe;
-	}
-
-	.btn-primary:active {
-		border-bottom-width: 0;
-		transform: translateY(4px);
-	}
-
-	.btn-ghost {
-		background: transparent;
-		color: var(--color-on-surface);
-		border: 2px solid var(--color-outline);
 	}
 
 	@media (max-width: 900px) {

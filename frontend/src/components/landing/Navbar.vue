@@ -5,19 +5,23 @@
 			<span class="brand-name">LingoDash</span>
 		</div>
 
-		<nav class="nav-links">
-			<a href="#how-it-works">How it Works</a>
-			<a href="#game-modes">Games</a>
+		<nav class="nav-links" :aria-label="t('landing.nav.main')">
+			<a href="#how-it-works">{{ t('landing.nav.howItWorks') }}</a>
+			<a href="#game-modes">{{ t('landing.nav.games') }}</a>
 		</nav>
 
 		<div class="auth-buttons">
-			<button class="btn-ghost" type="button" @click="emit('open-auth', 'login')">Login</button>
-			<button class="btn-login" type="button" @click="emit('open-auth', 'register')">Sign Up</button>
+			<LanguageSwitcher />
+			<BaseButton variant="ghost" pill @click="emit('open-auth', 'login')">{{ t('landing.nav.login') }}</BaseButton>
+			<BaseButton pill @click="emit('open-auth', 'register')">{{ t('landing.nav.signUp') }}</BaseButton>
 		</div>
 	</header>
 </template>
 
 <script setup lang="ts">
+import BaseButton from '../base/BaseButton.vue';
+import LanguageSwitcher from '../LanguageSwitcher.vue';
+import { t } from '../../i18n';
 import logo from "../../images/logo-transparent.png"
 
 const emit = defineEmits<{ 'open-auth': [tab: 'login' | 'register'] }>();
@@ -36,7 +40,7 @@ const emit = defineEmits<{ 'open-auth': [tab: 'login' | 'register'] }>();
 		background: rgba(249, 249, 255, 0.72);
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
-		border-bottom: 1px solid rgba(118, 117, 134, 0.15);
+		border-bottom: 1px solid var(--color-border);
 		width: 80vw;
 		margin: auto;
 	}
@@ -72,7 +76,7 @@ const emit = defineEmits<{ 'open-auth': [tab: 'login' | 'register'] }>();
 		color: var(--color-on-surface-variant);
 		text-decoration: none;
 		font-weight: 600;
-		font-size: 14px;
+		font-size: var(--text-md);
 		padding: 4px 0;
 		transition: color 0.2s ease;
 	}
@@ -102,49 +106,38 @@ const emit = defineEmits<{ 'open-auth': [tab: 'login' | 'register'] }>();
 		gap: 8px;
 	}
 
-	.btn-ghost {
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 14px;
-		padding: 10px 18px;
-		border-radius: var(--radius-pill);
-		border: none;
-		background: transparent;
-		color: var(--color-on-surface);
-		cursor: pointer;
-		transition: background 0.15s ease;
-	}
-
-	.btn-ghost:hover {
-		background: rgba(17, 28, 45, 0.06);
-	}
-
-	.btn-login {
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 14px;
-		padding: 10px 22px;
-		border-radius: var(--radius-pill);
-		border: none;
-		background: var(--color-primary);
-		color: var(--color-on-primary);
-		cursor: pointer;
-		transition: tansform 0.15s ease, box-shadow 0.15s ease;
-	}
-
-	.btn-login:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(70, 72, 212, 0.35);
-	}
-
-	.btn-login:active {
-		transform: translateY(0);
-		box-shadow: none;
-	}
-
 	@media (max-width: 720px) {
+		.navbar {
+			width: 100%;
+			gap: 12px;
+			padding: 12px 16px;
+		}
+
 		.nav-links {
-			display: none;;
+			display: none;
+		}
+
+		.auth-buttons .btn {
+			padding: 0 14px;
+		}
+	}
+
+	/* Language switcher and both buttons no longer fit next to the logo: they move to their own line. */
+	@media (max-width: 560px) {
+		.navbar {
+			flex-wrap: wrap;
+		}
+
+		.auth-buttons {
+			flex-wrap: wrap;
+			justify-content: flex-end;
+			margin-left: auto;
+		}
+	}
+
+	@media (max-width: 400px) {
+		.brand-name {
+			display: none;
 		}
 	}
 

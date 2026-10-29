@@ -1,67 +1,60 @@
 <template>
 	<section id="gamification" class="gamification">
 		<div class="header">
-			<span class="eyebrow">Gamification</span>
-			<h2 class="title">Progress you can feel every round</h2>
+			<BaseEyebrow>{{ t('landing.gamification.eyebrow') }}</BaseEyebrow>
+			<h2 class="title">{{ t('landing.gamification.title') }}</h2>
 		</div>
 
 		<div class="grid">
-			<div class="card">
-				<h3 class="card-title">XP &amp; levels</h3>
-				<p class="card-desc">
-					Every round you finish earns XP. Win, lose, or run out the clock -
-					you always walk away a little further along.
-				</p>
+			<BaseCard size="lg">
+				<h3 class="card-title">{{ t('landing.gamification.xpTitle') }}</h3>
+				<p class="card-desc">{{ t('landing.gamification.xpText') }}</p>
 				<div class="xp-widget">
 					<div class="xp-row">
-						<span class="xp-level">Level 7</span>
-						<span class="xp-amount">2,140 / 3,000 XP</span>
+						<span class="xp-level">{{ t('landing.gamification.level', { level: 7 }) }}</span>
+						<span class="xp-amount">{{ formatNumber(2140) }} / {{ t('common.xp', { xp: formatNumber(3000) }) }}</span>
 					</div>
 					<div class="xp-track">
 						<div class="xp-fill" style="width: 71%"></div>
 					</div>
 				</div>
-			</div>
+			</BaseCard>
 
-			<div class="card">
-				<h3 class="card-title">AI-reviewed flashcards</h3>
-				<p class="card-desc">
-					Slip-ups from the round get turned into flashcards, each with a
-					plain-language explanation of what to say instead.
-				</p>
+			<BaseCard size="lg">
+				<h3 class="card-title">{{ t('landing.gamification.flashcardsTitle') }}</h3>
+				<p class="card-desc">{{ t('landing.gamification.flashcardsText') }}</p>
 				<div class="flashcard">
 					<span class="flashcard-wrong">Ich habe gegeht nach Hause.</span>
 					<span class="flashcard-correct">Ich bin nach Hause gegangen.</span>
-					<p class="flashcard-explanation">
-						Movement verbs like "gehen" use "sein", not "haben", as the
-						auxiliary in the perfect tense.
-					</p>
+					<p class="flashcard-explanation">{{ t('landing.gamification.flashcardExplanation') }}</p>
 				</div>
-			</div>
+			</BaseCard>
 
-			<div class="card">
-				<h3 class="card-title">Friends</h3>
-				<p class="card-desc">
-					Add friends and see who's climbing fastest. Send a request, get
-					accepted, and play together whenever you're both online.
-				</p>
+			<BaseCard size="lg">
+				<h3 class="card-title">{{ t('landing.gamification.friendsTitle') }}</h3>
+				<p class="card-desc">{{ t('landing.gamification.friendsText') }}</p>
 				<ul class="friends-list">
-					<li v-for="(friend, index) in friends" :key="friend.name" class="friend-row">
+					<li v-for="(friend, index) in friends" :key="friend.xp" class="friend-row">
 						<span class="friend-rank">{{ index + 1 }}</span>
-						<span class="friend-name">{{ friend.name }}</span>
-						<span class="friend-xp">{{ friend.xp.toLocaleString() }} XP</span>
+						<span class="friend-name">{{ friend.name ?? t('landing.gamification.you') }}</span>
+						<span class="friend-xp">{{ t('common.xp', { xp: formatNumber(friend.xp) }) }}</span>
 					</li>
 				</ul>
-			</div>
+			</BaseCard>
 		</div>
 	</section>
 </template>
 
 <script setup lang="ts">
+import BaseEyebrow from '../base/BaseEyebrow.vue';
+import BaseCard from '../base/BaseCard.vue';
+import { t } from '../../i18n';
+import { formatNumber } from '../../utils/format';
 const friends = [
 	{ name: 'jonas.k', xp: 5820 },
 	{ name: 'mei_learns', xp: 4390 },
-	{ name: 'you', xp: 2140 },
+	// The demo player shown as "you" in the current language.
+	{ name: undefined, xp: 2140 },
 ];
 </script>
 
@@ -78,16 +71,6 @@ const friends = [
 		text-align: center;
 	}
 
-	.eyebrow {
-		display: inline-block;
-		font-family: var(--font-mono);
-		font-weight: 700;
-		font-size: 13px;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: var(--color-primary);
-	}
-
 	.title {
 		font-size: clamp(28px, 4vw, 40px);
 		font-weight: 800;
@@ -100,13 +83,6 @@ const friends = [
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 		gap: 20px;
-	}
-
-	.card {
-		background: #ffffff;
-		border: 1px solid rgba(118, 117, 134, 0.18);
-		border-radius: 16px;
-		padding: 28px;
 	}
 
 	.card-title {
@@ -137,12 +113,12 @@ const friends = [
 
 	.xp-level {
 		font-weight: 700;
-		font-size: 14px;
+		font-size: var(--text-md);
 		color: var(--color-on-surface);
 	}
 
 	.xp-amount {
-		font-size: 12px;
+		font-size: var(--text-xs);
 		color: var(--color-on-surface-variant);
 	}
 
@@ -150,7 +126,7 @@ const friends = [
 		width: 100%;
 		height: 10px;
 		border-radius: var(--radius-pill);
-		background: rgba(118, 117, 134, 0.15);
+		background: var(--color-border);
 		overflow: hidden;
 	}
 
@@ -167,14 +143,14 @@ const friends = [
 		padding: 16px;
 		border-radius: 12px;
 		background: var(--color-surface);
-		border: 1px solid rgba(118, 117, 134, 0.18);
+		border: 1px solid var(--color-border-strong);
 	}
 
 	.flashcard-wrong {
-		font-size: 14px;
+		font-size: var(--text-md);
 		color: var(--color-on-surface-variant);
 		text-decoration: line-through;
-		text-decoration-color: #d1352b;
+		text-decoration-color: var(--color-error);
 	}
 
 	.flashcard-correct {
@@ -184,7 +160,7 @@ const friends = [
 	}
 
 	.flashcard-explanation {
-		font-size: 13px;
+		font-size: var(--text-sm);
 		line-height: 1.5;
 		color: var(--color-on-surface-variant);
 		margin: 4px 0 0;
@@ -214,7 +190,7 @@ const friends = [
 	.friend-rank {
 		font-family: var(--font-mono);
 		font-weight: 700;
-		font-size: 13px;
+		font-size: var(--text-sm);
 		color: var(--color-primary-container);
 		width: 16px;
 	}
@@ -222,7 +198,7 @@ const friends = [
 	.friend-name {
 		flex: 1;
 		font-weight: 600;
-		font-size: 14px;
+		font-size: var(--text-md);
 		color: var(--color-on-surface);
 	}
 

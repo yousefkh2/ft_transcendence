@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"transcendence/backend/internal/db"
 	"transcendence/backend/internal/middleware"
@@ -27,6 +28,11 @@ func (h *FriendHandler) HandleSendRequest(c echo.Context) error {
 	var body sendRequestBody
 	if err := c.Bind(&body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
+	}
+
+	body.Username = strings.TrimSpace(body.Username)
+	if body.Username == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "username is required")
 	}
 
 	addresseeID, err := db.ResolveUserID(c.Request().Context(), h.DB, body.Username)
@@ -65,14 +71,14 @@ func (h *FriendHandler) HandleListRequests(c echo.Context) error {
 }
 
 func (h *FriendHandler) HandleAcceptRequest(c echo.Context) error {
-	return h.respondToRequest(c, "accepted")
+	return h.respondToRequest(c, true)
 }
 
 func (h *FriendHandler) HandleDeclineRequest(c echo.Context) error {
-	return h.respondToRequest(c, "declined")
+	return h.respondToRequest(c, false)
 }
 
-func (h *FriendHandler) respondToRequest(c echo.Context, targetStatus string) error {
+func (h *FriendHandler) respondToRequest(c echo.Context, accept bool) error {
 	userID := middleware.UserID(c)
 
 	requestID := c.Param("id")
@@ -93,7 +99,12 @@ func (h *FriendHandler) respondToRequest(c echo.Context, targetStatus string) er
 		return echo.NewHTTPError(http.StatusConflict, "friend request already resolved")
 	}
 
-	if err := db.SetFriendRequestStatus(c.Request().Context(), h.DB, requestID, targetStatus);err != nil {
+	if accept {
+		err = db.SetFriendRequestStatus(c.Request().Context(), h.DB, requestID, "accepted")
+	} else {
+		err = db.DeleteFriendRequest(c.Request().Context(), h.DB, requestID)
+	}
+	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 	}
 
@@ -110,4 +121,23 @@ func (h *FriendHandler) HandleListFriends(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, friends)
+}
+
+func (h *FriendHandler) HandleRemoveFriend(c echo.Context) error {
+	userID := middleware.UserID(c)
+
+	removed, err := db.RemoveFriend(c.Request().Context(), h.DB, userID, c.Param("friendId"))
+	if err != nil {
+		var pgErr *pgconn.PgError
+		// 22P02: the id is not a valid UUID, so it cannot belong to a friend.
+		if errors.As(err, &pgErr) && pgErr.Code == "22P02" {
+			return echo.NewHTTPError(http.StatusNotFound, "friend not found")
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	if !removed {
+		return echo.NewHTTPError(http.StatusNotFound, "friend not found")
+	}
+
+	return c.NoContent(http.StatusNoContent)
 }

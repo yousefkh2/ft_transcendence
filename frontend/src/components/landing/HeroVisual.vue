@@ -1,7 +1,7 @@
 <template>
 	<div class="hero-visual" aria-hidden="true">
 		<div class="glow"></div>
-		<div class="bolt"></div>
+		<BrandBolt size="lg" class="hero-bolt" />
 		<span
 			v-for="(lang, index) in languages"
 			:key="lang"
@@ -15,8 +15,9 @@
 </template>
 
 <script setup lang="ts">
+import BrandBolt from '../base/BrandBolt.vue';
 withDefaults(defineProps<{ languages?: string[] }>(), {
-	languages: () => ['DE', 'ES', 'JA'],
+	languages: () => ['DE', 'PL', 'TR'],
 });
 </script>
 
@@ -34,17 +35,13 @@ withDefaults(defineProps<{ languages?: string[] }>(), {
 		width: 65%;
 		height: 65%;
 		border-radius: 50%;
-		background: radial-gradient(circle, #6063ee 0%, transparent 70%);
+		background: radial-gradient(circle, var(--color-primary-container) 0%, transparent 70%);
 		filter: blur(24px);
 		animation: glow-pulse 5s ease-in-out infinite;
 	}
 
-	.bolt {
+	.hero-bolt {
 		position: relative;
-		width: 170px;
-		height: 270px;
-		background: linear-gradient(160deg, #fea619 0%, #ff5d8f 45%, #6063ee 100%);
-		clip-path: polygon(55% 0%, 25% 55%, 45% 55%, 35% 100%, 80% 40%, 55% 40%, 70% 0%);
 		box-shadow: 0 30px 60px rgba(70, 72, 212, 0.35);
 		animation: bolt-float 4s ease-in-out infinite;
 	}
@@ -56,12 +53,12 @@ withDefaults(defineProps<{ languages?: string[] }>(), {
 		justify-content: center;
 		padding: 8px 16px;
 		border-radius: var(--radius-pill);
-		background: #ffffff;
+		background: var(--color-surface-raised);
 		box-shadow: 0 8px 20px rgba(17, 28, 45, 0.14);
 		font-family: var(--font-mono);
 		font-weight: 700;
-		font-size: 14px;
-		color: #4648d4;
+		font-size: var(--text-md);
+		color: var(--color-primary);
 		animation: chip-bob 3.6s ease-in-out infinite;
 	}
 
@@ -111,7 +108,7 @@ withDefaults(defineProps<{ languages?: string[] }>(), {
 
 	@media (prefers-reduced-motion: reduce) {
 		.glow,
-		.bolt,
+		.hero-bolt,
 		.chip {
 			animation-play-state: paused;
 		}

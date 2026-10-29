@@ -7,21 +7,22 @@
 						<img :src="logo" alt="LingoDash Logo" class="brand-logo" />
 						<span class="brand-name">LingoDash</span>
 					</div>
-					<p class="brand-desc">
-						Real conversation, real pressure. Available now: German. Coming
-						soon: Spanish, French, Japanese.
-					</p>
+					<p class="brand-desc">{{ t('landing.footer.text') }}</p>
 				</div>
 
-				<nav class="links">
-					<a href="#how-it-works">How it Works</a>
-					<a href="#game-modes">Game Modes</a>
-					<a href="#gamification">Gamification</a>
+				<nav class="links" :aria-label="t('landing.nav.footer')">
+					<a href="#how-it-works">{{ t('landing.nav.howItWorks') }}</a>
+					<a href="#game-modes">{{ t('landing.nav.gameModes') }}</a>
+					<a href="#gamification">{{ t('landing.nav.gamification') }}</a>
 				</nav>
 			</div>
 
 			<div class="bottom">
-				<span class="copyright">© 2026 LingoDash. All rights reserved.</span>
+				<span class="copyright">{{ t('landing.footer.rights') }}</span>
+				<nav class="legal-links" :aria-label="t('landing.nav.legal')">
+					<RouterLink to="/privacy">{{ t('common.privacyPolicy') }}</RouterLink>
+					<RouterLink to="/terms">{{ t('common.termsOfService') }}</RouterLink>
+				</nav>
 			</div>
 		</div>
 	</footer>
@@ -29,11 +30,12 @@
 
 <script setup lang="ts">
 import logo from '../../images/logo-transparent.png';
+import { t } from '../../i18n';
 </script>
 
 <style scoped>
 	.footer {
-		border-top: 1px solid rgba(118, 117, 134, 0.15);
+		border-top: 1px solid var(--color-border);
 		padding: 48px 40px;
 	}
 
@@ -94,9 +96,31 @@ import logo from '../../images/logo-transparent.png';
 	}
 
 	.bottom {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
 		margin-top: 32px;
 		padding-top: 20px;
-		border-top: 1px solid rgba(118, 117, 134, 0.12);
+		border-top: 1px solid var(--color-border-subtle);
+	}
+
+	.legal-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 20px;
+	}
+
+	.legal-links a {
+		font-size: 12.5px;
+		font-weight: 600;
+		color: var(--color-outline);
+		text-decoration: none;
+	}
+
+	.legal-links a:hover {
+		color: var(--color-on-surface);
 	}
 
 	.copyright {

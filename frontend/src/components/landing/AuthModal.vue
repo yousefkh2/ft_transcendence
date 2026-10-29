@@ -1,110 +1,144 @@
 <template>
-	<Transition name="overlay">
-		<div v-if="open" class="overlay" @click.self="close">
-			<div class="modal">
-				<div class="glow glow-top"></div>
-				<div class="glow glow-bottom"></div>
+	<BaseModal v-model:open="open" :labelledby="titleId">
+		<div class="glow glow-top"></div>
+		<div class="glow glow-bottom"></div>
 
-				<button type="button" class="close-btn" aria-label="Close" @click="close">×</button>
+		<div ref="modalEl" class="modal-content">
+			<div class="header">
+				<BrandBolt class="bolt-mark" />
+				<h2 :id="titleId" class="title">{{ tab === 'login' ? t('auth.loginTitle') : t('auth.registerTitle') }}</h2>
+				<p class="subtitle">
+					{{ tab === 'login' ? t('auth.loginSubtitle') : t('auth.registerSubtitle') }}
+				</p>
+			</div>
 
-				<div class="modal-content">
-					<div class="header">
-						<div class="bolt-mark"></div>
-						<h2 class="title">{{ tab === 'login' ? 'Welcome back' : 'Create your account' }}</h2>
-						<p class="subtitle">
-							{{
-								tab === 'login'
-									? 'Log in to keep your streak going.'
-									: 'Start learning through play - free forever.'
-							}}
+			<div class="tab-switcher">
+				<div class="tab-indicator" :class="{ 'is-register': tab === 'register' }"></div>
+				<button
+					type="button"
+					class="tab-btn"
+					:class="{ active: tab === 'login' }"
+					:aria-pressed="tab === 'login'"
+					@click="switchTab('login')"
+				>
+					{{ t('auth.logIn') }}
+				</button>
+				<button
+					type="button"
+					class="tab-btn"
+					:class="{ active: tab === 'register' }"
+					:aria-pressed="tab === 'register'"
+					@click="switchTab('register')"
+				>
+					{{ t('auth.signUp') }}
+				</button>
+			</div>
+
+			<div class="form-area">
+				<Transition :name="direction === 'forward' ? 'slide-fwd' : 'slide-back'">
+					<form v-if="tab === 'login'" key="login" class="auth-form" novalidate @submit.prevent="handleLogin">
+						<BaseAlert v-if="loginError">{{ loginError }}</BaseAlert>
+						<BaseInput
+							v-model="loginForm.email"
+							:label="t('common.email')"
+							type="email"
+							autocomplete="email"
+							required
+							:placeholder="t('auth.emailPlaceholder')"
+							:error="loginErrors.email"
+						/>
+						<BaseInput
+							v-model="loginForm.password"
+							:label="t('common.password')"
+							type="password"
+							autocomplete="current-password"
+							required
+							placeholder="••••••••"
+							:error="loginErrors.password"
+						/>
+						<a href="#" class="forgot-link" @click.prevent="showForgotNotice = true">{{ t('auth.forgotPassword') }}</a>
+						<BaseAlert v-if="showForgotNotice" variant="info" class="forgot-notice">
+							{{ t('auth.forgotNotice') }}
+						</BaseAlert>
+						<BaseButton type="submit" variant="gradient" size="lg" block class="submit-btn" :disabled="loginLoading">
+							{{ loginLoading ? t('auth.loggingIn') : t('auth.logIn') }}
+						</BaseButton>
+						<p class="switch-line">
+							{{ t('auth.noAccount') }}
+							<a href="#" @click.prevent="switchTab('register')">{{ t('auth.signUp') }}</a>
 						</p>
-					</div>
-
-					<div class="tab-switcher">
-						<div class="tab-indicator" :class="{ 'is-register': tab === 'register' }"></div>
-						<button
-							type="button"
-							class="tab-btn"
-							:class="{ active: tab === 'login' }"
-							@click="switchTab('login')"
-						>
-							Log In
-						</button>
-						<button
-							type="button"
-							class="tab-btn"
-							:class="{ active: tab === 'register' }"
-							@click="switchTab('register')"
-						>
-							Sign Up
-						</button>
-					</div>
-
-					<div class="form-area">
-						<Transition :name="direction === 'forward' ? 'slide-fwd' : 'slide-back'">
-							<form v-if="tab === 'login'" key="login" class="auth-form" @submit.prevent="handleLogin">
-								<p v-if="loginError" class="form-error">{{ loginError }}</p>
-								<label class="field">
-									<span class="field-label">Email</span>
-									<input v-model="loginForm.email" type="email" required placeholder="you@example.com" />
-								</label>
-								<label class="field">
-									<span class="field-label">Password</span>
-									<input v-model="loginForm.password" type="password" required placeholder="••••••••" />
-								</label>
-								<a href="#" class="forgot-link" @click.prevent="showForgotNotice = true">Forgot password?</a>
-								<p v-if="showForgotNotice" class="form-notice">
-									Password reset isn't available yet - hang tight, it's coming soon.
-								</p>
-								<button type="submit" class="submit-btn" :disabled="loginLoading">
-									{{ loginLoading ? 'Logging in…' : 'Log In' }}
-								</button>
-								<p class="switch-line">
-									Don't have an account?
-									<a href="#" @click.prevent="switchTab('register')">Sign Up</a>
-								</p>
-							</form>
-							<form v-else key="register" class="auth-form" @submit.prevent="handleRegister">
-								<p v-if="registerError" class="form-error">{{ registerError }}</p>
-								<label class="field">
-									<span class="field-label">Username</span>
-									<input v-model="registerForm.username" type="text" required placeholder="yourname" />
-								</label>
-								<label class="field">
-									<span class="field-label">Email</span>
-									<input v-model="registerForm.email" type="email" required placeholder="you@example.com" />
-								</label>
-								<label class="field">
-									<span class="field-label">Password</span>
-									<input v-model="registerForm.password" type="password" required placeholder="••••••••" />
-								</label>
-								<label class="field">
-									<span class="field-label">Learning language</span>
-									<select v-model="registerForm.language">
-										<option value="de">German</option>
-										<option value="es" disabled>Spanish — coming soon</option>
-										<option value="fr" disabled>French — coming soon</option>
-										<option value="ja" disabled>Japanese — coming soon</option>
-									</select>
-								</label>
-								<button type="submit" class="submit-btn" :disabled="registerLoading">
-									{{ registerLoading ? 'Creating account…' : 'Create Account' }}
-								</button>
-								<p class="switch-line">
-									Already have an account?
-									<a href="#" @click.prevent="switchTab('login')">Log In</a>
-								</p>
-							</form>
-						</Transition>
-					</div>
-				</div>
+					</form>
+					<form v-else key="register" class="auth-form" novalidate @submit.prevent="handleRegister">
+						<BaseAlert v-if="registerError">{{ registerError }}</BaseAlert>
+						<BaseInput
+							v-model="registerForm.username"
+							:label="t('common.username')"
+							type="text"
+							autocomplete="username"
+							required
+:placeholder="t('auth.usernamePlaceholder')"
+							:error="registerErrors.username"
+						/>
+						<BaseInput
+							v-model="registerForm.email"
+							:label="t('common.email')"
+							type="email"
+							autocomplete="email"
+							required
+							:placeholder="t('auth.emailPlaceholder')"
+							:error="registerErrors.email"
+						/>
+						<BaseInput
+							v-model="registerForm.password"
+							:label="t('common.password')"
+							type="password"
+							autocomplete="new-password"
+							required
+							placeholder="••••••••"
+							:hint="passwordHint()"
+							:error="registerErrors.password"
+						/>
+						<BaseSelect v-model="registerForm.language" :label="t('common.learningLanguage')" :options="languageOptions" />
+						<BaseButton type="submit" variant="gradient" size="lg" block class="submit-btn" :disabled="registerLoading">
+							{{ registerLoading ? t('auth.creatingAccount') : t('auth.createAccount') }}
+						</BaseButton>
+						<p class="legal-note">
+							{{ t('auth.legalBefore') }}
+							<RouterLink to="/terms">{{ t('auth.legalTerms') }}</RouterLink> {{ t('auth.legalAnd') }}
+							<RouterLink to="/privacy">{{ t('auth.legalPrivacy') }}</RouterLink>{{ t('auth.legalAfter') }}
+						</p>
+						<p class="switch-line">
+							{{ t('auth.haveAccount') }}
+							<a href="#" @click.prevent="switchTab('login')">{{ t('auth.logIn') }}</a>
+						</p>
+					</form>
+				</Transition>
 			</div>
 		</div>
-	</Transition>
+	</BaseModal>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { computed, nextTick, reactive, ref, useId, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { login, register } from '../../api/auth';
+import {
+	passwordHint,
+	validateEmail,
+	validateLoginPassword,
+	validateNewPassword,
+	validateUsername,
+} from '../../validation/rules';
+import BaseAlert from '../base/BaseAlert.vue';
+import BaseInput from '../base/BaseInput.vue';
+import BaseSelect from '../base/BaseSelect.vue';
+import { DEFAULT_LEARNING_LANGUAGE, learningLanguageOptions } from '../../constants/languages';
+import { t } from '../../i18n';
+import BaseButton from '../base/BaseButton.vue';
+import BaseModal from '../base/BaseModal.vue';
+import BrandBolt from '../base/BrandBolt.vue';
+
+const router = useRouter();
 
 const open = defineModel<boolean>('open', { default: false });
 const tab = defineModel<'login' | 'register'>('tab', { default: 'login' });
@@ -112,15 +146,49 @@ const tab = defineModel<'login' | 'register'>('tab', { default: 'login' });
 const direction = ref<'forward' | 'backward'>('forward');
 const showForgotNotice = ref(false);
 
-const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+const modalEl = ref<HTMLElement | null>(null);
+const titleId = useId();
+const languageOptions = computed(learningLanguageOptions);
 
 const loginForm = reactive({ email: '', password: '' });
+const loginErrors = reactive({ email: '', password: '' });
+const loginSubmitted = ref(false);
 const loginError = ref('');
 const loginLoading = ref(false);
 
-const registerForm = reactive({ username: '', email: '', password: '', language: 'de' });
+const registerForm = reactive({ username: '', email: '', password: '', language: DEFAULT_LEARNING_LANGUAGE });
+const registerErrors = reactive({ username: '', email: '', password: '' });
+const registerSubmitted = ref(false);
 const registerError = ref('');
 const registerLoading = ref(false);
+
+function validateLoginForm() {
+	loginErrors.email = validateEmail(loginForm.email);
+	loginErrors.password = validateLoginPassword(loginForm.password);
+	return !loginErrors.email && !loginErrors.password;
+}
+
+function validateRegisterForm() {
+	registerErrors.username = validateUsername(registerForm.username);
+	registerErrors.email = validateEmail(registerForm.email);
+	registerErrors.password = validateNewPassword(registerForm.password);
+	return !registerErrors.username && !registerErrors.email && !registerErrors.password;
+}
+
+// After a first submit attempt, errors update live while the user fixes them.
+watch(loginForm, () => loginSubmitted.value && validateLoginForm());
+watch(registerForm, () => registerSubmitted.value && validateRegisterForm());
+
+function focusFirstInvalidField() {
+	nextTick(() => modalEl.value?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus());
+}
+
+function resetValidation() {
+	loginSubmitted.value = false;
+	registerSubmitted.value = false;
+	Object.assign(loginErrors, { email: '', password: '' });
+	Object.assign(registerErrors, { username: '', email: '', password: '' });
+}
 
 function switchTab(next: 'login' | 'register') {
 	if (next === tab.value) return;
@@ -129,44 +197,36 @@ function switchTab(next: 'login' | 'register') {
 	loginError.value = '';
 	registerError.value = '';
 	showForgotNotice.value = false;
+	resetValidation();
 }
 
 function close() {
-	loginError.value = '';
-	registerError.value = '';
-	showForgotNotice.value = false;
 	open.value = false;
 }
 
-async function parseErrorMessage(response: Response, fallback: string) {
-	const data = await response.json().catch(() => null);
-	return data && typeof data.message === 'string' ? data.message : fallback;
-}
-
-async function login(email: string, password: string) {
-	const response = await fetch(`${apiUrl}/api/auth/login`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ email, password }),
-	});
-
-	if (!response.ok) {
-		throw new Error(await parseErrorMessage(response, 'Invalid email or password.'));
-	}
-
-	const data = await response.json();
-	localStorage.setItem('lingodash_token', data.token);
-}
+// However the dialog was closed (button, Escape, click outside, success), it opens clean next time.
+watch(open, (isOpen) => {
+	if (isOpen) return;
+	loginError.value = '';
+	registerError.value = '';
+	showForgotNotice.value = false;
+	resetValidation();
+});
 
 async function handleLogin() {
 	loginError.value = '';
+	loginSubmitted.value = true;
+	if (!validateLoginForm()) {
+		focusFirstInvalidField();
+		return;
+	}
 	loginLoading.value = true;
 	try {
-		await login(loginForm.email, loginForm.password);
+		await login(loginForm.email.trim(), loginForm.password);
 		close();
-		window.location.href = '/dashboard';
+		router.push('/dashboard');
 	} catch (err) {
-		loginError.value = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+		loginError.value = err instanceof Error ? err.message : t('common.somethingWentWrong');
 	} finally {
 		loginLoading.value = false;
 	}
@@ -174,27 +234,21 @@ async function handleLogin() {
 
 async function handleRegister() {
 	registerError.value = '';
+	registerSubmitted.value = true;
+	if (!validateRegisterForm()) {
+		focusFirstInvalidField();
+		return;
+	}
 	registerLoading.value = true;
+	const username = registerForm.username.trim();
+	const email = registerForm.email.trim();
 	try {
-		const response = await fetch(`${apiUrl}/api/auth/register`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				username: registerForm.username,
-				email: registerForm.email,
-				password: registerForm.password,
-			}),
-		});
-
-		if (!response.ok) {
-			throw new Error(await parseErrorMessage(response, 'Could not create your account.'));
-		}
-
-		await login(registerForm.email, registerForm.password);
+		await register(username, email, registerForm.password, registerForm.language);
+		await login(email, registerForm.password);
 		close();
-		window.location.href = '/dashboard';
+		router.push('/dashboard');
 	} catch (err) {
-		registerError.value = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+		registerError.value = err instanceof Error ? err.message : t('common.somethingWentWrong');
 	} finally {
 		registerLoading.value = false;
 	}
@@ -202,38 +256,6 @@ async function handleRegister() {
 </script>
 
 <style scoped>
-	.overlay {
-		position: fixed;
-		inset: 0;
-		z-index: 200;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 16px;
-		background: rgba(10, 12, 28, 0.6);
-		backdrop-filter: blur(6px);
-		-webkit-backdrop-filter: blur(6px);
-	}
-
-	.overlay-enter-active {
-		animation: overlay-in 0.22s ease;
-	}
-
-	.modal {
-		position: relative;
-		width: 100%;
-		max-width: 400px;
-		padding: 40px 36px;
-		border-radius: 28px;
-		overflow: hidden;
-		background: rgba(255, 255, 255, 0.86);
-		backdrop-filter: blur(20px);
-		-webkit-backdrop-filter: blur(20px);
-		border: 1px solid rgba(255, 255, 255, 0.5);
-		box-shadow: 0 50px 100px rgba(17, 28, 45, 0.4);
-		animation: modal-in 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-	}
-
 	.glow {
 		position: absolute;
 		width: 55%;
@@ -258,30 +280,6 @@ async function handleRegister() {
 		animation-delay: 3s;
 	}
 
-	.close-btn {
-		position: absolute;
-		top: 16px;
-		right: 16px;
-		z-index: 2;
-		width: 32px;
-		height: 32px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border: none;
-		border-radius: 50%;
-		background: rgba(17, 28, 45, 0.06);
-		color: var(--color-on-surface-variant);
-		font-size: 18px;
-		line-height: 1;
-		cursor: pointer;
-		transition: background 0.15s ease;
-	}
-
-	.close-btn:hover {
-		background: rgba(17, 28, 45, 0.12);
-	}
-
 	.modal-content {
 		position: relative;
 		z-index: 1;
@@ -293,23 +291,19 @@ async function handleRegister() {
 	}
 
 	.bolt-mark {
-		width: 30px;
-		height: 48px;
 		margin: 0 auto 16px;
-		background: linear-gradient(160deg, #fea619 0%, #ff5d8f 45%, #6063ee 100%);
-		clip-path: polygon(55% 0%, 25% 55%, 45% 55%, 35% 100%, 80% 40%, 55% 40%, 70% 0%);
 		filter: drop-shadow(0 8px 14px rgba(70, 72, 212, 0.35));
 	}
 
 	.title {
-		font-size: 24px;
+		font-size: var(--text-xl);
 		font-weight: 800;
 		color: var(--color-on-surface);
 		margin: 0 0 6px;
 	}
 
 	.subtitle {
-		font-size: 14px;
+		font-size: var(--text-md);
 		color: var(--color-on-surface-variant);
 		margin: 0;
 	}
@@ -320,7 +314,7 @@ async function handleRegister() {
 		padding: 4px;
 		margin-bottom: 24px;
 		border-radius: 13px;
-		background: rgba(118, 117, 134, 0.1);
+		background: var(--color-fill-muted);
 	}
 
 	.tab-indicator {
@@ -330,8 +324,8 @@ async function handleRegister() {
 		width: calc(50% - 4px);
 		height: calc(100% - 8px);
 		border-radius: 10px;
-		background: #ffffff;
-		box-shadow: 0 1px 3px rgba(17, 28, 45, 0.12);
+		background: var(--color-surface-raised);
+		box-shadow: var(--shadow-sm);
 		transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);
 	}
 
@@ -349,7 +343,7 @@ async function handleRegister() {
 		background: transparent;
 		font-family: var(--font-display);
 		font-weight: 700;
-		font-size: 14px;
+		font-size: var(--text-md);
 		color: var(--color-on-surface-variant);
 		cursor: pointer;
 		transition: color 0.2s ease;
@@ -372,63 +366,14 @@ async function handleRegister() {
 		gap: 14px;
 	}
 
-	.form-error {
-		margin: 0;
-		padding: 10px 14px;
-		border-radius: 10px;
-		background: rgba(209, 53, 43, 0.08);
-		color: #d1352b;
-		font-size: 13px;
-		font-weight: 600;
-		line-height: 1.4;
-	}
-
-	.form-notice {
-		margin: -6px 0 0;
-		padding: 10px 14px;
-		border-radius: 10px;
-		background: rgba(118, 117, 134, 0.1);
-		color: var(--color-on-surface-variant);
-		font-size: 12.5px;
-		font-weight: 600;
-		line-height: 1.4;
-	}
-
-	.field {
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-	}
-
-	.field-label {
-		font-size: 13px;
-		font-weight: 600;
-		color: var(--color-on-surface-variant);
-	}
-
-	.field input,
-	.field select {
-		height: 47px;
-		padding: 0 14px;
-		border-radius: 12px;
-		border: 1px solid rgba(118, 117, 134, 0.18);
-		background: rgba(249, 249, 255, 0.8);
-		font-family: var(--font-display);
-		font-size: 14px;
-		color: var(--color-on-surface);
-		transition: border-color 0.2s ease;
-	}
-
-	.field input:focus,
-	.field select:focus {
-		outline: none;
-		border-color: var(--color-primary);
+	.forgot-notice {
+		margin-top: -6px;
 	}
 
 	.forgot-link {
 		align-self: flex-end;
 		margin-top: -4px;
-		font-size: 13px;
+		font-size: var(--text-sm);
 		font-weight: 600;
 		color: var(--color-primary);
 		text-decoration: none;
@@ -439,31 +384,20 @@ async function handleRegister() {
 	}
 
 	.submit-btn {
-		height: 47px;
 		margin-top: 4px;
-		border: none;
-		border-radius: 12px;
-		background: linear-gradient(135deg, #3739b8 0%, #4648d4 55%, #6063ee 100%);
-		color: #ffffff;
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 15px;
-		cursor: pointer;
-		box-shadow: 0 10px 20px -8px rgba(53, 55, 170, 0.55), 0 20px 40px -16px rgba(53, 55, 170, 0.4);
-		transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 	}
 
-	.submit-btn:hover {
-		transform: translateY(-2px);
-		filter: brightness(1.08);
-		box-shadow: 0 14px 26px -8px rgba(53, 55, 170, 0.6), 0 26px 48px -16px rgba(53, 55, 170, 0.48);
+	.legal-note {
+		margin: 0;
+		text-align: center;
+		font-size: var(--text-xs);
+		line-height: 1.5;
+		color: var(--color-outline);
 	}
 
-	.submit-btn:disabled {
-		cursor: not-allowed;
-		opacity: 0.7;
-		transform: none;
-		filter: none;
+	.legal-note a {
+		color: var(--color-on-surface-variant);
+		font-weight: 600;
 	}
 
 	.switch-line {
@@ -503,26 +437,6 @@ async function handleRegister() {
 		opacity: 0;
 	}
 
-	@keyframes overlay-in {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-		}
-	}
-
-	@keyframes modal-in {
-		from {
-			opacity: 0;
-			transform: translateY(24px) scale(0.96);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0) scale(1);
-		}
-	}
-
 	@keyframes glow-pulse {
 		0%, 100% {
 			transform: scale(1);
@@ -535,11 +449,6 @@ async function handleRegister() {
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.overlay-enter-active,
-		.modal {
-			animation: none;
-		}
-
 		.glow {
 			animation-play-state: paused;
 		}

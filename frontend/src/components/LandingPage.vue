@@ -1,13 +1,15 @@
 <template>
-	<main class="landing">
+	<div class="landing">
 		<Navbar @open-auth="openAuth" />
-		<Hero />
-		<HowItWorks />
-		<GameModesPreview />
-		<Gamification />
+		<main id="main" tabindex="-1">
+			<Hero @open-auth="openAuth" />
+			<HowItWorks />
+			<GameModesPreview />
+			<Gamification />
+		</main>
 		<Footer />
 		<AuthModal v-model:open="authOpen" v-model:tab="authTab" />
-	</main>
+	</div>
 </template>
 
 <script setup lang="ts">
@@ -31,22 +33,6 @@ function openAuth(tab: 'login' | 'register') {
 
 <style scoped>
 	.landing {
-		--color-primary: #4648d4;
-		--color-primary-container: #6063ee;
-		--color-on-primary: #ffffff;
-		--color-secondary-container: #fea619;
-		--color-on-secondary-container: #684000;
-		--color-surface: #f9f9ff;
-		--color-on-surface: #111c2d;
-		--color-on-surface-variant: #464554;
-		--color-outline: #767586;
-
-		--font-display: "Plus Jakarta Sans", sans-serif;
-		--font-mono: "Space Grotesk", monospace;
-
-		--radius-lg: 1rem;
-		--radius-pill: 9999px;
-
 		background: var(--color-surface);
 		color: var(--color-on-surface);
 		font-family: var(--font-display);

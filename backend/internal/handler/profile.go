@@ -1,12 +1,20 @@
 package handler
 
 import (
+	"errors"
+	"io"
 	"net/http"
+	"strings"
+	"transcendence/backend/internal/avatar"
 	"transcendence/backend/internal/db"
 	"transcendence/backend/internal/middleware"
+	"transcendence/backend/internal/validate"
 
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type ProfileHandler struct {
@@ -18,6 +26,10 @@ func (h *ProfileHandler) HandleMe(c echo.Context) error {
 
 	profile, err := db.GetProfile(c.Request().Context(), h.DB, userID)
 	if err != nil {
+		// A valid token for an account that was deleted: the frontend logs out on 401.
+		if errors.Is(err, pgx.ErrNoRows) {
+			return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+		}
 		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 	}
 
@@ -33,4 +45,237 @@ func (h *ProfileHandler) HandleMatchHistory(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, matches)
+}
+
+func (h *ProfileHandler) HandleUserProfile(c echo.Context) error {
+	username := strings.TrimSpace(c.Param("username"))
+	if username == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "username is required")
+	}
+
+	profile, err := db.GetPublicProfile(c.Request().Context(), h.DB, username)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return echo.NewHTTPError(http.StatusNotFound, "user not found")
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+
+	return c.JSON(http.StatusOK, profile)
+}
+
+type deleteAccountRequest struct {
+	Password string `json:"password"`
+}
+
+// HandleDeleteAccount asks for the password again, so an open session alone cannot delete the account.
+// A wrong password answers 403, not 401, because 401 means "your session is invalid" to the frontend.
+func (h *ProfileHandler) HandleDeleteAccount(c echo.Context) error {
+	userID := middleware.UserID(c)
+
+	var req deleteAccountRequest
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
+	}
+	if req.Password == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "password is required")
+	}
+
+	hash, err := db.GetPasswordHash(c.Request().Context(), h.DB, userID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	if bcrypt.CompareHashAndPassword([]byte(hash), []byte(req.Password)) != nil {
+		return echo.NewHTTPError(http.StatusForbidden, "incorrect password")
+	}
+
+	if err := db.DeleteUser(c.Request().Context(), h.DB, userID); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	return c.NoContent(http.StatusNoContent)
+}
+
+type updateProfileRequest struct {
+	Username         *string `json:"username"`
+	Email            *string `json:"email"`
+	LearningLanguage *string `json:"learningLanguage"`
+	CurrentPassword  string  `json:"currentPassword"`
+}
+
+// HandleUpdateProfile changes username and/or email. A new email needs the current password,
+// because whoever controls the email can take over the account.
+func (h *ProfileHandler) HandleUpdateProfile(c echo.Context) error {
+	userID := middleware.UserID(c)
+	ctx := c.Request().Context()
+
+	var req updateProfileRequest
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
+	}
+	if req.Username == nil && req.Email == nil && req.LearningLanguage == nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "nothing to update")
+	}
+
+	if req.Username != nil {
+		username := strings.TrimSpace(*req.Username)
+		if msg := validate.Username(username); msg != "" {
+			return echo.NewHTTPError(http.StatusBadRequest, msg)
+		}
+		req.Username = &username
+	}
+	if req.LearningLanguage != nil && !db.SupportedLobbyLangs[*req.LearningLanguage] {
+		return echo.NewHTTPError(http.StatusBadRequest, unsupportedLanguageMsg)
+	}
+	if req.Email != nil {
+		email := strings.TrimSpace(*req.Email)
+		if msg := validate.Email(email); msg != "" {
+			return echo.NewHTTPError(http.StatusBadRequest, msg)
+		}
+		req.Email = &email
+
+		current, err := db.GetProfile(ctx, h.DB, userID)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+		}
+		if email != current.Email {
+			if err := h.checkPassword(c, userID, req.CurrentPassword); err != nil {
+				return err
+			}
+		}
+	}
+
+	profile, err := db.UpdateProfile(ctx, h.DB, userID, req.Username, req.Email, req.LearningLanguage)
+	if err != nil {
+		if msg := uniqueViolationMessage(err); msg != "" {
+			return echo.NewHTTPError(http.StatusConflict, msg)
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	return c.JSON(http.StatusOK, profile)
+}
+
+type changePasswordRequest struct {
+	CurrentPassword string `json:"currentPassword"`
+	NewPassword     string `json:"newPassword"`
+}
+
+func (h *ProfileHandler) HandleChangePassword(c echo.Context) error {
+	userID := middleware.UserID(c)
+
+	var req changePasswordRequest
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
+	}
+	if msg := validate.NewPassword(req.NewPassword); msg != "" {
+		return echo.NewHTTPError(http.StatusBadRequest, msg)
+	}
+	if err := h.checkPassword(c, userID, req.CurrentPassword); err != nil {
+		return err
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	if err := db.UpdatePasswordHash(c.Request().Context(), h.DB, userID, string(hash)); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	return c.NoContent(http.StatusNoContent)
+}
+
+// checkPassword answers 403 (not 401) on a wrong password, because 401 makes the frontend log out.
+func (h *ProfileHandler) checkPassword(c echo.Context, userID, password string) error {
+	if password == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "current password is required")
+	}
+	hash, err := db.GetPasswordHash(c.Request().Context(), h.DB, userID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	if bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) != nil {
+		return echo.NewHTTPError(http.StatusForbidden, "incorrect password")
+	}
+	return nil
+}
+
+// maxAvatarUploadBytes limits the whole upload request. The frontend sends about 30 KB.
+const maxAvatarUploadBytes = 2 << 20
+
+// HandleUploadAvatar takes a multipart form with the picture in the "avatar" field and answers
+// with the updated profile, which contains the new avatarUrl.
+func (h *ProfileHandler) HandleUploadAvatar(c echo.Context) error {
+	userID := middleware.UserID(c)
+	ctx := c.Request().Context()
+
+	c.Request().Body = http.MaxBytesReader(c.Response(), c.Request().Body, maxAvatarUploadBytes)
+	fileHeader, err := c.FormFile("avatar")
+	if err != nil {
+		var tooBig *http.MaxBytesError
+		if errors.As(err, &tooBig) {
+			return echo.NewHTTPError(http.StatusRequestEntityTooLarge, "The picture must be 2 MB or smaller.")
+		}
+		return echo.NewHTTPError(http.StatusBadRequest, "avatar file is required")
+	}
+	file, err := fileHeader.Open()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "avatar file is required")
+	}
+	defer file.Close()
+	data, err := io.ReadAll(file)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "avatar file is required")
+	}
+
+	image, contentType, err := avatar.Normalize(data)
+	if err != nil {
+		if errors.Is(err, avatar.ErrFormat) || errors.Is(err, avatar.ErrDimensions) {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	if err := db.SetAvatar(ctx, h.DB, userID, image, contentType); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	return h.respondWithProfile(c, userID)
+}
+
+func (h *ProfileHandler) HandleDeleteAvatar(c echo.Context) error {
+	userID := middleware.UserID(c)
+	if err := db.DeleteAvatar(c.Request().Context(), h.DB, userID); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	return h.respondWithProfile(c, userID)
+}
+
+func (h *ProfileHandler) respondWithProfile(c echo.Context, userID string) error {
+	profile, err := db.GetProfile(c.Request().Context(), h.DB, userID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	return c.JSON(http.StatusOK, profile)
+}
+
+// HandleAvatar serves a picture without login, so a plain <img> tag can load it. The URL contains the
+// random user id and a version (see db.avatarURL), so the picture can be cached for a long time.
+func (h *ProfileHandler) HandleAvatar(c echo.Context) error {
+	image, contentType, err := db.GetAvatar(c.Request().Context(), h.DB, c.Param("userId"))
+	if err != nil {
+		var pgErr *pgconn.PgError
+		// 22P02: the id is not a valid UUID, so there is no such picture either.
+		if errors.Is(err, pgx.ErrNoRows) || (errors.As(err, &pgErr) && pgErr.Code == "22P02") {
+			return echo.NewHTTPError(http.StatusNotFound, "avatar not found")
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	c.Response().Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+	c.Response().Header().Set("X-Content-Type-Options", "nosniff")
+	return c.Blob(http.StatusOK, contentType, image)
+}
+
+// HandleHeartbeat is called regularly by the open app, so friends can see the user as online.
+func (h *ProfileHandler) HandleHeartbeat(c echo.Context) error {
+	if err := db.TouchLastSeen(c.Request().Context(), h.DB, middleware.UserID(c)); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+	}
+	return c.NoContent(http.StatusNoContent)
 }

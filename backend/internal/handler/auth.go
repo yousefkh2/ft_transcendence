@@ -3,11 +3,13 @@ package handler
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"transcendence/backend/internal/auth"
+	"transcendence/backend/internal/db"
+	"transcendence/backend/internal/validate"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -18,9 +20,10 @@ type AuthHandler struct {
 }
 
 type registerRequest struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Username         string `json:"username"`
+	Email            string `json:"email"`
+	Password         string `json:"password"`
+	LearningLanguage string `json:"learningLanguage"`
 }
 
 func (h *AuthHandler) HandleRegister(c echo.Context) error {
@@ -29,8 +32,20 @@ func (h *AuthHandler) HandleRegister(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
 	}
 
-	if req.Username == "" || req.Email == "" || req.Password == "" {
-		return echo.NewHTTPError(http.StatusBadRequest, "username, email and password are required")
+	req.Username = strings.TrimSpace(req.Username)
+	req.Email = strings.TrimSpace(req.Email)
+	if msg := validate.FirstError(
+		validate.Username(req.Username),
+		validate.Email(req.Email),
+		validate.NewPassword(req.Password),
+	); msg != "" {
+		return echo.NewHTTPError(http.StatusBadRequest, msg)
+	}
+	if req.LearningLanguage == "" {
+		req.LearningLanguage = defaultLearningLanguage
+	}
+	if !db.SupportedLobbyLangs[req.LearningLanguage] {
+		return echo.NewHTTPError(http.StatusBadRequest, unsupportedLanguageMsg)
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
@@ -40,23 +55,15 @@ func (h *AuthHandler) HandleRegister(c echo.Context) error {
 
 	var userID string
 	err = h.DB.QueryRow(c.Request().Context(),
-		`INSERT INTO users (username, email, password_hash)
-		VALUES ($1, $2, $3)
+		`INSERT INTO users (username, email, password_hash, learning_lang)
+		VALUES ($1, $2, $3, $4)
 		RETURNING id`,
-		req.Username, req.Email, string(hash),
+		req.Username, req.Email, string(hash), req.LearningLanguage,
 	).Scan(&userID)
 
 	if err != nil {
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			switch pgErr.ConstraintName {
-			case "users_username_key":
-				return echo.NewHTTPError(http.StatusConflict, "username already taken")
-			case "users_email_key":
-				return echo.NewHTTPError(http.StatusConflict, "email already registered")
-			default:
-				return echo.NewHTTPError(http.StatusConflict, "user already exists")
-			}
+		if msg := uniqueViolationMessage(err); msg != "" {
+			return echo.NewHTTPError(http.StatusConflict, msg)
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 	}
@@ -73,6 +80,11 @@ func (h *AuthHandler) HandleLogin(c echo.Context) error {
 	var req loginRequest
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
+	}
+
+	req.Email = strings.TrimSpace(req.Email)
+	if req.Email == "" || req.Password == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "email and password are required")
 	}
 
 	var userID, passwordHash string
@@ -104,6 +116,11 @@ func (h *AuthHandler) HandleRealtimeLogin(c echo.Context) error {
 	var req loginRequest
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
+	}
+
+	req.Email = strings.TrimSpace(req.Email)
+	if req.Email == "" || req.Password == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "email and password are required")
 	}
 
 	var userID, username, passwordHash string
