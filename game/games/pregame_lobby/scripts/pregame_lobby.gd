@@ -4,27 +4,16 @@ extends Control
 @onready var game_type: Label = $create_lobby_interface/game_type
 @onready var lobby_lang: Label = $create_lobby_interface/lobby_lang
 @onready var user_name: Label = $player_data/User_name
-@onready var message: RichTextLabel = $message_interface/message
+@onready var message: RichTextLabel = $messages_terminal/message
 
+const MISSION_CONTROL_SCENE := "res://games/livingroom/mission_control.tscn"
+const ON_SITE_SCENE := "res://games/livingroom/on_site.tscn"
+const READY_GREEN := Color(0.2, 0.85, 0.25)
 
 var websocket_url = "ws://localhost:8080/ws/lobby"
-var message_to_send = "TEST TEST TEST"
-
-const REQUEST_MATCH = "REQUEST_MATCH"
-const JOIN_MATCH = "JOIN_MATCH"
-const MATCH_PLAYERS = "MATCH_PLAYERS"
-const PLAYER_LEFT = "PLAYER_LEFT"
-const PLAYER_JOINED = "PLAYER_JOINED"
-const START_MATCH = "START_MATCH"
-const MATCH_READY = "MATCH_READY"
-const NO_ROLE_ASSIGN = "NO_ROLE_ASSIGN"
-const MISSION_CONTROL_ASSIGN = "MISSION_CONTROL_ASSIGN"
-const ON_SITE_ASSIGN = "ON_SITE_ASSIGN"
-const CHECK_MATCH_READY = "CHECK_MATCH_READY"
-
-const NO_ROLE_PLAYER = 0
-const ON_SITE_PLAYER = 1
-const MISSION_CONTROL_PLAYER = 2
+var local_role := ""
+var local_ready := false
+var match_started := false
 
 @onready var _client : web_socket_client = $web_socket_client
 
@@ -97,6 +86,10 @@ func _process_received_message(raw_message):
 	match response_msg.get("type", ""):
 		"lobby.updated":
 			_update_lobby_state(response_msg)
+		"lobby.countdown":
+			message.text = "MATCH STARTING: %d" % int(response_msg.get("countdown", 0))
+		"lobby.started":
+			_load_role_scene()
 		"player.disconnected":
 			var disconnect_message = str(response_msg.get("message", "A player disconnected from the lobby"))
 			print("Lobby message: %s" % disconnect_message)
@@ -108,21 +101,6 @@ func _process_received_message(raw_message):
 		_:
 			print("Unhandled server message: %s" % response_msg.get("type", ""))
 
-func _enter_match_lobby(match_with_players):
-	print("enter match lobby")
-	print(match_with_players)
-	
-	_build_player_lobby_list(match_with_players.user)
-	
-	var match_id = match_with_players.matchInfo.matchId
-	var check_match_ready = {
-		"op": CHECK_MATCH_READY,
-		"matchID": match_id
-	}
-	
-	_send_message(check_match_ready)
-	
-	
 func _update_lobby_state(response_msg: Dictionary) -> void:
 	var players = response_msg.get("players", [])
 	if players is Array:
@@ -143,15 +121,23 @@ func _build_player_lobby_list(match_players):
 	for player in match_players:
 		var player_label := Label.new()
 		var role := ""
+		var is_ready := false
 		if player is Dictionary:
 			player_label.text = str(player.get("username", player.get("userId", "Unknown player")))
 			role = str(player.get("role", "")).strip_edges().to_lower()
+			is_ready = bool(player.get("ready", false))
+			if player_label.text == GameState.player_name:
+				local_role = role
+				local_ready = is_ready
+				$create_lobby_interface/start.text = tr("_PRE_UNREADY_") if local_ready else tr("_PRE_READY_")
 		else:
 			player_label.text = str(player)
 		player_label.custom_minimum_size = Vector2(260.0, 60.0)
 		player_label.add_theme_font_override("font", preload("res://game_files/fonts/GrapeSoda.ttf"))
 		player_label.add_theme_font_size_override("font_size", 48)
 		player_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		if is_ready:
+			player_label.add_theme_color_override("font_color", READY_GREEN)
 		
 		match role:
 			"on_site":
@@ -182,6 +168,39 @@ func _on_websocket_client_connected_to_server():
 
 func _on_lobby_button_pressed() -> void:
 	get_tree().change_scene_to_file("res://games/lobby/lobby.tscn")
+
+
+func _on_ready_button_pressed() -> void:
+	if _client.get_socket().get_ready_state() != WebSocketPeer.STATE_OPEN:
+		message.text = "Lobby connection is not ready"
+		return
+	if local_role == "":
+		message.text = "Select a role before readying up"
+		return
+
+	local_ready = not local_ready
+	$create_lobby_interface/start.text = tr("_PRE_UNREADY_") if local_ready else tr("_PRE_READY_")
+	message.text = "READY - waiting for the other player" if local_ready else "NOT READY"
+	_send_message({
+		"type": "lobby.ready",
+		"roomCode": GameState.lobby_code,
+		"token": GameState.auth_token,
+		"ready": local_ready,
+	})
+
+
+func _load_role_scene() -> void:
+	if match_started:
+		return
+	match_started = true
+	match local_role:
+		"mission_control":
+			get_tree().change_scene_to_file(MISSION_CONTROL_SCENE)
+		"on_site":
+			get_tree().change_scene_to_file(ON_SITE_SCENE)
+		_:
+			match_started = false
+			message.text = "Select a role before starting"
  
 
 func _process(delta: float) -> void:
@@ -227,3 +246,5 @@ func _select_role(role: String) -> void:
 		"role": role,
 		"token": GameState.auth_token,
 	})
+	local_ready = false
+	$create_lobby_interface/start.text = tr("_PRE_READY_")
