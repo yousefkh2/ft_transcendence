@@ -4,6 +4,7 @@ extends Control
 @onready var lobby_interface: Panel = $lobby_interface
 @onready var http_request: HTTPRequest = $HTTPRequest
 @onready var lobby_code_input: LineEdit = $lobby_interface/LineEdit
+@onready var message_interface: Panel = $message_interface
 @onready var message: RichTextLabel = $message_interface/message
 @onready var user_name: Label = $Background/player_data/User_name
 
@@ -14,6 +15,7 @@ var dev_game_select = "res://games/dev/dev_game_select.tscn"
 func _ready():
 	create_lobby_interface.visible = false
 	lobby_code_input.text_changed.connect(_on_lobby_code_text_changed)
+	call_deferred("_show_pending_lobby_message")
 
 	http_request.login_success.connect(_on_login_success)
 	http_request.login_failed.connect(_on_login_failed)
@@ -24,7 +26,14 @@ func _ready():
 
 	http_request.login()
 	
-	
+
+func _show_pending_lobby_message() -> void:
+	if GameState.lobby_message == "":
+		return
+	message_interface.visible = true
+	message.visible = true
+	message.text = GameState.lobby_message
+	GameState.lobby_message = ""
 
 func _on_login_success() -> void:
 	print("Logged in successfully.")

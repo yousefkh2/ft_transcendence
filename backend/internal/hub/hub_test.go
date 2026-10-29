@@ -267,6 +267,37 @@ func TestRoomJoin_RoleFreedAfterDisconnect(t *testing.T) {
 	}
 }
 
+func TestRoomLeave_NotifiesRemainingPlayer(t *testing.T) {
+	roles := newFakeRoleResolver()
+	alice := uniqueUserID(t, "alice")
+	bob := uniqueUserID(t, "bob")
+	roles.assign("ABCD", alice, "mission_control")
+	roles.assign("ABCD", bob, "on_site")
+
+	server := newTestServer(t, roles)
+	aliceConn := dial(t, server)
+	bobConn := dial(t, server)
+	joinRoom(t, aliceConn, "ABCD", alice)
+	joinRoom(t, bobConn, "ABCD", bob)
+
+	if err := aliceConn.Close(websocket.StatusNormalClosure, ""); err != nil {
+		t.Fatalf("close alice connection failed: %v", err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var response model.ServerMessage
+	if err := wsjson.Read(ctx, bobConn, &response); err != nil {
+		t.Fatalf("read disconnect notification failed: %v", err)
+	}
+	if response.Type != "player.disconnected" {
+		t.Fatalf("expected player.disconnected, got %s", response.Type)
+	}
+	if response.Message != "A player left the game" {
+		t.Fatalf("expected leave message, got %q", response.Message)
+	}
+}
+
 func TestRoomJoin_RoomDeletedAfterLastPlayerLeaves(t *testing.T) {
 	roles := newFakeRoleResolver()
 	alice := uniqueUserID(t, "alice")

@@ -36,7 +36,7 @@ func _get_active_language_code() -> String:
 # Fill these in with real credentials (or pass them in from elsewhere)
 var username: String = "daniel"
 var password: String = "secret123"
-var email: String = "test@test.com"
+var email: String = "hallo@hallo.com"
 
 func login() -> void:
 	request_completed.connect(_on_login_completed, CONNECT_ONE_SHOT)

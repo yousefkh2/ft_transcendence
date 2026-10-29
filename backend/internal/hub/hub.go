@@ -394,12 +394,9 @@ func (h *Hub) leaveLobby(code, userID, watcherID string) {
 	if code == "" || userID == "" {
 		return
 	}
-	if err := db.RemoveDisconnectedParticipant(context.Background(), h.db, code, userID); err != nil {
-		log.Printf("failed to remove disconnected lobby participant: %v", err)
-		return
-	}
 
 	h.mu.Lock()
+	matchStarted := h.lobbyStarting[code]
 	h.removeLobbyWatcherLocked(code, watcherID)
 	delete(h.lobbyReady[code], userID)
 	if len(h.lobbyReady[code]) == 0 {
@@ -411,6 +408,13 @@ func (h *Hub) leaveLobby(code, userID, watcherID string) {
 		connections = append(connections, watcher.conn)
 	}
 	h.mu.Unlock()
+
+	if !matchStarted {
+		if err := db.RemoveDisconnectedParticipant(context.Background(), h.db, code, userID); err != nil {
+			log.Printf("failed to remove disconnected lobby participant: %v", err)
+			return
+		}
+	}
 
 	message := model.ServerMessage{
 		Type:    "player.disconnected",
@@ -782,15 +786,15 @@ func (h *Hub) leaveRoom(roomCode string, role string, playerID string) {
 	}
 
 	h.mu.Lock()
-	defer h.mu.Unlock()
-
 	room, exists := h.rooms[roomCode]
 	if !exists {
+		h.mu.Unlock()
 		return
 	}
 
 	player, exists := room.players[role]
 	if !exists || player.id != playerID {
+		h.mu.Unlock()
 		return
 	}
 
@@ -798,11 +802,28 @@ func (h *Hub) leaveRoom(roomCode string, role string, playerID string) {
 
 	if len(room.players) == 0 {
 		delete(h.rooms, roomCode)
+		h.mu.Unlock()
 		log.Printf("room deleted after final player left: %s", roomCode)
 		return
 	}
 
+	remainingPlayers := make([]*Player, 0, len(room.players))
+	for _, remainingPlayer := range room.players {
+		remainingPlayers = append(remainingPlayers, remainingPlayer)
+	}
+	h.mu.Unlock()
+
 	log.Printf("player %s left room %s as %s", playerID, roomCode, role)
+	disconnectMessage := model.ServerMessage{
+		Type:     "player.disconnected",
+		RoomCode: roomCode,
+		Message:  "A player left the game",
+	}
+	for _, remainingPlayer := range remainingPlayers {
+		if err := remainingPlayer.send(context.Background(), disconnectMessage); err != nil {
+			log.Printf("game disconnect notification failed for player %s: %v", remainingPlayer.id, err)
+		}
+	}
 }
 
 func (p *Player) send(ctx context.Context, message model.ServerMessage) error {

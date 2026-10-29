@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://b3gvrq4vjw3rn" path="res://games/livingroom/assets/mission_control_assets/mission_control_background.png" id="1_vytyf"]
 [ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="2_rvbt4"]
+[ext_resource type="Script" path="res://game_files/livingroom_game.gd" id="3_game"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_vytyf"]
 texture = ExtResource("1_vytyf")
@@ -42,6 +43,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("3_game")
 
 [node name="Background" type="Panel" parent="." unique_id=1866047462]
 modulate = Color(0.871141, 0.8711411, 0.8711411, 1)
@@ -90,6 +92,32 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_fq3g8")
 theme_override_styles/hover = SubResource("StyleBoxFlat_m01nn")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_qrf2b")
 text = "Check"
+
+[node name="TimerLabel" type="Label" parent="." unique_id=1874228517]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 40.0
+offset_right = 180.0
+offset_bottom = 140.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_rvbt4")
+theme_override_font_sizes/font_size = 72
+text = "15"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LeaveButton" type="Button" parent="." unique_id=1874228518]
+layout_mode = 0
+offset_left = 1640.0
+offset_top = 40.0
+offset_right = 1840.0
+offset_bottom = 110.0
+theme_override_fonts/font = ExtResource("2_rvbt4")
+theme_override_font_sizes/font_size = 40
+text = "Leave"
+
+[node name="GameTimer" type="Timer" parent="." unique_id=1874228519]
+wait_time = 1.0
 
 [node name="first_instruction" type="Label" parent="." unique_id=1015388816]
 layout_mode = 1
@@ -188,3 +216,4 @@ vertical_alignment = 1
 uppercase = true
 
 [connection signal="pressed" from="check_button" to="check_button" method="_on_pressed"]
+[connection signal="pressed" from="LeaveButton" to="." method="_on_leave_button_pressed"]
