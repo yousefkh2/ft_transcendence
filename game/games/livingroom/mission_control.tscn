@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://b3gvrq4vjw3rn" path="res://games/livingroom/assets/mission_control_assets/mission_control_background.png" id="1_vytyf"]
 [ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="2_rvbt4"]
-[ext_resource type="Script" path="res://game_files/livingroom_game.gd" id="3_game"]
+[ext_resource type="Script" uid="uid://bvwvtb33rgkdp" path="res://game_files/livingroom_game.gd" id="3_game"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_vytyf"]
 texture = ExtResource("1_vytyf")
@@ -35,6 +35,25 @@ shadow_size = 5
 shadow_offset = Vector2(0, 3.41)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_qrf2b"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a01gq"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d3fr7"]
+bg_color = Color(0.9079417, 0.9079417, 0.90794164, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ns8xt"]
 
 [node name="MissionControllRefac" type="Control" unique_id=1149291135]
 layout_mode = 3
@@ -108,16 +127,20 @@ vertical_alignment = 1
 
 [node name="LeaveButton" type="Button" parent="." unique_id=1874228518]
 layout_mode = 0
-offset_left = 1640.0
-offset_top = 40.0
-offset_right = 1840.0
-offset_bottom = 110.0
+offset_left = 52.0
+offset_top = 964.0
+offset_right = 252.0
+offset_bottom = 1034.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("2_rvbt4")
 theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_a01gq")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_a01gq")
+theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
 text = "Leave"
 
 [node name="GameTimer" type="Timer" parent="." unique_id=1874228519]
-wait_time = 1.0
 
 [node name="first_instruction" type="Label" parent="." unique_id=1015388816]
 layout_mode = 1
