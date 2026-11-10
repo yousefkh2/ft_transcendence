@@ -143,13 +143,12 @@ script = ExtResource("10_drag")
 layout_mode = 0
 offset_left = 80.0
 offset_top = 40.0
-offset_right = 180.0
+offset_right = 280.0
 offset_bottom = 140.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("8_font")
 theme_override_font_sizes/font_size = 72
 text = "15"
-horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="LeaveButton" type="Button" parent="." unique_id=281759185]

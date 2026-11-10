@@ -6,6 +6,9 @@ class_name DragDropCell extends Button
 ## the cursor shows a see-through "shadow" of the piece where it would land;
 ## if that slot is occupied, its current piece fades out to show the swap.
 
+## Emitted on the slot that received a drop, after the two icons swapped.
+signal swapped
+
 const DRAG_ALPHA := 0.0
 const GHOST_ALPHA := 0.45
 const ICON_PADDING := 8.0
@@ -54,6 +57,7 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 	var temp: Texture2D = icon
 	icon = source.icon
 	source.icon = temp
+	swapped.emit()
 
 func _process(_delta: float) -> void:
 	# _can_drop_data only fires while hovering, so clear the highlight once

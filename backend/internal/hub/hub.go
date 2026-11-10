@@ -163,6 +163,8 @@ func (h *Hub) handleWebSocket(c echo.Context, lobbyOnly bool) error {
 			h.handleObjectMoved(ctx, player, message, joinedRoom, joinedRole)
 		case "voice.transcript":
 			h.handleVoiceTranscript(ctx, player, message, joinedRoom, joinedRole)
+		case "game.layout", "game.layout_request", "game.check_result":
+			h.handleGameRelay(ctx, player, message, joinedRoom, joinedRole)
 		case "webrtc.offer", "webrtc.answer", "webrtc.ice_candidate":
 			h.handleWebRTCSignal(ctx, player, message, joinedRoom, joinedRole)
 		default:
@@ -777,6 +779,58 @@ func (h *Hub) handleWebRTCSignal(ctx context.Context, player *Player, message mo
 		FromRole:  joinedRole,
 	}); err != nil {
 		log.Printf("webrtc singal realy failed for player %s: %v", target.id, err)
+	}
+}
+
+// gameRelaySenders lists which role may send each relayed game message.
+// The game client builds the puzzle and checks the answer; the server only
+// forwards the payload to the other player in the room.
+var gameRelaySenders = map[string]string{
+	"game.layout":         db.RoleOnSite,         // on_site's current furniture layout
+	"game.layout_request": db.RoleMissionControl, // ask on_site to (re)send its layout
+	"game.check_result":   db.RoleMissionControl, // result of mission control's check
+}
+
+func (h *Hub) handleGameRelay(ctx context.Context, player *Player, message model.ClientMessage, joinedRoom, joinedRole string) {
+	if joinedRoom == "" {
+		_ = player.send(ctx, model.ServerMessage{
+			Type:    "error",
+			Message: "join a room before sending game events",
+		})
+		return
+	}
+
+	if gameRelaySenders[message.Type] != joinedRole {
+		_ = player.send(ctx, model.ServerMessage{
+			Type:    "error",
+			Message: message.Type + " can only be sent by " + gameRelaySenders[message.Type],
+		})
+		return
+	}
+
+	targetRole := db.RoleMissionControl
+	if joinedRole == db.RoleMissionControl {
+		targetRole = db.RoleOnSite
+	}
+
+	h.mu.Lock()
+	var target *Player
+	if room := h.rooms[joinedRoom]; room != nil {
+		target = room.players[targetRole]
+	}
+	h.mu.Unlock()
+
+	if target == nil {
+		return
+	}
+
+	if err := target.send(ctx, model.ServerMessage{
+		Type:     message.Type,
+		RoomCode: joinedRoom,
+		FromRole: joinedRole,
+		Payload:  message.Payload,
+	}); err != nil {
+		log.Printf("game relay failed for player %s: %v", target.id, err)
 	}
 }
 

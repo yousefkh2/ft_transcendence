@@ -329,6 +329,59 @@ func TestRoomJoin_RoomDeletedAfterLastPlayerLeaves(t *testing.T) {
 	}
 }
 
+func TestGameRelay_ForwardsPayloadToOtherRole(t *testing.T) {
+	roles := newFakeRoleResolver()
+	alice := uniqueUserID(t, "alice")
+	bob := uniqueUserID(t, "bob")
+	roles.assign("RELAY", alice, "mission_control")
+	roles.assign("RELAY", bob, "on_site")
+
+	server := newTestServer(t, roles)
+	aliceConn := dial(t, server)
+	bobConn := dial(t, server)
+	joinRoom(t, aliceConn, "RELAY", alice)
+	joinRoom(t, bobConn, "RELAY", bob)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// on_site -> mission_control
+	layout := []byte(`{"layout":["","lamp","","plant","couch","","table",""]}`)
+	if err := wsjson.Write(ctx, bobConn, model.ClientMessage{Type: "game.layout", Payload: layout}); err != nil {
+		t.Fatalf("write game.layout failed: %v", err)
+	}
+	var got model.ServerMessage
+	if err := wsjson.Read(ctx, aliceConn, &got); err != nil {
+		t.Fatalf("read relayed layout failed: %v", err)
+	}
+	if got.Type != "game.layout" || got.FromRole != "on_site" || string(got.Payload) != string(layout) {
+		t.Fatalf("unexpected relay: type=%s from=%s payload=%s", got.Type, got.FromRole, got.Payload)
+	}
+
+	// mission_control -> on_site
+	result := []byte(`{"solved":false,"correct":2}`)
+	if err := wsjson.Write(ctx, aliceConn, model.ClientMessage{Type: "game.check_result", Payload: result}); err != nil {
+		t.Fatalf("write game.check_result failed: %v", err)
+	}
+	if err := wsjson.Read(ctx, bobConn, &got); err != nil {
+		t.Fatalf("read relayed check result failed: %v", err)
+	}
+	if got.Type != "game.check_result" || got.FromRole != "mission_control" || string(got.Payload) != string(result) {
+		t.Fatalf("unexpected relay: type=%s from=%s payload=%s", got.Type, got.FromRole, got.Payload)
+	}
+
+	// mission_control may not send a layout
+	if err := wsjson.Write(ctx, aliceConn, model.ClientMessage{Type: "game.layout", Payload: layout}); err != nil {
+		t.Fatalf("write game.layout failed: %v", err)
+	}
+	if err := wsjson.Read(ctx, aliceConn, &got); err != nil {
+		t.Fatalf("read error response failed: %v", err)
+	}
+	if got.Type != "error" {
+		t.Fatalf("expected error for wrong sender, got %s", got.Type)
+	}
+}
+
 func TestMain(m *testing.M) {
 	os.Setenv("JWT_SECRET", "test_secret_for_hub_tests")
 	os.Exit(m.Run())
