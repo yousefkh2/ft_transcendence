@@ -11,7 +11,9 @@ var player_pass: String = ""
 var player_email: String = ""
 var game_lang: String = ""
 var selected_locale: String = "ENGLISH"
+var lobby_locale: String = "en"
 var player_role: int = 0
+var lobby_message: String = ""
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

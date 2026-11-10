@@ -23,6 +23,11 @@ type RealtimeLobbyHandler struct {
 
 type createLobbyRequest struct {
 	GameMode string `json:"gameMode"`
+	Lang     string `json:"lang"`
+}
+
+type joinLobbyRequest struct {
+	Lang string `json:"lang"`
 }
 
 const defaultGameMode = "apartment_setup"
@@ -39,8 +44,11 @@ func (h *LobbyHandler) HandleCreateLobby(c echo.Context) error {
 		gameMode = defaultGameMode
 	}
 
-	lobby, err := db.CreateLobby(c.Request().Context(), h.DB, userID, gameMode)
+	lobby, err := db.CreateLobby(c.Request().Context(), h.DB, userID, gameMode, req.Lang)
 	if err != nil {
+		if errors.Is(err, db.ErrUnsupportedLang) {
+			return echo.NewHTTPError(http.StatusBadRequest, "unsupported language")
+		}
 		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 	}
 
@@ -59,8 +67,12 @@ func (h *LobbyHandler) HandleListLobbies(c echo.Context) error {
 func (h *LobbyHandler) HandleJoinLobby(c echo.Context) error {
 	userID := middleware.UserID(c)
 	code := c.Param("code")
+	var req joinLobbyRequest
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
+	}
 
-	lobby, err := db.JoinLobby(c.Request().Context(), h.DB, code, userID)
+	lobby, err := db.JoinLobby(c.Request().Context(), h.DB, code, userID, req.Lang)
 	if err != nil {
 		switch {
 		case errors.Is(err, db.ErrLobbyNotFound):
@@ -71,6 +83,10 @@ func (h *LobbyHandler) HandleJoinLobby(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusConflict, "lobby is full")
 		case errors.Is(err, db.ErrAlreadyJoined):
 			return echo.NewHTTPError(http.StatusConflict, "already joined this lobby")
+		case errors.Is(err, db.ErrLobbyLanguageMismatch):
+			return echo.NewHTTPError(http.StatusConflict, "lobby language does not match your current language")
+		case errors.Is(err, db.ErrUnsupportedLang):
+			return echo.NewHTTPError(http.StatusBadRequest, "unsupported language")
 		default:
 			return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 		}
@@ -87,8 +103,11 @@ func (h *RealtimeLobbyHandler) HandleCreateLobby(c echo.Context) error {
 	if req.GameMode == "" {
 		req.GameMode = defaultGameMode
 	}
-	lobby, err := db.CreateLobby(c.Request().Context(), h.DB, userID, req.GameMode)
+	lobby, err := db.CreateLobby(c.Request().Context(), h.DB, userID, req.GameMode, req.Lang)
 	if err != nil {
+		if errors.Is(err, db.ErrUnsupportedLang) {
+			return echo.NewHTTPError(http.StatusBadRequest, "unsupported language")
+		}
 		return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 	}
 	return c.JSON(http.StatusCreated, lobby)
@@ -96,7 +115,11 @@ func (h *RealtimeLobbyHandler) HandleCreateLobby(c echo.Context) error {
 
 func (h *RealtimeLobbyHandler) HandleJoinLobby(c echo.Context) error {
 	userID := middleware.UserID(c)
-	lobby, err := db.JoinLobby(c.Request().Context(), h.DB, c.Param("code"), userID)
+	var req joinLobbyRequest
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid json")
+	}
+	lobby, err := db.JoinLobby(c.Request().Context(), h.DB, c.Param("code"), userID, req.Lang)
 	if err != nil {
 		switch {
 		case errors.Is(err, db.ErrLobbyNotFound):
@@ -107,6 +130,10 @@ func (h *RealtimeLobbyHandler) HandleJoinLobby(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusConflict, "lobby is full")
 		case errors.Is(err, db.ErrAlreadyJoined):
 			return echo.NewHTTPError(http.StatusConflict, "already joined this lobby")
+		case errors.Is(err, db.ErrLobbyLanguageMismatch):
+			return echo.NewHTTPError(http.StatusConflict, "lobby language does not match your current language")
+		case errors.Is(err, db.ErrUnsupportedLang):
+			return echo.NewHTTPError(http.StatusBadRequest, "unsupported language")
 		default:
 			return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
 		}

@@ -3,12 +3,15 @@ _LIVINGROOM_TEXT1_,SOFA LEFT FROM PLANT,EL SOFÁ ESTÁ A LA IZQUIERDA DE LA PLAN
 _LIVINGROOM_TEXT2_,PLANT IS THE THIRD SPOT,LA PLANTA ESTÁ EN EL TERCER LUGAR,ROŚLINA JEST NA TRZECIM MIEJSCU,BİTKİ ÜÇÜNCÜ SIRADADIR,DIE PFLANZE IST AN DRITTER STELLE
 _LIVINGROOM_TEXT3_,LAMP IS THE FIRST,LA LÁMPARA ES LA PRIMERA,LAMPA JEST PIERWSZA,LAMPA BİRİNCİDİR,DIE LAMPE IST AN ERSTER STELLE
 _LIVINGROOM_TEXT4_,TABLE IS THE LAST,LA MESA ES LA ÚLTIMA,STÓŁ JEST OSTATNI,MASA SONUNCUDUR,DER TISCH IST AN LETZTER STELLE
+_LIVINGROOM_INSTRUCTIONS_,YOUR INSTRUCTIONS,TUS INSTRUCCIONES,TWOJE INSTRUKCJE,TALİMATLARIN,DEINE ANWEISUNGEN
 ,,,,,
 _LOBBY_CREATE_LOBBY_,Create lobby,Crear sala,Utwórz lobby,Lobi oluştur,Lobby erstellen
 _LOBBY_JOIN_,Join,Unirse,Dołącz,Katıl,Beitreten
 _LOBBY_LOGIN_FAILED_,Login Failed,Error de inicio de sesión,Logowanie nie powiodło się,Giriş başarısız,Anmeldung fehlgeschlagen
 _LOBBY_PLEASE_ENTER_CODE_,Please enter a lobby code,Introduce un código de sala,Wprowadź kod lobby,Lütfen bir lobi kodu girin,Bitte gib einen Lobby Code ein
 _LOBBY_NOT_FOUND_,Lobby not found,Sala no encontrada,Nie znaleziono lobby,Lobi bulunamadı,Lobby nicht gefunden
+_LOBBY_ALREADY_JOINED_,You already joined this lobby,Ya te has unido a esta sala,Dołączyłeś już do tego lobby,Bu lobiye zaten katıldın,Du bist dieser Lobby bereits beigetreten
+_LOBBY_LANGUAGE_MISMATCH_,The lobby language must match your current language,El idioma de la sala debe coincidir con tu idioma actual,Język lobby musi być taki sam jak bieżący język,Lobi dili mevcut dilinizle aynı olmalıdır,Die Lobby-Sprache muss deiner aktuellen Sprache entsprechen
 ,,,,,
 _PROFILE_NAME_LOADING_,Name Loading...,Cargando nombre...,Ładowanie nazwy...,İsim yükleniyor...,Name wird geladen...
 _PROFILE_RANK_LOADING_,Rank Loading...,Cargando rango...,Ładowanie rangi...,Rütbe yükleniyor...,Rang wird geladen...
@@ -21,3 +24,37 @@ _PRE_SEL_MIS_CON_,Selected mission Control,Mission Control seleccionado,Wybrano 
 _PRE_SEL_ON_SITE_,Selected on site,On Site seleccionado,Wybrano On Site,On Site seçildi,On Site ausgewählt
 _PRE_SEL_PLEASE_,Please select a Role,Selecciona un rol,Wybierz rol,Lütfen bir rol seçin,Bitte wähle eine Rolle aus
 _PRE_ERR_ROLE_TAKEN_,This role is already taken by another player,Este rol ya está ocupado por otro jugador,Ta rola jest już zajęta przez innego gracza,Bu rol zaten başka bir oyuncu tarafından alındı,Diese Rolle wird bereits von einem anderen Spieler verwendet
+_PRE_READY_,Ready,Listo,Gotowy,Hazır,Bereit
+_PRE_UNREADY_,Unready,No listo,Niegotowy,Hazır değil,Nicht bereit
+,,,,,
+_GAME_TIMES_UP_,TIME'S UP!,¡SE ACABÓ EL TIEMPO!,KONIEC CZASU!,SÜRE DOLDU!,ZEIT ABGELAUFEN!
+_GAME_TIMES_UP_TEXT_,The room was not finished in time.,La sala no se terminó a tiempo.,Pokój nie został urządzony na czas.,Oda zamanında tamamlanamadı.,Das Zimmer wurde nicht rechtzeitig fertig.
+_GAME_BACK_TO_LOBBY_,Back to lobby,Volver a la sala,Wróć do lobby,Lobiye dön,Zurück zur Lobby
+,,,,,
+_LR_ITEM_LAMP_,THE LAMP,LA LÁMPARA,LAMPA,LAMBA,DIE LAMPE
+_LR_ITEM_LAMP_SIDE_,THE LAMP,DE LA LÁMPARA,LAMPY,LAMBANIN,DER LAMPE
+_LR_ITEM_LAMP_VERT_,THE LAMP,DE LA LÁMPARA,LAMPĄ,LAMBANIN,DER LAMPE
+_LR_ITEM_PLANT_,THE PLANT,LA PLANTA,ROŚLINA,BİTKİ,DIE PFLANZE
+_LR_ITEM_PLANT_SIDE_,THE PLANT,DE LA PLANTA,ROŚLINY,BİTKİNİN,DER PFLANZE
+_LR_ITEM_PLANT_VERT_,THE PLANT,DE LA PLANTA,ROŚLINĄ,BİTKİNİN,DER PFLANZE
+_LR_ITEM_COUCH_,THE SOFA,EL SOFÁ,SOFA,KANEPE,DAS SOFA
+_LR_ITEM_COUCH_SIDE_,THE SOFA,DEL SOFÁ,SOFY,KANEPENİN,DEM SOFA
+_LR_ITEM_COUCH_VERT_,THE SOFA,DEL SOFÁ,SOFĄ,KANEPENİN,DEM SOFA
+_LR_ITEM_TABLE_,THE TABLE,LA MESA,STÓŁ,MASA,DER TISCH
+_LR_ITEM_TABLE_SIDE_,THE TABLE,DE LA MESA,STOŁU,MASANIN,DEM TISCH
+_LR_ITEM_TABLE_VERT_,THE TABLE,DE LA MESA,STOŁEM,MASANIN,DEM TISCH
+_LR_CLUE_TOP_ROW_,"{a} IS IN THE TOP ROW, SPOT {n}","{a} ESTÁ EN LA FILA DE ARRIBA, LUGAR {n}","{a} STOI W GÓRNYM RZĘDZIE, MIEJSCE {n}","{a} ÜST SIRADA, {n}. YERDEDİR","{a} STEHT IN DER OBEREN REIHE, PLATZ {n}"
+_LR_CLUE_BOTTOM_ROW_,"{a} IS IN THE BOTTOM ROW, SPOT {n}","{a} ESTÁ EN LA FILA DE ABAJO, LUGAR {n}","{a} STOI W DOLNYM RZĘDZIE, MIEJSCE {n}","{a} ALT SIRADA, {n}. YERDEDİR","{a} STEHT IN DER UNTEREN REIHE, PLATZ {n}"
+_LR_CLUE_LEFT_,{a} IS DIRECTLY LEFT OF {b},{a} ESTÁ JUSTO A LA IZQUIERDA {b},{a} STOI TUŻ NA LEWO OD {b},{a} {b} HEMEN SOLUNDADIR,{a} STEHT DIREKT LINKS NEBEN {b}
+_LR_CLUE_RIGHT_,{a} IS DIRECTLY RIGHT OF {b},{a} ESTÁ JUSTO A LA DERECHA {b},{a} STOI TUŻ NA PRAWO OD {b},{a} {b} HEMEN SAĞINDADIR,{a} STEHT DIREKT RECHTS NEBEN {b}
+_LR_CLUE_ABOVE_,{a} IS DIRECTLY ABOVE {b},{a} ESTÁ JUSTO ENCIMA {b},{a} STOI TUŻ NAD {b},{a} {b} HEMEN ÜSTÜNDEDİR,{a} STEHT DIREKT ÜBER {b}
+_LR_CLUE_BELOW_,{a} IS DIRECTLY BELOW {b},{a} ESTÁ JUSTO DEBAJO {b},{a} STOI TUŻ POD {b},{a} {b} HEMEN ALTINDADIR,{a} STEHT DIREKT UNTER {b}
+,,,,,
+_GAME_ROOM_DONE_,ROOM COMPLETE!,¡HABITACIÓN LISTA!,POKÓJ GOTOWY!,ODA TAMAM!,ZIMMER FERTIG!
+_GAME_ROOM_DONE_TEXT_,Every piece is in the right place.,Todos los muebles están en su sitio.,Wszystkie meble są na swoim miejscu.,Tüm eşyalar doğru yerde.,Alle Möbel stehen am richtigen Platz.
+_GAME_CHECK_WRONG_,{n} of {total} in the right place,{n} de {total} en su sitio,{n} z {total} na swoim miejscu,{total} eşyadan {n} tanesi doğru yerde,{n} von {total} am richtigen Platz
+_GAME_CHECK_WAITING_,Waiting for your partner's room...,Esperando la habitación de tu compañero...,Czekam na pokój partnera...,Partnerinin odası bekleniyor...,Warte auf das Zimmer deines Partners...
+_GAME_CHECK_WRONG_TITLE_,THE ROOM IS WRONG!,¡LA HABITACIÓN NO ESTÁ BIEN!,POKÓJ JEST ŹLE URZĄDZONY!,ODA YANLIŞ DÜZENLENMİŞ!,DAS ZIMMER STIMMT NICHT!
+_GAME_ATTEMPTS_LEFT_,Attempts left: {left},Intentos restantes: {left},Pozostałe próby: {left},Kalan deneme: {left},Verbleibende Versuche: {left}
+_GAME_NO_ATTEMPTS_,GAME OVER!,¡FIN DEL JUEGO!,KONIEC GRY!,OYUN BİTTİ!,SPIEL VORBEI!
+_GAME_NO_ATTEMPTS_TEXT_,You used all {max} attempts.,Habéis usado los {max} intentos.,Wykorzystaliście wszystkie {max} prób.,{max} denemenin hepsini kullandınız.,Ihr habt alle {max} Versuche verbraucht.

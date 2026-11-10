@@ -267,6 +267,37 @@ func TestRoomJoin_RoleFreedAfterDisconnect(t *testing.T) {
 	}
 }
 
+func TestRoomLeave_NotifiesRemainingPlayer(t *testing.T) {
+	roles := newFakeRoleResolver()
+	alice := uniqueUserID(t, "alice")
+	bob := uniqueUserID(t, "bob")
+	roles.assign("ABCD", alice, "mission_control")
+	roles.assign("ABCD", bob, "on_site")
+
+	server := newTestServer(t, roles)
+	aliceConn := dial(t, server)
+	bobConn := dial(t, server)
+	joinRoom(t, aliceConn, "ABCD", alice)
+	joinRoom(t, bobConn, "ABCD", bob)
+
+	if err := aliceConn.Close(websocket.StatusNormalClosure, ""); err != nil {
+		t.Fatalf("close alice connection failed: %v", err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var response model.ServerMessage
+	if err := wsjson.Read(ctx, bobConn, &response); err != nil {
+		t.Fatalf("read disconnect notification failed: %v", err)
+	}
+	if response.Type != "player.disconnected" {
+		t.Fatalf("expected player.disconnected, got %s", response.Type)
+	}
+	if response.Message != "A player left the game" {
+		t.Fatalf("expected leave message, got %q", response.Message)
+	}
+}
+
 func TestRoomJoin_RoomDeletedAfterLastPlayerLeaves(t *testing.T) {
 	roles := newFakeRoleResolver()
 	alice := uniqueUserID(t, "alice")
@@ -295,6 +326,59 @@ func TestRoomJoin_RoomDeletedAfterLastPlayerLeaves(t *testing.T) {
 	}
 	if second.Role != "mission_control" {
 		t.Fatalf("expected recreated room to assign mission_control, got %s", second.Role)
+	}
+}
+
+func TestGameRelay_ForwardsPayloadToOtherRole(t *testing.T) {
+	roles := newFakeRoleResolver()
+	alice := uniqueUserID(t, "alice")
+	bob := uniqueUserID(t, "bob")
+	roles.assign("RELAY", alice, "mission_control")
+	roles.assign("RELAY", bob, "on_site")
+
+	server := newTestServer(t, roles)
+	aliceConn := dial(t, server)
+	bobConn := dial(t, server)
+	joinRoom(t, aliceConn, "RELAY", alice)
+	joinRoom(t, bobConn, "RELAY", bob)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// on_site -> mission_control
+	layout := []byte(`{"layout":["","lamp","","plant","couch","","table",""]}`)
+	if err := wsjson.Write(ctx, bobConn, model.ClientMessage{Type: "game.layout", Payload: layout}); err != nil {
+		t.Fatalf("write game.layout failed: %v", err)
+	}
+	var got model.ServerMessage
+	if err := wsjson.Read(ctx, aliceConn, &got); err != nil {
+		t.Fatalf("read relayed layout failed: %v", err)
+	}
+	if got.Type != "game.layout" || got.FromRole != "on_site" || string(got.Payload) != string(layout) {
+		t.Fatalf("unexpected relay: type=%s from=%s payload=%s", got.Type, got.FromRole, got.Payload)
+	}
+
+	// mission_control -> on_site
+	result := []byte(`{"solved":false,"correct":2}`)
+	if err := wsjson.Write(ctx, aliceConn, model.ClientMessage{Type: "game.check_result", Payload: result}); err != nil {
+		t.Fatalf("write game.check_result failed: %v", err)
+	}
+	if err := wsjson.Read(ctx, bobConn, &got); err != nil {
+		t.Fatalf("read relayed check result failed: %v", err)
+	}
+	if got.Type != "game.check_result" || got.FromRole != "mission_control" || string(got.Payload) != string(result) {
+		t.Fatalf("unexpected relay: type=%s from=%s payload=%s", got.Type, got.FromRole, got.Payload)
+	}
+
+	// mission_control may not send a layout
+	if err := wsjson.Write(ctx, aliceConn, model.ClientMessage{Type: "game.layout", Payload: layout}); err != nil {
+		t.Fatalf("write game.layout failed: %v", err)
+	}
+	if err := wsjson.Read(ctx, aliceConn, &got); err != nil {
+		t.Fatalf("read error response failed: %v", err)
+	}
+	if got.Type != "error" {
+		t.Fatalf("expected error for wrong sender, got %s", got.Type)
 	}
 }
 

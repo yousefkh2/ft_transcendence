@@ -1,5 +1,7 @@
 package model
 
+import "encoding/json"
+
 type ClientMessage struct {
 	Type      string `json:"type"`
 	RoomCode  string `json:"roomCode,omitempty"`
@@ -14,6 +16,9 @@ type ClientMessage struct {
 	SDP       string `json:"sdp,omitempty"`
 	Candidate string `json:"candidate,omitempty"`
 	Role      string `json:"role,omitempty"`
+	Ready     bool   `json:"ready"`
+	// Payload carries game data relayed between the two players (game.layout, game.check_result).
+	Payload json.RawMessage `json:"payload,omitempty"`
 }
 
 type ServerMessage struct {
@@ -31,12 +36,15 @@ type ServerMessage struct {
 	SDP                 string              `json:"sdp,omitempty"`
 	Candidate           string              `json:"candidate,omitempty"`
 	FromRole            string              `json:"fromRole,omitempty"`
+	Countdown           int                 `json:"countdown"`
+	Payload             json.RawMessage     `json:"payload,omitempty"`
 }
 
 type LobbyPlayer struct {
 	UserID   string `json:"userId"`
 	Username string `json:"username"`
 	Role     string `json:"role"`
+	Ready    bool   `json:"ready"`
 }
 
 type Objective struct {

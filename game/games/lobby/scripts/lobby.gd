@@ -4,7 +4,8 @@ extends Control
 @onready var lobby_interface: Panel = $lobby_interface
 @onready var http_request: HTTPRequest = $HTTPRequest
 @onready var lobby_code_input: LineEdit = $lobby_interface/LineEdit
-@onready var message: Label = $message_interface/message
+@onready var message_interface: Panel = $message_interface
+@onready var message: RichTextLabel = $message_interface/message
 @onready var user_name: Label = $Background/player_data/User_name
 
 var pre_game_lobby = "res://games/pregame_lobby/pregame_lobby.tscn"
@@ -13,6 +14,8 @@ var dev_game_select = "res://games/dev/dev_game_select.tscn"
 
 func _ready():
 	create_lobby_interface.visible = false
+	lobby_code_input.text_changed.connect(_on_lobby_code_text_changed)
+	call_deferred("_show_pending_lobby_message")
 
 	http_request.login_success.connect(_on_login_success)
 	http_request.login_failed.connect(_on_login_failed)
@@ -23,7 +26,14 @@ func _ready():
 
 	http_request.login()
 	
-	
+
+func _show_pending_lobby_message() -> void:
+	if GameState.lobby_message == "":
+		return
+	message_interface.visible = true
+	message.visible = true
+	message.text = GameState.lobby_message
+	GameState.lobby_message = ""
 
 func _on_login_success() -> void:
 	print("Logged in successfully.")
@@ -45,13 +55,29 @@ func _on_select_dev_game_button_pressed() -> void:
 	get_tree().change_scene_to_file(dev_game_select)
 
 func _on_create_pressed() -> void:
+	if GameState.lobby_locale != _get_active_language_code():
+		message.text = tr("_LOBBY_LANGUAGE_MISMATCH_")
+		return
+
 	http_request.create_lobby()
+
+func _get_active_language_code() -> String:
+	match GameState.selected_locale:
+		"GERMAN":
+			return "de"
+		"POLISH":
+			return "pl"
+		"TURKISH":
+			return "tr"
+		_:
+			return "en"
 
 func _on_lobby_created(code: String) -> void:
 	print("Lobby created with code: ", code)
 	get_tree().change_scene_to_file(pre_game_lobby)
 
 func _on_lobby_creation_failed(message: String) -> void:
+	self.message.text = message
 	push_error("Could not create lobby: " + message)
 
 func _on_join_pressed() -> void:
@@ -60,6 +86,12 @@ func _on_join_pressed() -> void:
 		message.text = tr("_LOBBY_PLEASE_ENTER_CODE_")
 		return
 	http_request.join_lobby(code)
+
+func _on_lobby_code_text_changed(new_text: String) -> void:
+	var uppercase_text = new_text.to_upper()
+	if new_text != uppercase_text:
+		lobby_code_input.text = uppercase_text
+		lobby_code_input.caret_column = uppercase_text.length()
 
 func _on_lobby_joined(lobby_data: Dictionary) -> void:
 	print("Joined lobby: ", lobby_data)
