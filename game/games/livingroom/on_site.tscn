@@ -7,44 +7,29 @@
 [ext_resource type="Texture2D" uid="uid://byfgya7emseiv" path="res://games/livingroom/assets/on_site_asstes/table.png" id="7_gjxtx"]
 [ext_resource type="FontFile" uid="uid://fowu6mj7miff" path="res://game_files/fonts/GrapeSoda.ttf" id="8_font"]
 [ext_resource type="Script" uid="uid://bvwvtb33rgkdp" path="res://game_files/livingroom_game.gd" id="9_game"]
+[ext_resource type="Script" uid="uid://dldvcq7utau7t" path="res://games/livingroom/scripts/on_site_scripts/drag_drop_script.gd" id="10_drag"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_0lrx7"]
 texture = ExtResource("2_bx3jd")
 
-[sub_resource type="GDScript" id="GDScript_mplec"]
-script/source = "class_name DragDropCell extends Button
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_leave_normal"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_offset = Vector2(0, 3.41)
 
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_leave_hover"]
+bg_color = Color(0.9079417, 0.9079417, 0.90794164, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-
-func _get_drag_data(at_position: Vector2) -> Variant:
-	if not icon:
-		return null
-	
-	var preview: TextureRect = TextureRect.new()
-	preview.texture = icon
-	set_drag_preview(preview)
-	
-	return self
-	
-func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
-	if not data is DragDropCell or data == self:
-		return false
-	
-	grab_focus()
-	return true
-	
-func _drop_data(at_position: Vector2, data: Variant) -> void:
-	var temp: Texture2D = icon
-	icon = data.icon
-	data.icon = temp
-	
-"
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_leave_focus"]
 
 [node name="OnSite" type="Control" unique_id=281759183]
 layout_mode = 3
@@ -72,39 +57,87 @@ anchor_left = 0.074
 anchor_top = 0.379
 anchor_right = 0.83300006
 anchor_bottom = 0.99600005
-offset_left = -7.080002
+offset_left = 137.92
 offset_top = 90.67999
 offset_right = 109.63989
 offset_bottom = -25.680054
 columns = 4
 
 [node name="lamp" type="Button" parent="GridContainer" unique_id=361340857]
-custom_minimum_size = Vector2(100, 50)
+custom_minimum_size = Vector2(120, 120)
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 icon = ExtResource("6_kemar")
 flat = true
-script = SubResource("GDScript_mplec")
+expand_icon = true
+script = ExtResource("10_drag")
 
 [node name="plant" type="Button" parent="GridContainer" unique_id=1328120525]
-custom_minimum_size = Vector2(100, 100)
+custom_minimum_size = Vector2(120, 120)
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 icon = ExtResource("3_p848u")
 flat = true
-script = SubResource("GDScript_mplec")
+expand_icon = true
+script = ExtResource("10_drag")
 
 [node name="couch" type="Button" parent="GridContainer" unique_id=352909043]
-custom_minimum_size = Vector2(100, 100)
+custom_minimum_size = Vector2(120, 120)
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 icon = ExtResource("5_au1nr")
 flat = true
-script = SubResource("GDScript_mplec")
+expand_icon = true
+script = ExtResource("10_drag")
 
 [node name="table" type="Button" parent="GridContainer" unique_id=397078120]
-custom_minimum_size = Vector2(100, 100)
+custom_minimum_size = Vector2(120, 120)
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 icon = ExtResource("7_gjxtx")
 flat = true
-script = SubResource("GDScript_mplec")
+expand_icon = true
+script = ExtResource("10_drag")
+
+[node name="spot_5" type="Button" parent="GridContainer" unique_id=361340861]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+flat = true
+expand_icon = true
+script = ExtResource("10_drag")
+
+[node name="spot_6" type="Button" parent="GridContainer" unique_id=361340862]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+flat = true
+expand_icon = true
+script = ExtResource("10_drag")
+
+[node name="spot_7" type="Button" parent="GridContainer" unique_id=361340863]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+flat = true
+expand_icon = true
+script = ExtResource("10_drag")
+
+[node name="spot_8" type="Button" parent="GridContainer" unique_id=361340864]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+flat = true
+expand_icon = true
+script = ExtResource("10_drag")
 
 [node name="TimerLabel" type="Label" parent="." unique_id=281759184]
 layout_mode = 0
@@ -121,12 +154,17 @@ vertical_alignment = 1
 
 [node name="LeaveButton" type="Button" parent="." unique_id=281759185]
 layout_mode = 0
-offset_left = 1640.0
-offset_top = 40.0
-offset_right = 1840.0
-offset_bottom = 110.0
+offset_left = 52.0
+offset_top = 964.0
+offset_right = 252.0
+offset_bottom = 1034.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("8_font")
 theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_leave_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_leave_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_leave_hover")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_leave_focus")
 text = "Leave"
 
 [node name="GameTimer" type="Timer" parent="." unique_id=281759186]

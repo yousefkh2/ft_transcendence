@@ -26,3 +26,7 @@ _PRE_SEL_PLEASE_,Please select a Role,Selecciona un rol,Wybierz rol,Lütfen bir 
 _PRE_ERR_ROLE_TAKEN_,This role is already taken by another player,Este rol ya está ocupado por otro jugador,Ta rola jest już zajęta przez innego gracza,Bu rol zaten başka bir oyuncu tarafından alındı,Diese Rolle wird bereits von einem anderen Spieler verwendet
 _PRE_READY_,Ready,Listo,Gotowy,Hazır,Bereit
 _PRE_UNREADY_,Unready,No listo,Niegotowy,Hazır değil,Nicht bereit
+,,,,,
+_GAME_TIMES_UP_,TIME'S UP!,¡SE ACABÓ EL TIEMPO!,KONIEC CZASU!,SÜRE DOLDU!,ZEIT ABGELAUFEN!
+_GAME_TIMES_UP_TEXT_,The room was not finished in time.,La sala no se terminó a tiempo.,Pokój nie został urządzony na czas.,Oda zamanında tamamlanamadı.,Das Zimmer wurde nicht rechtzeitig fertig.
+_GAME_BACK_TO_LOBBY_,Back to lobby,Volver a la sala,Wróć do lobby,Lobiye dön,Zurück zur Lobby
