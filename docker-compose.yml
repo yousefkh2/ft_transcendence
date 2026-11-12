@@ -15,6 +15,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-transcendence_dev_password}
       POSTGRES_DB: ${POSTGRES_DB:-transcendence}
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set}
+      VOICE_REQUIRED: ${VOICE_REQUIRED:-true}
     ports:
       - "${BACKEND_PORT:-8080}:8080"
     depends_on:
@@ -28,7 +29,11 @@ services:
       dockerfile: Dockerfile
     container_name: transcendence-frontend
     environment:
-      VITE_API_URL: ${VITE_API_URL:-http://localhost}
+      # Empty: the website talks to the address it was opened from (nginx or the Vite proxy).
+      VITE_API_URL: ${VITE_API_URL:-}
+      # Where the Vite dev server forwards /api and /ws when the site is opened on port 5173.
+      API_PROXY_TARGET: http://backend:8080
+      VITE_STUN_URLS: ${VITE_STUN_URLS:-}
     ports:
       - "${FRONTEND_PORT:-5173}:5173"
     volumes:
@@ -56,20 +61,24 @@ services:
       timeout: 3s
       retries: 10
     restart: unless-stopped
-  
-  # nginx:
-  #   image: nginx:alpine
-  #   container_name: transcendence-nginx
-  #   ports:
-  #     - "443:443"
-  #     - "80:80"
-  #   volumes:
-  #     - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-  #     - ./nginx/certs:/etc/nginx/certs:ro
-  #   depends_on:
-  #     - backend
-  #     - frontend
-  #   restart: unless-stopped
+
+  # HTTPS entry point: https://localhost:8443 here, https://<this computer's IP>:8443 from other computers.
+  # Ports above 1024, because rootless Docker (e.g. on the school computers) cannot use 80 and 443.
+  nginx:
+    image: nginx:alpine
+    container_name: transcendence-nginx
+    environment:
+      HTTPS_PORT: ${HTTPS_PORT:-8443}
+    ports:
+      - "${HTTPS_PORT:-8443}:443"
+      - "${HTTP_PORT:-8000}:80"
+    volumes:
+      - ./nginx/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - backend
+      - frontend
+    restart: unless-stopped
 
 volumes:
   postgres_data:

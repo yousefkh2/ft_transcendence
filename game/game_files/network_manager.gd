@@ -4,7 +4,6 @@ signal connected
 signal room_joined(role)
 signal connection_failed(message)
 
-const WS_URL := "ws://localhost:8080/ws"
 
 var socket := WebSocketPeer.new()
 
@@ -19,7 +18,7 @@ func connect_to_server():
 
 	is_connecting = true
 
-	var err = socket.connect_to_url(WS_URL)
+	var err = socket.connect_to_url(GameState.ws_url("/ws"))
 
 	if err != OK:
 		connection_failed.emit("Failed to connect")

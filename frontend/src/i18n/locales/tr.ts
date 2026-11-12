@@ -243,6 +243,12 @@ const tr: Messages = {
 		won: 'Kazanıldı',
 		lost: 'Kaybedildi',
 		pending: 'Tamamlanmadı',
+		duration: '{time} oynandı',
+		endReason: {
+			solved: 'Oda çözüldü',
+			timeUp: 'Süre doldu',
+			outOfChecks: 'Deneme hakkı kalmadı',
+		},
 	},
 	avatar: {
 		upload: 'Resim yükle',
@@ -283,6 +289,16 @@ const tr: Messages = {
 		back: 'Panele dön',
 		gameTitle: 'LingoDash oyunu',
 		loading: 'Oyun yükleniyor...',
+		voice: {
+			off: 'Ses kapalı',
+			requestingMic: 'Mikrofona izin ver...',
+			micDenied: 'Mikrofon yok',
+			waiting: 'Sesli sohbet bekleniyor...',
+			connected: 'Sesli sohbet bağlı',
+			error: 'Ses yeniden bağlanıyor...',
+			mute: 'Sessize al',
+			unmute: 'Sesi aç',
+		},
 	},
 	notFound: {
 		title: 'Sayfa bulunamadı',

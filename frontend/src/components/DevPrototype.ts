@@ -1,7 +1,7 @@
 import { h, ref } from "vue";
 import "./DevPrototype.css";
 
-const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
+import { apiUrl } from "../api/client";
 type Position = {
   x: number;
   y: number;
@@ -44,7 +44,7 @@ export default {
     function connect() {
       connectionStatus.value = "Connecting...";
 
-      socket = new WebSocket("ws://localhost:8080/ws");
+      socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
 
       socket.onopen = () => {
         connectionStatus.value = "Connected";

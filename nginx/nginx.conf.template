@@ -1,0 +1,68 @@
+# One HTTPS address for everything: the website, the Godot game, the API and the WebSockets.
+# Other computers on the network open https://<this computer's IP>:${HTTPS_PORT}. HTTPS is required
+# because browsers only allow the microphone (voice chat) on https:// or localhost.
+#
+# This is a template: when the container starts, nginx fills in ${HTTPS_PORT} from docker-compose.yml.
+# nginx's own variables like $host stay as they are.
+
+map $http_upgrade $connection_upgrade {
+	default upgrade;
+	''      close;
+}
+
+server {
+	listen 80;
+	server_name _;
+	return 301 https://$host:${HTTPS_PORT}$request_uri;
+}
+
+server {
+	listen 443 ssl;
+	server_name _;
+
+	ssl_certificate     /etc/nginx/certs/cert.pem;
+	ssl_certificate_key /etc/nginx/certs/key.pem;
+
+	# Profile picture uploads.
+	client_max_body_size 10m;
+
+	# Keep the original Host (with port): the backend accepts a WebSocket when its Origin matches it.
+	proxy_set_header Host              $http_host;
+	proxy_set_header X-Real-IP         $remote_addr;
+	proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+	proxy_set_header X-Forwarded-Proto $scheme;
+	# WebSockets (game, lobby, voice chat and Vite's live reload). Set here and not per location:
+	# a location with its own proxy_set_header would drop all of the ones above, including Host.
+	proxy_set_header Upgrade    $http_upgrade;
+	proxy_set_header Connection $connection_upgrade;
+	proxy_http_version 1.1;
+
+	location /api/ {
+		proxy_pass http://backend:8080;
+	}
+
+	location /health {
+		proxy_pass http://backend:8080;
+	}
+
+	location /transcriptions {
+		proxy_pass http://backend:8080;
+	}
+
+	location /realtime/ {
+		proxy_pass http://backend:8080;
+	}
+
+	# Game, lobby and voice chat WebSockets (/ws, /ws/lobby, /ws/voice).
+	location /ws {
+		proxy_pass http://backend:8080;
+		# A lobby or match can stay quiet for a while; do not cut the connection.
+		proxy_read_timeout 1h;
+		proxy_send_timeout 1h;
+	}
+
+	# Everything else is the website and the exported game (Vite dev server, with live reload).
+	location / {
+		proxy_pass http://frontend:5173;
+	}
+}

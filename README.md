@@ -14,6 +14,8 @@ German to arrange a room before time runs out.
 
 ## First Run
 
+Step-by-step guide, including playing with two computers: [SETUP.md](SETUP.md)
+
 ```sh
 cp .env.example .env
 make up

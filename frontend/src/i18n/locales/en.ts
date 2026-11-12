@@ -244,6 +244,12 @@ const en = {
 		won: 'Won',
 		lost: 'Lost',
 		pending: 'Not finished',
+		duration: '{time} played',
+		endReason: {
+			solved: 'Room solved',
+			timeUp: "Time's up",
+			outOfChecks: 'Out of attempts',
+		},
 	},
 	avatar: {
 		upload: 'Upload picture',
@@ -284,6 +290,16 @@ const en = {
 		back: 'Back to dashboard',
 		gameTitle: 'LingoDash game',
 		loading: 'Loading game...',
+		voice: {
+			off: 'Voice off',
+			requestingMic: 'Allow microphone...',
+			micDenied: 'No microphone',
+			waiting: 'Waiting for voice...',
+			connected: 'Voice connected',
+			error: 'Voice reconnecting...',
+			mute: 'Mute',
+			unmute: 'Unmute',
+		},
 	},
 	notFound: {
 		title: 'Page not found',

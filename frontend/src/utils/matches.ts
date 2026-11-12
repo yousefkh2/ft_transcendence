@@ -20,6 +20,13 @@ export function roundResult(match: MatchHistoryEntry): 'won' | 'lost' | 'pending
 	return 'pending';
 }
 
+// Time between start and end as "m:ss", or null while a round has no end time.
+export function formatDuration(startedAt: string, endedAt: string | null) {
+	if (!endedAt) return null;
+	const seconds = Math.max(0, Math.round((new Date(endedAt).getTime() - new Date(startedAt).getTime()) / 1000));
+	return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+}
+
 export function countSince(matches: MatchHistoryEntry[], days: number) {
 	const since = Date.now() - days * DAY_MS;
 	return matches.filter((m) => new Date(m.startedAt).getTime() >= since).length;

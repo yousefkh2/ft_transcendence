@@ -36,6 +36,7 @@ func main() {
 	e.GET("/health/openai", handler.HandleOpenAIHealth)
 	e.GET("/ws", hub.HandleWebSocket)
 	e.GET("/ws/lobby", hub.HandleLobbyWebSocket)
+	e.GET("/ws/voice", hub.HandleVoiceWebSocket)
 	e.Any("/transcriptions", handler.HandleTranscription)
 	e.Any("/realtime/transcription-session", handler.HandleRealtimeTranscriptionSession)
 

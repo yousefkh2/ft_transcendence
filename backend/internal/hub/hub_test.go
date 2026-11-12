@@ -382,6 +382,107 @@ func TestGameRelay_ForwardsPayloadToOtherRole(t *testing.T) {
 	}
 }
 
+// savedMatches records what the hub would write to the match history.
+type savedMatches struct {
+	mu      sync.Mutex
+	reasons []string
+}
+
+func (s *savedMatches) save(code string, startedAt, endedAt time.Time, endReason string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.reasons = append(s.reasons, endReason)
+	return nil
+}
+
+func (s *savedMatches) waitFor(t *testing.T, count int) []string {
+	t.Helper()
+	deadline := time.Now().Add(2 * time.Second)
+	for time.Now().Before(deadline) {
+		s.mu.Lock()
+		n := len(s.reasons)
+		s.mu.Unlock()
+		if n >= count {
+			break
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+	// Give a wrong second save a moment to show up.
+	time.Sleep(50 * time.Millisecond)
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return append([]string(nil), s.reasons...)
+}
+
+// startMatch joins mission control and on site to the room and returns the mission control connection.
+func startMatch(t *testing.T, code string) (*websocket.Conn, *savedMatches) {
+	t.Helper()
+	roles := newFakeRoleResolver()
+	alice := uniqueUserID(t, "alice")
+	bob := uniqueUserID(t, "bob")
+	roles.assign(code, alice, "mission_control")
+	roles.assign(code, bob, "on_site")
+
+	saved := &savedMatches{}
+	h := hub.NewHubWithOrigins([]string{"*"}, roles)
+	h.SaveMatch = saved.save
+	e := echo.New()
+	e.GET("/ws", h.HandleWebSocket)
+	server := httptest.NewServer(e)
+	t.Cleanup(server.Close)
+
+	aliceConn := dial(t, server)
+	bobConn := dial(t, server)
+	joinRoom(t, aliceConn, code, alice)
+	joinRoom(t, bobConn, code, bob)
+	return aliceConn, saved
+}
+
+func sendCheck(t *testing.T, conn *websocket.Conn, payload string) {
+	t.Helper()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := wsjson.Write(ctx, conn, model.ClientMessage{Type: "game.check_result", Payload: []byte(payload)}); err != nil {
+		t.Fatalf("write game.check_result failed: %v", err)
+	}
+}
+
+func TestMatchHistory_SolvedCheckSavesWinOnce(t *testing.T) {
+	missionControl, saved := startMatch(t, "WINNER")
+	sendCheck(t, missionControl, `{"solved":false,"correct":3,"attemptsLeft":4}`)
+	sendCheck(t, missionControl, `{"solved":true,"correct":8,"attemptsLeft":4}`)
+	sendCheck(t, missionControl, `{"solved":true,"correct":8,"attemptsLeft":4}`)
+
+	reasons := saved.waitFor(t, 1)
+	if len(reasons) != 1 || reasons[0] != db.EndSolved {
+		t.Fatalf("expected exactly one solved match, got %v", reasons)
+	}
+}
+
+func TestMatchHistory_OutOfChecksSavesLoss(t *testing.T) {
+	missionControl, saved := startMatch(t, "LOSER")
+	// The server counts wrong checks itself, whatever attemptsLeft the client claims.
+	for i := 0; i < 5; i++ {
+		sendCheck(t, missionControl, `{"solved":false,"correct":2,"attemptsLeft":99}`)
+	}
+
+	reasons := saved.waitFor(t, 1)
+	if len(reasons) != 1 || reasons[0] != db.EndOutOfChecks {
+		t.Fatalf("expected exactly one out-of-checks match, got %v", reasons)
+	}
+}
+
+func TestMatchHistory_FewWrongChecksSaveNothing(t *testing.T) {
+	missionControl, saved := startMatch(t, "PENDING")
+	for i := 0; i < 4; i++ {
+		sendCheck(t, missionControl, `{"solved":false,"correct":2}`)
+	}
+
+	if reasons := saved.waitFor(t, 1); len(reasons) != 0 {
+		t.Fatalf("expected no saved match yet, got %v", reasons)
+	}
+}
+
 func TestMain(m *testing.M) {
 	os.Setenv("JWT_SECRET", "test_secret_for_hub_tests")
 	os.Exit(m.Run())

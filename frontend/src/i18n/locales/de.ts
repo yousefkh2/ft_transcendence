@@ -242,6 +242,12 @@ const de: Messages = {
 		won: 'Gewonnen',
 		lost: 'Verloren',
 		pending: 'Nicht beendet',
+		duration: '{time} gespielt',
+		endReason: {
+			solved: 'Raum gelöst',
+			timeUp: 'Zeit abgelaufen',
+			outOfChecks: 'Keine Versuche mehr',
+		},
 	},
 	avatar: {
 		upload: 'Bild hochladen',
@@ -282,6 +288,16 @@ const de: Messages = {
 		back: 'Zurück zum Dashboard',
 		gameTitle: 'LingoDash-Spiel',
 		loading: 'Spiel wird geladen...',
+		voice: {
+			off: 'Sprache aus',
+			requestingMic: 'Mikrofon erlauben...',
+			micDenied: 'Kein Mikrofon',
+			waiting: 'Warte auf Sprachchat...',
+			connected: 'Sprachchat verbunden',
+			error: 'Sprachchat verbindet neu...',
+			mute: 'Stummschalten',
+			unmute: 'Ton an',
+		},
 	},
 	notFound: {
 		title: 'Seite nicht gefunden',

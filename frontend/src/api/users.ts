@@ -18,6 +18,11 @@ export interface MatchHistoryEntry {
 	endedAt: string | null;
 	role?: string;
 	isWinner: boolean | null;
+	lang: string;
+	// Missing for rounds saved before the backend recorded it.
+	endReason?: 'solved' | 'time_up' | 'out_of_checks';
+	// XP this player got for the round (0 for rounds saved before XP was awarded).
+	xpEarned: number;
 }
 
 export function fetchProfile(): Promise<Profile> {

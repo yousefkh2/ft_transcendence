@@ -3,7 +3,9 @@ import { getToken } from '../auth/session';
 import { t } from '../i18n';
 import { translateApiError } from '../i18n/apiErrors';
 
-const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+// Empty by default: the API is on the same address as the website (nginx, or the Vite proxy in
+// vite.config.ts), so it also works when another computer opens the site by IP.
+export const apiUrl = import.meta.env.VITE_API_URL || window.location.origin;
 
 // Turns a path the API returns (like an avatarUrl) into a full URL for <img src>.
 export function apiAssetUrl(path?: string): string | undefined {

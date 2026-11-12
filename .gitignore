@@ -17,4 +17,4 @@ frontend/.vite/
 
 # Local Docker/Postgres data
 postgres_data/
-nginx
+nginx/certs/

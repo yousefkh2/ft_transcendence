@@ -4,8 +4,10 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"log"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -46,7 +48,14 @@ type Room struct {
 	objectPositions     map[string]model.Position
 	roundDeadline       time.Time
 	startedAt           time.Time
+	failedChecks        int
+	finished            bool        // result already saved to the match history
+	endTimer            *time.Timer // saves a lost round when time runs out
 }
+
+// roundGracePeriod gives the clients a little extra time: their own timer starts slightly
+// before the server's, and a check sent in the last second should still count.
+const roundGracePeriod = 5 * time.Second
 
 type LobbyWatcher struct {
 	id      string
@@ -64,6 +73,15 @@ type Hub struct {
 	lobbyWatchers  map[string]map[string]*LobbyWatcher
 	lobbyReady     map[string]map[string]bool
 	lobbyStarting  map[string]bool
+	// Voice chat per lobby: code -> userID -> connection, and who has a working microphone.
+	voicePeers     map[string]map[string]*Player
+	voiceConnected map[string]map[string]bool
+	// voiceRequired blocks readying up until the player's microphone is connected.
+	voiceRequired bool
+	// isLobbyMember checks that a user joined the lobby through the API.
+	isLobbyMember func(ctx context.Context, code, userID string) (bool, error)
+	// SaveMatch stores a finished round in the match history. Tests replace it; nil saves nothing.
+	SaveMatch func(code string, startedAt, endedAt time.Time, endReason string) error
 }
 
 func NewHub(pool *pgxpool.Pool) *Hub {
@@ -75,6 +93,25 @@ func NewHub(pool *pgxpool.Pool) *Hub {
 		lobbyWatchers:  make(map[string]map[string]*LobbyWatcher),
 		lobbyReady:     make(map[string]map[string]bool),
 		lobbyStarting:  make(map[string]bool),
+		voicePeers:     make(map[string]map[string]*Player),
+		voiceConnected: make(map[string]map[string]bool),
+		// Set VOICE_REQUIRED=false to test without microphones (e.g. from the Godot editor).
+		voiceRequired: strings.TrimSpace(os.Getenv("VOICE_REQUIRED")) != "false",
+		isLobbyMember: func(ctx context.Context, code, userID string) (bool, error) {
+			players, err := db.ListLobbyPlayers(ctx, pool, code)
+			if err != nil {
+				return false, err
+			}
+			for _, player := range players {
+				if player.UserID == userID {
+					return true, nil
+				}
+			}
+			return false, nil
+		},
+		SaveMatch: func(code string, startedAt, endedAt time.Time, endReason string) error {
+			return db.FinishMatch(context.Background(), pool, code, startedAt, endedAt, endReason)
+		},
 	}
 }
 
@@ -86,6 +123,16 @@ func NewHubWithOrigins(origins []string, roles RoleResolver) *Hub {
 		lobbyWatchers:  make(map[string]map[string]*LobbyWatcher),
 		lobbyReady:     make(map[string]map[string]bool),
 		lobbyStarting:  make(map[string]bool),
+		voicePeers:     make(map[string]map[string]*Player),
+		voiceConnected: make(map[string]map[string]bool),
+		voiceRequired:  true,
+		isLobbyMember: func(ctx context.Context, code, userID string) (bool, error) {
+			_, _, err := roles.GetParticipantRole(ctx, code, userID)
+			if errors.Is(err, db.ErrNotInLobby) {
+				return false, nil
+			}
+			return err == nil, err
+		},
 	}
 }
 
@@ -244,6 +291,11 @@ func (h *Hub) handleLobbyReady(ctx context.Context, conn *websocket.Conn, messag
 	}
 
 	h.mu.Lock()
+	if message.Ready && h.voiceRequired && !h.voiceConnected[code][subscribedUserID] {
+		h.mu.Unlock()
+		_ = wsjson.Write(ctx, conn, model.ServerMessage{Type: "error", Message: "connect your microphone before readying up"})
+		return
+	}
 	if h.lobbyReady[code] == nil {
 		h.lobbyReady[code] = make(map[string]bool)
 	}
@@ -352,6 +404,9 @@ func (h *Hub) PublishLobbyUpdate(ctx context.Context, code string) {
 }
 
 func (h *Hub) sendLobbyUpdate(ctx context.Context, code string, connections []*websocket.Conn) {
+	if h.db == nil {
+		return
+	}
 	players, err := db.ListLobbyPlayers(ctx, h.db, code)
 	if err != nil {
 		log.Printf("failed to load lobby players for %s: %v", code, err)
@@ -361,12 +416,14 @@ func (h *Hub) sendLobbyUpdate(ctx context.Context, code string, connections []*w
 	for _, player := range players {
 		h.mu.Lock()
 		ready := h.lobbyReady[code][player.UserID]
+		voiceConnected := h.voiceConnected[code][player.UserID]
 		h.mu.Unlock()
 		messagePlayers = append(messagePlayers, model.LobbyPlayer{
-			UserID:   player.UserID,
-			Username: player.Username,
-			Role:     player.Role,
-			Ready:    ready,
+			UserID:         player.UserID,
+			Username:       player.Username,
+			Role:           player.Role,
+			Ready:          ready,
+			VoiceConnected: voiceConnected,
 		})
 	}
 	message := model.ServerMessage{Type: "lobby.updated", RoomCode: code, Players: messagePlayers, Message: "lobby updated"}
@@ -524,6 +581,9 @@ func (h *Hub) handleRoomJoin(
 	if len(room.players) == 2 && room.roundDeadline.IsZero() {
 		room.roundDeadline = time.Now().Add(game.RoundDuration)
 		room.startedAt = time.Now()
+		room.endTimer = time.AfterFunc(game.RoundDuration+roundGracePeriod, func() {
+			h.finishRoom(room, db.EndTimeUp)
+		})
 	}
 
 	*joinedRoom = room.code
@@ -592,7 +652,6 @@ func (h *Hub) handleObjectMoved(
 		completedObjectives := game.CompletedObjectiveIDs(room.completedObjectives)
 		objectPositions := game.CopyObjectPositions(room.objectPositions)
 		remaining := game.RemainingSeconds(room.roundDeadline)
-		startedAt := room.startedAt
 
 		players := make([]*Player, 0, len(room.players))
 		for _, roomPlayer := range room.players {
@@ -601,11 +660,7 @@ func (h *Hub) handleObjectMoved(
 
 		h.mu.Unlock()
 
-		go func() {
-			if err := db.FinishMatch(context.Background(), h.db, joinedRoom, startedAt, time.Now(), false); err != nil {
-				log.Printf("failed to save expired match for room %s: %v", joinedRoom, err)
-			}
-		}()
+		go h.finishRoom(room, db.EndTimeUp)
 
 		expiredMessage := model.ServerMessage{
 			Type:                "game.round_expired",
@@ -641,12 +696,9 @@ func (h *Hub) handleObjectMoved(
 	messageType := "game.state_updated"
 	stateMessage := "object moved"
 
-	var startedAt time.Time
-
 	if game.AllObjectivesCompleted(room.completedObjectives) {
 		messageType = "game.round_completed"
 		stateMessage = "round completed"
-		startedAt = room.startedAt
 	}
 
 	players := make([]*Player, 0, len(room.players))
@@ -657,11 +709,7 @@ func (h *Hub) handleObjectMoved(
 	h.mu.Unlock()
 
 	if messageType == "game.round_completed" {
-		go func() {
-			if err := db.FinishMatch(context.Background(), h.db, joinedRoom, startedAt, time.Now(), true); err != nil {
-				log.Printf("failed to save completed match for room %s: %v", joinedRoom, err)
-			}
-		}()
+		go h.finishRoom(room, db.EndSolved)
 	}
 
 	log.Printf("object moved in room %s: %s to (%d,%d)", joinedRoom,
@@ -814,11 +862,16 @@ func (h *Hub) handleGameRelay(ctx context.Context, player *Player, message model
 	}
 
 	h.mu.Lock()
+	room := h.rooms[joinedRoom]
 	var target *Player
-	if room := h.rooms[joinedRoom]; room != nil {
+	if room != nil {
 		target = room.players[targetRole]
 	}
 	h.mu.Unlock()
+
+	if room != nil && message.Type == "game.check_result" {
+		h.recordCheckResult(room, message.Payload)
+	}
 
 	if target == nil {
 		return
@@ -832,6 +885,64 @@ func (h *Hub) handleGameRelay(ctx context.Context, player *Player, message model
 	}); err != nil {
 		log.Printf("game relay failed for player %s: %v", target.id, err)
 	}
+}
+
+// recordCheckResult ends the round when mission control's check solved the puzzle (won), or when
+// the team used up all checks (lost). The server counts the wrong checks itself instead of
+// trusting the attemptsLeft the client sends.
+func (h *Hub) recordCheckResult(room *Room, payload json.RawMessage) {
+	var result struct {
+		Solved bool `json:"solved"`
+	}
+	if err := json.Unmarshal(payload, &result); err != nil {
+		return
+	}
+
+	h.mu.Lock()
+	if room.finished || room.startedAt.IsZero() {
+		h.mu.Unlock()
+		return
+	}
+	expired := time.Now().After(room.roundDeadline.Add(roundGracePeriod))
+	if !result.Solved {
+		room.failedChecks++
+	}
+	outOfChecks := room.failedChecks >= game.MaxCheckAttempts
+	h.mu.Unlock()
+
+	switch {
+	case expired:
+		go h.finishRoom(room, db.EndTimeUp)
+	case result.Solved:
+		go h.finishRoom(room, db.EndSolved)
+	case outOfChecks:
+		go h.finishRoom(room, db.EndOutOfChecks)
+	}
+}
+
+// finishRoom saves the round to the match history of both players. Only the first call per room
+// does anything, so a solved round cannot later turn into a loss when the timer fires.
+func (h *Hub) finishRoom(room *Room, endReason string) {
+	h.mu.Lock()
+	if room.finished || room.startedAt.IsZero() {
+		h.mu.Unlock()
+		return
+	}
+	room.finished = true
+	if room.endTimer != nil {
+		room.endTimer.Stop()
+	}
+	startedAt := room.startedAt
+	h.mu.Unlock()
+
+	if h.SaveMatch == nil {
+		return
+	}
+	if err := h.SaveMatch(room.code, startedAt, time.Now(), endReason); err != nil {
+		log.Printf("failed to save match for room %s: %v", room.code, err)
+		return
+	}
+	log.Printf("saved match for room %s (%s)", room.code, endReason)
 }
 
 func (h *Hub) leaveRoom(roomCode string, role string, playerID string) {
