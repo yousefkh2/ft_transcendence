@@ -107,7 +107,7 @@ func _stop_listening() -> void:
 func _fetch_me() -> void:
 	request_completed.connect(_on_me_completed, CONNECT_ONE_SHOT)
 	var headers = ["Authorization: Bearer " + GameState.auth_token]
-	var error = request("http://localhost:8080/api/users/me", headers, HTTPClient.METHOD_GET)
+	var error = request(GameState.api_url() + "/api/users/me", headers, HTTPClient.METHOD_GET)
 	if error != OK:
 		_fail_login("Profile request failed to send.")
 
@@ -139,7 +139,7 @@ func _dev_login() -> void:
 	var headers = ["Content-Type: application/json"]
 	var body = JSON.stringify({"email": DEV_EMAIL, "password": DEV_PASSWORD})
 	var error = request(
-		"http://localhost:8080/api/v2/auth/login",
+		GameState.api_url() + "/api/v2/auth/login",
 		headers,
 		HTTPClient.METHOD_POST,
 		body
@@ -192,7 +192,7 @@ func create_lobby() -> void:
 		"lang": GameState.lobby_locale
 	})
 	var error = request(
-		"http://localhost:8080/api/v2/lobbies",
+		GameState.api_url() + "/api/v2/lobbies",
 		headers,
 		HTTPClient.METHOD_POST,
 		body
@@ -233,7 +233,7 @@ func join_lobby(code: String) -> void:
 		"lang": _get_active_language_code()
 	})
 	var error = request(
-		"http://localhost:8080/api/v2/lobbies/%s/join" % code,
+		GameState.api_url() + "/api/v2/lobbies/%s/join" % code,
 		headers,
 		HTTPClient.METHOD_POST,
 		body

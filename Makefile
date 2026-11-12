@@ -1,12 +1,20 @@
 COMPOSE=docker compose
 
-.PHONY: up down restart build logs ps test health clean migrate
+.PHONY: up down restart build logs ps test health clean migrate url
 
 up:	certs
 	$(COMPOSE) up -d --build
 	@echo "Waiting for DB to be ready..."
 	@until docker exec transcendence-db pg_isready -U $${POSTGRES_USER:-transcendence} -d $${POSTGRES_DB:-transcendence} > /dev/null 2>&1; do sleep 1; done
 	$(MAKE) migrate
+	@$(MAKE) --no-print-directory url
+
+# Prints the addresses to open, also for other computers on the same network.
+url:
+	@echo "Open https://localhost on this computer."
+	@IP=$$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || hostname -I 2>/dev/null | awk '{print $$1}'); \
+	if [ -n "$$IP" ]; then echo "Other computers on the network: https://$$IP"; fi
+	@echo "The certificate is self-signed: accept the browser warning once on each computer."
 
 down:
 	$(COMPOSE) down

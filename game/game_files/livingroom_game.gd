@@ -13,7 +13,6 @@ extends Control
 const MAIN_LOBBY_SCENE := "res://games/lobby/lobby.tscn"
 const STARTING_SECONDS := 5 * 60
 const MAX_ATTEMPTS := 5
-const GAME_WEBSOCKET_URL := "ws://localhost:8080/ws"
 const GAME_FONT: FontFile = preload("res://game_files/fonts/GrapeSoda.ttf")
 const ACCENT_RED := Color(0.7529412, 0.22745098, 0.2, 1)
 const ACCENT_YELLOW := Color(1, 0.76862746, 0.20392157, 1)
@@ -51,7 +50,7 @@ func _ready() -> void:
 	game_timer.timeout.connect(_on_game_timer_timeout)
 	_update_timer_label()
 	game_timer.start()
-	var error := game_socket.connect_to_url(GAME_WEBSOCKET_URL)
+	var error := game_socket.connect_to_url(GameState.ws_url("/ws"))
 	if error != OK:
 		push_error("Failed to connect to the game server: %s" % error)
 

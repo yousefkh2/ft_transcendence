@@ -5,7 +5,10 @@ signal avatar_changed
 ## Emitted when the website reports a new voice chat state (see voice_status).
 signal voice_status_changed(status: String)
 
-const API_URL := "http://localhost:8080"
+## Backend address outside the browser (Godot editor). In the browser the game uses the website's
+## own address instead: nginx (or the Vite dev server) passes /api and /ws on to the backend,
+## so it also works when another computer opens the site by IP.
+const DEV_API_URL := "http://localhost:8080"
 const ROUNDED_CORNERS_SHADER := preload("res://game_files/shaders/rounded_corners.gdshader")
 ## Corner radius of the profile picture, as a share of its side (0.5 would be a circle).
 const AVATAR_CORNER_RADIUS := 0.2
@@ -30,6 +33,27 @@ func xp_text() -> String:
 		return tr("_PROFILE_RANK_LOADING_")
 	return "%d XP" % player_xp
 
+# --- Backend address -----------------------------------------------------------
+
+var _api_url := ""
+
+## "https://192.168.1.20" in the browser, DEV_API_URL in the editor. No trailing slash.
+func api_url() -> String:
+	if _api_url == "":
+		_api_url = DEV_API_URL
+		if OS.has_feature("web"):
+			var origin = JavaScriptBridge.eval("window.location.origin", true)
+			if typeof(origin) == TYPE_STRING and origin.begins_with("http"):
+				_api_url = origin
+	return _api_url
+
+## WebSocket address for a path like "/ws/lobby": wss:// on an https page, ws:// otherwise.
+func ws_url(path: String) -> String:
+	var base := api_url()
+	if base.begins_with("https://"):
+		return "wss://" + base.substr(8) + path
+	return "ws://" + base.trim_prefix("http://") + path
+
 # --- Profile picture ----------------------------------------------------------
 
 # The picture the website shows for this player; null when they have none (the scene keeps its placeholder).
@@ -49,7 +73,7 @@ func set_avatar_url(url: String) -> void:
 		avatar_changed.emit()
 		return
 	# The picture endpoint is public, so no token is needed.
-	if _avatar_request.request(API_URL + url) != OK:
+	if _avatar_request.request(api_url() + url) != OK:
 		push_error("Profile picture request failed to send.")
 		_avatar_url = ""
 

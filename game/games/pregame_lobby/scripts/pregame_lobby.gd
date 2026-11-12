@@ -12,7 +12,6 @@ const MISSION_CONTROL_SCENE := "res://games/livingroom/mission_control.tscn"
 const ON_SITE_SCENE := "res://games/livingroom/on_site.tscn"
 const READY_GREEN := Color(0.2, 0.85, 0.25)
 
-var websocket_url = "ws://localhost:8080/ws/lobby"
 var local_role := ""
 var local_ready := false
 var match_started := false
@@ -81,6 +80,7 @@ func _send_message(message_to_send):
 	_client.send(json_message)
 
 func _connect_to_matchmaking_server():
+	var websocket_url := GameState.ws_url("/ws/lobby")
 	var error = _client.connect_to_url(websocket_url)
 	if (error != OK):
 		print("Error connecting to websocket: %s " % [websocket_url])
