@@ -289,6 +289,16 @@ const tr: Messages = {
 		back: 'Panele dön',
 		gameTitle: 'LingoDash oyunu',
 		loading: 'Oyun yükleniyor...',
+		voice: {
+			off: 'Ses kapalı',
+			requestingMic: 'Mikrofona izin ver...',
+			micDenied: 'Mikrofon yok',
+			waiting: 'Sesli sohbet bekleniyor...',
+			connected: 'Sesli sohbet bağlı',
+			error: 'Ses yeniden bağlanıyor...',
+			mute: 'Sessize al',
+			unmute: 'Sesi aç',
+		},
 	},
 	notFound: {
 		title: 'Sayfa bulunamadı',

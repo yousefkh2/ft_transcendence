@@ -28,6 +28,8 @@ func _ready():
 
 	GameState.apply_avatar(user_pfp)
 	GameState.avatar_changed.connect(_on_avatar_changed)
+	# Back in the lobby list (left a lobby or finished a match): hang up the voice chat.
+	GameState.voice_leave()
 	http_request.login()
 	
 

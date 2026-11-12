@@ -288,6 +288,16 @@ const de: Messages = {
 		back: 'Zurück zum Dashboard',
 		gameTitle: 'LingoDash-Spiel',
 		loading: 'Spiel wird geladen...',
+		voice: {
+			off: 'Sprache aus',
+			requestingMic: 'Mikrofon erlauben...',
+			micDenied: 'Kein Mikrofon',
+			waiting: 'Warte auf Sprachchat...',
+			connected: 'Sprachchat verbunden',
+			error: 'Sprachchat verbindet neu...',
+			mute: 'Stummschalten',
+			unmute: 'Ton an',
+		},
 	},
 	notFound: {
 		title: 'Seite nicht gefunden',

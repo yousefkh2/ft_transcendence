@@ -35,6 +35,11 @@ func _ready() -> void:
 	
 	
 	_build_player_lobby_list([GameState.player_name])
+
+	# Talk to the other player while in the lobby; readying up needs a connected microphone.
+	GameState.voice_status_changed.connect(_on_voice_status_changed)
+	GameState.voice_join(GameState.lobby_code)
+	_on_voice_status_changed(GameState.voice_status)
 	
 	print("Attemting to connect to server...")
 	_connect_to_matchmaking_server()
@@ -43,6 +48,8 @@ func _translate_error(error_message: String) -> String:
 	match error_message:
 		"that role is already taken":
 			return tr("_PRE_ERR_ROLE_TAKEN_")
+		"connect your microphone before readying up":
+			return tr("_PRE_VOICE_REQUIRED_")
 		_:
 			return error_message
 
@@ -126,10 +133,12 @@ func _build_player_lobby_list(match_players):
 		var player_label := Label.new()
 		var role := ""
 		var is_ready := false
+		var has_voice := true
 		if player is Dictionary:
 			player_label.text = str(player.get("username", player.get("userId", "Unknown player")))
 			role = str(player.get("role", "")).strip_edges().to_lower()
 			is_ready = bool(player.get("ready", false))
+			has_voice = bool(player.get("voiceConnected", true))
 			if player_label.text == GameState.player_name:
 				local_role = role
 				local_ready = is_ready
@@ -142,6 +151,9 @@ func _build_player_lobby_list(match_players):
 		player_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		if is_ready:
 			player_label.add_theme_color_override("font_color", READY_GREEN)
+		# Players without a connected microphone are shown faded.
+		if not has_voice:
+			player_label.modulate.a = 0.45
 		
 		match role:
 			"on_site":
@@ -181,6 +193,10 @@ func _on_ready_button_pressed() -> void:
 	if local_role == "":
 		message.text = "Select a role before readying up"
 		return
+	# The server checks this too; outside the website (Godot editor) it decides alone.
+	if not local_ready and GameState.voice_status != "unavailable" and not GameState.voice_connected():
+		message.text = tr("_PRE_VOICE_REQUIRED_")
+		return
 
 	local_ready = not local_ready
 	$create_lobby_interface/start.text = tr("_PRE_UNREADY_") if local_ready else tr("_PRE_READY_")
@@ -192,6 +208,23 @@ func _on_ready_button_pressed() -> void:
 		"ready": local_ready,
 	})
 
+
+func _on_voice_status_changed(status: String) -> void:
+	match status:
+		"requesting-mic":
+			message.text = tr("_PRE_VOICE_REQUESTING_")
+		"mic-denied":
+			message.text = tr("_PRE_VOICE_MIC_DENIED_")
+		"waiting":
+			message.text = tr("_PRE_VOICE_WAITING_")
+		"connected":
+			message.text = tr("_PRE_VOICE_CONNECTED_")
+		"error":
+			message.text = tr("_PRE_VOICE_ERROR_")
+	# Losing the voice chat un-readies the player on the server; show that here too.
+	if status != "connected" and status != "unavailable" and local_ready:
+		local_ready = false
+		$create_lobby_interface/start.text = tr("_PRE_READY_")
 
 func _load_role_scene() -> void:
 	if match_started:

@@ -3,7 +3,7 @@ import { getToken } from '../auth/session';
 import { t } from '../i18n';
 import { translateApiError } from '../i18n/apiErrors';
 
-const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+export const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 // Turns a path the API returns (like an avatarUrl) into a full URL for <img src>.
 export function apiAssetUrl(path?: string): string | undefined {

@@ -17,6 +17,10 @@ type ClientMessage struct {
 	Candidate string `json:"candidate,omitempty"`
 	Role      string `json:"role,omitempty"`
 	Ready     bool   `json:"ready"`
+	// TargetUser is the user a voice signal (offer/answer/ICE candidate) is meant for.
+	TargetUser string `json:"targetUser,omitempty"`
+	// Connected reports in voice.status whether the microphone is live and connected to the other player.
+	Connected bool `json:"connected"`
 	// Payload carries game data relayed between the two players (game.layout, game.check_result).
 	Payload json.RawMessage `json:"payload,omitempty"`
 }
@@ -38,6 +42,10 @@ type ServerMessage struct {
 	FromRole            string              `json:"fromRole,omitempty"`
 	Countdown           int                 `json:"countdown"`
 	Payload             json.RawMessage     `json:"payload,omitempty"`
+	// FromUser is the user a relayed voice signal came from.
+	FromUser string `json:"fromUser,omitempty"`
+	// Peers lists the users already in the voice chat (voice.joined).
+	Peers []string `json:"peers,omitempty"`
 }
 
 type LobbyPlayer struct {
@@ -45,6 +53,8 @@ type LobbyPlayer struct {
 	Username string `json:"username"`
 	Role     string `json:"role"`
 	Ready    bool   `json:"ready"`
+	// VoiceConnected is true while the player's microphone is connected to the voice chat.
+	VoiceConnected bool `json:"voiceConnected"`
 }
 
 type Objective struct {

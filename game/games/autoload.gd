@@ -2,6 +2,8 @@ extends Node
 
 ## Emitted when the player's profile picture has been downloaded (or removed).
 signal avatar_changed
+## Emitted when the website reports a new voice chat state (see voice_status).
+signal voice_status_changed(status: String)
 
 const API_URL := "http://localhost:8080"
 const ROUNDED_CORNERS_SHADER := preload("res://game_files/shaders/rounded_corners.gdshader")
@@ -91,11 +93,66 @@ func apply_avatar(rect: TextureRect) -> void:
 	rounded.set_shader_parameter("radius", AVATAR_CORNER_RADIUS)
 	rect.material = rounded
 
+# --- Voice chat ----------------------------------------------------------------
+# The voice chat runs on the website around the game (frontend/src/composables/useVoiceChat.ts):
+# a web export of Godot cannot send microphone audio. The game only tells the website which lobby
+# the player is in and shows the state it reports back.
+
+## "off", "requesting-mic", "mic-denied", "waiting", "connected" or "error".
+## "unavailable" when the game does not run inside the website (e.g. in the Godot editor).
+var voice_status := "off"
+var voice_muted := false
+var _voice_js_cb: JavaScriptObject
+
+## Join the voice chat of a lobby (asks for the microphone the first time).
+func voice_join(code: String) -> void:
+	_post_to_website({"type": "lingodash:voice-join", "roomCode": code})
+
+## Leave the voice chat (back in the lobby list).
+func voice_leave() -> void:
+	_post_to_website({"type": "lingodash:voice-leave"})
+
+func voice_connected() -> bool:
+	return voice_status == "connected"
+
+func _post_to_website(message: Dictionary) -> void:
+	if not OS.has_feature("web"):
+		return
+	var window = JavaScriptBridge.get_interface("window")
+	if window != null and window.parent != null:
+		window.parent.postMessage(JSON.stringify(message), window.location.origin)
+
+func _listen_to_website() -> void:
+	if not OS.has_feature("web"):
+		voice_status = "unavailable"
+		return
+	_voice_js_cb = JavaScriptBridge.create_callback(_on_website_message)
+	JavaScriptBridge.get_interface("window").addEventListener("message", _voice_js_cb)
+
+func _on_website_message(args: Array) -> void:
+	if args.is_empty():
+		return
+	var event = args[0]
+	# Only accept messages from our own website.
+	if str(event.origin) != str(JavaScriptBridge.get_interface("window").location.origin):
+		return
+	if typeof(event.data) != TYPE_STRING:
+		return
+	var data = JSON.parse_string(event.data)
+	if typeof(data) != TYPE_DICTIONARY or data.get("type", "") != "lingodash:voice-status":
+		return
+	voice_muted = bool(data.get("muted", false))
+	var status := str(data.get("status", "off"))
+	if status != voice_status:
+		voice_status = status
+		voice_status_changed.emit(status)
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	_avatar_request = HTTPRequest.new()
 	add_child(_avatar_request)
 	_avatar_request.request_completed.connect(_on_avatar_completed)
+	_listen_to_website()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

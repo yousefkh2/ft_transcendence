@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -72,6 +73,13 @@ type Hub struct {
 	lobbyWatchers  map[string]map[string]*LobbyWatcher
 	lobbyReady     map[string]map[string]bool
 	lobbyStarting  map[string]bool
+	// Voice chat per lobby: code -> userID -> connection, and who has a working microphone.
+	voicePeers     map[string]map[string]*Player
+	voiceConnected map[string]map[string]bool
+	// voiceRequired blocks readying up until the player's microphone is connected.
+	voiceRequired bool
+	// isLobbyMember checks that a user joined the lobby through the API.
+	isLobbyMember func(ctx context.Context, code, userID string) (bool, error)
 	// SaveMatch stores a finished round in the match history. Tests replace it; nil saves nothing.
 	SaveMatch func(code string, startedAt, endedAt time.Time, endReason string) error
 }
@@ -85,6 +93,22 @@ func NewHub(pool *pgxpool.Pool) *Hub {
 		lobbyWatchers:  make(map[string]map[string]*LobbyWatcher),
 		lobbyReady:     make(map[string]map[string]bool),
 		lobbyStarting:  make(map[string]bool),
+		voicePeers:     make(map[string]map[string]*Player),
+		voiceConnected: make(map[string]map[string]bool),
+		// Set VOICE_REQUIRED=false to test without microphones (e.g. from the Godot editor).
+		voiceRequired: strings.TrimSpace(os.Getenv("VOICE_REQUIRED")) != "false",
+		isLobbyMember: func(ctx context.Context, code, userID string) (bool, error) {
+			players, err := db.ListLobbyPlayers(ctx, pool, code)
+			if err != nil {
+				return false, err
+			}
+			for _, player := range players {
+				if player.UserID == userID {
+					return true, nil
+				}
+			}
+			return false, nil
+		},
 		SaveMatch: func(code string, startedAt, endedAt time.Time, endReason string) error {
 			return db.FinishMatch(context.Background(), pool, code, startedAt, endedAt, endReason)
 		},
@@ -99,6 +123,16 @@ func NewHubWithOrigins(origins []string, roles RoleResolver) *Hub {
 		lobbyWatchers:  make(map[string]map[string]*LobbyWatcher),
 		lobbyReady:     make(map[string]map[string]bool),
 		lobbyStarting:  make(map[string]bool),
+		voicePeers:     make(map[string]map[string]*Player),
+		voiceConnected: make(map[string]map[string]bool),
+		voiceRequired:  true,
+		isLobbyMember: func(ctx context.Context, code, userID string) (bool, error) {
+			_, _, err := roles.GetParticipantRole(ctx, code, userID)
+			if errors.Is(err, db.ErrNotInLobby) {
+				return false, nil
+			}
+			return err == nil, err
+		},
 	}
 }
 
@@ -257,6 +291,11 @@ func (h *Hub) handleLobbyReady(ctx context.Context, conn *websocket.Conn, messag
 	}
 
 	h.mu.Lock()
+	if message.Ready && h.voiceRequired && !h.voiceConnected[code][subscribedUserID] {
+		h.mu.Unlock()
+		_ = wsjson.Write(ctx, conn, model.ServerMessage{Type: "error", Message: "connect your microphone before readying up"})
+		return
+	}
 	if h.lobbyReady[code] == nil {
 		h.lobbyReady[code] = make(map[string]bool)
 	}
@@ -365,6 +404,9 @@ func (h *Hub) PublishLobbyUpdate(ctx context.Context, code string) {
 }
 
 func (h *Hub) sendLobbyUpdate(ctx context.Context, code string, connections []*websocket.Conn) {
+	if h.db == nil {
+		return
+	}
 	players, err := db.ListLobbyPlayers(ctx, h.db, code)
 	if err != nil {
 		log.Printf("failed to load lobby players for %s: %v", code, err)
@@ -374,12 +416,14 @@ func (h *Hub) sendLobbyUpdate(ctx context.Context, code string, connections []*w
 	for _, player := range players {
 		h.mu.Lock()
 		ready := h.lobbyReady[code][player.UserID]
+		voiceConnected := h.voiceConnected[code][player.UserID]
 		h.mu.Unlock()
 		messagePlayers = append(messagePlayers, model.LobbyPlayer{
-			UserID:   player.UserID,
-			Username: player.Username,
-			Role:     player.Role,
-			Ready:    ready,
+			UserID:         player.UserID,
+			Username:       player.Username,
+			Role:           player.Role,
+			Ready:          ready,
+			VoiceConnected: voiceConnected,
 		})
 	}
 	message := model.ServerMessage{Type: "lobby.updated", RoomCode: code, Players: messagePlayers, Message: "lobby updated"}

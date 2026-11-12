@@ -294,6 +294,16 @@ const pl: Messages = {
 		back: 'Wróć do panelu',
 		gameTitle: 'Gra LingoDash',
 		loading: 'Wczytywanie gry...',
+		voice: {
+			off: 'Głos wyłączony',
+			requestingMic: 'Zezwól na mikrofon...',
+			micDenied: 'Brak mikrofonu',
+			waiting: 'Czekam na czat głosowy...',
+			connected: 'Czat głosowy połączony',
+			error: 'Ponowne łączenie głosu...',
+			mute: 'Wycisz',
+			unmute: 'Włącz dźwięk',
+		},
 	},
 	notFound: {
 		title: 'Nie znaleziono strony',

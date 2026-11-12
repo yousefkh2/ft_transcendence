@@ -58,3 +58,9 @@ _GAME_CHECK_WRONG_TITLE_,THE ROOM IS WRONG!,¡LA HABITACIÓN NO ESTÁ BIEN!,POK�
 _GAME_ATTEMPTS_LEFT_,Attempts left: {left},Intentos restantes: {left},Pozostałe próby: {left},Kalan deneme: {left},Verbleibende Versuche: {left}
 _GAME_NO_ATTEMPTS_,GAME OVER!,¡FIN DEL JUEGO!,KONIEC GRY!,OYUN BİTTİ!,SPIEL VORBEI!
 _GAME_NO_ATTEMPTS_TEXT_,You used all {max} attempts.,Habéis usado los {max} intentos.,Wykorzystaliście wszystkie {max} prób.,{max} denemenin hepsini kullandınız.,Ihr habt alle {max} Versuche verbraucht.
+_PRE_VOICE_REQUESTING_,Allow the microphone in your browser,Permite el micrófono en tu navegador,Zezwól na mikrofon w przeglądarce,Tarayıcında mikrofona izin ver,Erlaube das Mikrofon in deinem Browser
+_PRE_VOICE_MIC_DENIED_,No microphone - allow it in your browser to play,Sin micrófono - permítelo en tu navegador para jugar,Brak mikrofonu - zezwól na niego w przeglądarce aby grać,Mikrofon yok - oynamak için tarayıcında izin ver,Kein Mikrofon - erlaube es im Browser um zu spielen
+_PRE_VOICE_WAITING_,Microphone ready - waiting for the other player,Micrófono listo - esperando al otro jugador,Mikrofon gotowy - czekam na drugiego gracza,Mikrofon hazır - diğer oyuncu bekleniyor,Mikrofon bereit - warte auf den anderen Spieler
+_PRE_VOICE_CONNECTED_,Voice connected - you can talk now,Voz conectada - ya podéis hablar,Głos połączony - możecie rozmawiać,Ses bağlandı - artık konuşabilirsiniz,Sprachchat verbunden - ihr könnt jetzt reden
+_PRE_VOICE_ERROR_,Voice chat reconnecting...,Reconectando el chat de voz...,Ponowne łączenie czatu głosowego...,Sesli sohbet yeniden bağlanıyor...,Sprachchat verbindet neu...
+_PRE_VOICE_REQUIRED_,Connect your microphone before getting ready,Conecta tu micrófono antes de estar listo,Podłącz mikrofon zanim będziesz gotowy,Hazır olmadan önce mikrofonunu bağla,Verbinde dein Mikrofon bevor du bereit bist

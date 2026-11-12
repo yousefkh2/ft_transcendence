@@ -15,6 +15,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-transcendence_dev_password}
       POSTGRES_DB: ${POSTGRES_DB:-transcendence}
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set}
+      VOICE_REQUIRED: ${VOICE_REQUIRED:-true}
     ports:
       - "${BACKEND_PORT:-8080}:8080"
     depends_on:
@@ -29,6 +30,7 @@ services:
     container_name: transcendence-frontend
     environment:
       VITE_API_URL: ${VITE_API_URL:-http://localhost}
+      VITE_STUN_URLS: ${VITE_STUN_URLS:-}
     ports:
       - "${FRONTEND_PORT:-5173}:5173"
     volumes:
