@@ -4,6 +4,8 @@ extends Control
 @onready var game_type: Label = $create_lobby_interface/game_type
 @onready var lobby_lang: Label = $create_lobby_interface/lobby_lang
 @onready var user_name: Label = $player_data/User_name
+@onready var user_rank: Label = $player_data/User_rank
+@onready var user_pfp: TextureRect = $player_data/User_pfp
 @onready var message: RichTextLabel = $messages_terminal/message
 
 const MISSION_CONTROL_SCENE := "res://games/livingroom/mission_control.tscn"
@@ -26,6 +28,8 @@ func _ready() -> void:
 	
 	lobby_code.text = GameState.lobby_code
 	user_name.text = GameState.player_name
+	user_rank.text = GameState.xp_text()
+	GameState.apply_avatar(user_pfp)
 	_select_lobby_game_type()
 	_select_lobby_language()
 	

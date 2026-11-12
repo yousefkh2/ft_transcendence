@@ -10,6 +10,7 @@
 				<div class="round-mode">{{ round.mode }}</div>
 				<div class="round-when">{{ round.details }}</div>
 			</div>
+			<div v-if="round.xp" class="round-xp">+{{ t('common.xp', { xp: formatNumber(round.xp) }) }}</div>
 		</div>
 	</div>
 </template>
@@ -19,6 +20,7 @@ import { computed } from 'vue';
 import type { MatchHistoryEntry } from '../../api/users';
 import { formatDuration, formatLabel, formatWhen, roundResult } from '../../utils/matches';
 import { languageName } from '../../constants/languages';
+import { formatNumber } from '../../utils/format';
 import { t } from '../../i18n';
 import BaseIcon from '../base/BaseIcon.vue';
 
@@ -54,6 +56,7 @@ const rows = computed(() =>
 		result: roundResult(m),
 		mode: formatLabel(m.gameMode),
 		details: details(m),
+		xp: m.xpEarned ?? 0,
 	})),
 );
 </script>
@@ -107,6 +110,14 @@ const rows = computed(() =>
 	.round-mode {
 		font-size: var(--text-md);
 		font-weight: 700;
+	}
+
+	.round-xp {
+		flex: none;
+		font-family: var(--font-mono);
+		font-size: var(--text-sm);
+		font-weight: 700;
+		color: var(--color-success);
 	}
 
 	.round-when {

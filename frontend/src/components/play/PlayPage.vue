@@ -115,18 +115,30 @@ function enterFullscreen() {
 		gap: 10px;
 	}
 
+	/* The game is designed for 16:9. The frame keeps that shape and is as large as fits, so Godot
+	   never adds black bars; leftover space shows the page background instead. */
 	.stage {
 		position: relative;
 		flex: 1;
 		min-height: 0;
-		background: #000;
+		display: grid;
+		place-items: center;
+		container-type: size;
+		background: var(--color-surface);
 	}
 
 	iframe {
 		display: block;
+		width: min(100cqw, 100cqh * 16 / 9);
+		aspect-ratio: 16 / 9;
+		border: 0;
+		background: #000;
+	}
+
+	/* In fullscreen the frame takes the whole screen again. */
+	iframe:fullscreen {
 		width: 100%;
 		height: 100%;
-		border: 0;
 	}
 
 	.loading {

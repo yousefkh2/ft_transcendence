@@ -46,8 +46,9 @@ var _waiting_for_token := false
 # In the browser the website already logged the player in: we ask the page around the iframe for
 # its session token and then ask the backend who that token belongs to. No password is involved.
 func login() -> void:
-	if GameState.auth_token != "" and GameState.player_name != "":
-		login_success.emit.call_deferred()
+	# Already logged in (e.g. back from a round): only reload the profile, so the XP is up to date.
+	if GameState.auth_token != "":
+		_fetch_me()
 		return
 
 	if OS.has_feature("web"):
@@ -123,6 +124,9 @@ func _on_me_completed(result, response_code, headers, body):
 		return
 
 	GameState.player_name = response["username"]
+	GameState.player_xp = int(response.get("xp", 0))
+	var avatar_url = response.get("avatarUrl")
+	GameState.set_avatar_url(avatar_url if typeof(avatar_url) == TYPE_STRING else "")
 	login_success.emit()
 
 func _fail_login(reason: String) -> void:
@@ -175,7 +179,7 @@ func _on_login_completed(result, response_code, headers, body):
 
 	GameState.auth_token = token
 	GameState.player_name = logged_in_username
-	login_success.emit()
+	_fetch_me()
 
 func create_lobby() -> void:
 	request_completed.connect(_on_create_lobby_completed, CONNECT_ONE_SHOT)

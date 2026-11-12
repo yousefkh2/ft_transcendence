@@ -30,6 +30,7 @@ type MatchHistoryEntry struct {
 	IsWinner	*bool		`json:"isWinner,omitempty"`
 	Lang		string		`json:"lang"`
 	EndReason	*string		`json:"endReason,omitempty"`
+	XPEarned	int			`json:"xpEarned"`
 }
 
 func GetProfile(ctx context.Context, pool *pgxpool.Pool, userID string) (Profile, error) {
@@ -83,7 +84,7 @@ func GetPublicProfile(ctx context.Context, pool *pgxpool.Pool, username string) 
 func GetMatchHistory(ctx context.Context, pool *pgxpool.Pool, userID string) ([]MatchHistoryEntry, error) {
 	rows, err := pool.Query(ctx,
 		`SELECT gs.id, gs.game_mode, gs.status, gs.started_at, gs.ended_at, sp.role, sp.is_winner,
-			gs.lang, gs.end_reason
+			gs.lang, gs.end_reason, sp.score_delta
 		FROM session_participants sp
 		JOIN game_sessions gs ON gs.id = sp.session_id
 		WHERE sp.user_id = $1
@@ -102,7 +103,7 @@ func GetMatchHistory(ctx context.Context, pool *pgxpool.Pool, userID string) ([]
 		if err := rows.Scan(
 			&entry.SessionID, &entry.GameMode, &entry.Status,
 			&entry.StartedAt, &entry.EndedAt, &entry.Role, &entry.IsWinner,
-			&entry.Lang, &entry.EndReason,
+			&entry.Lang, &entry.EndReason, &entry.XPEarned,
 		); err != nil {
 			return nil, err
 		}

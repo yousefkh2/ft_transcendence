@@ -7,6 +7,8 @@ extends Control
 @onready var message_interface: Panel = $message_interface
 @onready var message: RichTextLabel = $message_interface/message
 @onready var user_name: Label = $Background/player_data/User_name
+@onready var user_rank: Label = $Background/player_data/User_rank
+@onready var user_pfp: TextureRect = $Background/player_data/User_pfp
 
 var pre_game_lobby = "res://games/pregame_lobby/pregame_lobby.tscn"
 var main_menu = "res://games/main_menu/menu.tscn"
@@ -24,6 +26,8 @@ func _ready():
 	http_request.lobby_joined.connect(_on_lobby_joined)
 	http_request.lobby_join_failed.connect(_on_lobby_join_failed)
 
+	GameState.apply_avatar(user_pfp)
+	GameState.avatar_changed.connect(_on_avatar_changed)
 	http_request.login()
 	
 
@@ -38,6 +42,10 @@ func _show_pending_lobby_message() -> void:
 func _on_login_success() -> void:
 	print("Logged in successfully.")
 	user_name.text = GameState.player_name
+	user_rank.text = GameState.xp_text()
+
+func _on_avatar_changed() -> void:
+	GameState.apply_avatar(user_pfp)
 
 func _on_login_failed(message: String) -> void:
 	push_error("Login failed: " + message)

@@ -5,6 +5,8 @@ import (
 	"errors"
 	"time"
 
+	"transcendence/backend/internal/game"
+
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -50,9 +52,18 @@ func FinishMatch(ctx context.Context, pool *pgxpool.Pool, code string, startedAt
 		return nil
 	}
 
+	xp := game.MatchXP(won, endedAt.Sub(startedAt))
 	if _, err := tx.Exec(ctx,
-		`UPDATE session_participants SET is_winner = $1 WHERE session_id = $2`,
-		won, sessionID,
+		`UPDATE session_participants SET is_winner = $1, score_delta = $2 WHERE session_id = $3`,
+		won, xp, sessionID,
+	); err != nil {
+		return err
+	}
+
+	if _, err := tx.Exec(ctx,
+		`UPDATE users SET xp = xp + $1
+		WHERE id IN (SELECT user_id FROM session_participants WHERE session_id = $2)`,
+		xp, sessionID,
 	); err != nil {
 		return err
 	}
