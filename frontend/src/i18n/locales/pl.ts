@@ -248,6 +248,12 @@ const pl: Messages = {
 		won: 'Wygrana',
 		lost: 'Przegrana',
 		pending: 'Nieukończona',
+		duration: 'Czas gry {time}',
+		endReason: {
+			solved: 'Pokój ukończony',
+			timeUp: 'Koniec czasu',
+			outOfChecks: 'Brak prób',
+		},
 	},
 	avatar: {
 		upload: 'Prześlij zdjęcie',

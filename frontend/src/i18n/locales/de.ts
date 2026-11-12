@@ -242,6 +242,12 @@ const de: Messages = {
 		won: 'Gewonnen',
 		lost: 'Verloren',
 		pending: 'Nicht beendet',
+		duration: '{time} gespielt',
+		endReason: {
+			solved: 'Raum gelöst',
+			timeUp: 'Zeit abgelaufen',
+			outOfChecks: 'Keine Versuche mehr',
+		},
 	},
 	avatar: {
 		upload: 'Bild hochladen',

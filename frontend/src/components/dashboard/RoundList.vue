@@ -17,7 +17,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { MatchHistoryEntry } from '../../api/users';
-import { formatLabel, formatWhen, roundResult } from '../../utils/matches';
+import { formatDuration, formatLabel, formatWhen, roundResult } from '../../utils/matches';
+import { languageName } from '../../constants/languages';
 import { t } from '../../i18n';
 import BaseIcon from '../base/BaseIcon.vue';
 
@@ -28,12 +29,31 @@ function resultLabel(result: 'won' | 'lost' | 'pending') {
 	return result === 'pending' ? t('rounds.pending') : t(result === 'won' ? 'rounds.won' : 'rounds.lost');
 }
 
+const END_REASON_KEYS = {
+	solved: 'rounds.endReason.solved',
+	time_up: 'rounds.endReason.timeUp',
+	out_of_checks: 'rounds.endReason.outOfChecks',
+} as const;
+
+// "Today · German · 4:32 played · Time's up", plus the role on the profile page.
+function details(m: MatchHistoryEntry) {
+	const duration = formatDuration(m.startedAt, m.endedAt);
+	const parts = [
+		formatWhen(m.startedAt),
+		m.lang ? languageName(m.lang) : null,
+		duration ? t('rounds.duration', { time: duration }) : null,
+		m.endReason ? t(END_REASON_KEYS[m.endReason]) : null,
+		props.showRole && m.role ? formatLabel(m.role) : null,
+	];
+	return parts.filter(Boolean).join(' · ');
+}
+
 const rows = computed(() =>
 	props.matches.map((m) => ({
 		sessionId: m.sessionId,
 		result: roundResult(m),
 		mode: formatLabel(m.gameMode),
-		details: props.showRole && m.role ? `${formatWhen(m.startedAt)} · ${formatLabel(m.role)}` : formatWhen(m.startedAt),
+		details: details(m),
 	})),
 );
 </script>

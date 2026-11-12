@@ -26,7 +26,11 @@ var apartmentObjectives = []model.Objective{
 	},
 }
 
-const RoundDuration = 60 * time.Second
+// RoundDuration matches the timer in the game client (livingroom_game.gd STARTING_SECONDS).
+const RoundDuration = 5 * time.Minute
+
+// MaxCheckAttempts matches MAX_ATTEMPTS in the game client: after this many wrong checks the round is lost.
+const MaxCheckAttempts = 5
 
 func InitialObjectPositions() map[string]model.Position {
 	return map[string]model.Position{

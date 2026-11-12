@@ -243,6 +243,12 @@ const tr: Messages = {
 		won: 'Kazanıldı',
 		lost: 'Kaybedildi',
 		pending: 'Tamamlanmadı',
+		duration: '{time} oynandı',
+		endReason: {
+			solved: 'Oda çözüldü',
+			timeUp: 'Süre doldu',
+			outOfChecks: 'Deneme hakkı kalmadı',
+		},
 	},
 	avatar: {
 		upload: 'Resim yükle',

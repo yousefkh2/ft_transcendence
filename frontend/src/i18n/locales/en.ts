@@ -244,6 +244,12 @@ const en = {
 		won: 'Won',
 		lost: 'Lost',
 		pending: 'Not finished',
+		duration: '{time} played',
+		endReason: {
+			solved: 'Room solved',
+			timeUp: "Time's up",
+			outOfChecks: 'Out of attempts',
+		},
 	},
 	avatar: {
 		upload: 'Upload picture',
