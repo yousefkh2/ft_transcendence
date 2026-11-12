@@ -29,9 +29,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import logo from '../../images/logo-transparent.png';
 import { useHeartbeat } from '../../composables/useHeartbeat';
+import { getToken, hasValidSession } from '../../auth/session';
 import BaseButton from '../base/BaseButton.vue';
 import BaseIcon from '../base/BaseIcon.vue';
 import { t } from '../../i18n';
@@ -41,6 +42,29 @@ useHeartbeat();
 
 const gameFrame = ref<HTMLIFrameElement | null>(null);
 const loaded = ref(false);
+
+// The Godot game asks for the login token once it has started. Only our own iframe, on our own
+// origin, gets an answer, and the reply is addressed to that origin only. The game gets the signed
+// session token (never the password) and the backend checks it on every request.
+function onGameMessage(event: MessageEvent) {
+	const frameWindow = gameFrame.value?.contentWindow;
+	if (!frameWindow || event.source !== frameWindow || event.origin !== window.location.origin) return;
+	if (typeof event.data !== 'string') return;
+
+	let message: { type?: unknown };
+	try {
+		message = JSON.parse(event.data);
+	} catch {
+		return;
+	}
+	if (message?.type !== 'lingodash:auth-request') return;
+
+	const token = hasValidSession() ? getToken() : null;
+	frameWindow.postMessage(JSON.stringify({ type: 'lingodash:auth', token }), window.location.origin);
+}
+
+onMounted(() => window.addEventListener('message', onGameMessage));
+onBeforeUnmount(() => window.removeEventListener('message', onGameMessage));
 
 function enterFullscreen() {
 	gameFrame.value?.requestFullscreen();
