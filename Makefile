@@ -11,9 +11,10 @@ up:	certs
 
 # Prints the addresses to open, also for other computers on the same network.
 url:
-	@echo "Open https://localhost on this computer."
-	@IP=$$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || hostname -I 2>/dev/null | awk '{print $$1}'); \
-	if [ -n "$$IP" ]; then echo "Other computers on the network: https://$$IP"; fi
+	@PORT=$$(grep -E '^HTTPS_PORT=' .env 2>/dev/null | cut -d= -f2 | tr -d ' "'); PORT=$${PORT:-8443}; \
+	echo "Open https://localhost:$$PORT on this computer."; \
+	IP=$$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || hostname -I 2>/dev/null | awk '{print $$1}'); \
+	if [ -n "$$IP" ]; then echo "Other computers on the network: https://$$IP:$$PORT"; fi
 	@echo "The certificate is self-signed: accept the browser warning once on each computer."
 
 down:

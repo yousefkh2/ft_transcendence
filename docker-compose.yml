@@ -62,15 +62,18 @@ services:
       retries: 10
     restart: unless-stopped
 
-  # HTTPS entry point: https://localhost here, https://<this computer's IP> from other computers.
+  # HTTPS entry point: https://localhost:8443 here, https://<this computer's IP>:8443 from other computers.
+  # Ports above 1024, because rootless Docker (e.g. on the school computers) cannot use 80 and 443.
   nginx:
     image: nginx:alpine
     container_name: transcendence-nginx
+    environment:
+      HTTPS_PORT: ${HTTPS_PORT:-8443}
     ports:
-      - "443:443"
-      - "80:80"
+      - "${HTTPS_PORT:-8443}:443"
+      - "${HTTP_PORT:-8000}:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ./nginx/certs:/etc/nginx/certs:ro
     depends_on:
       - backend

@@ -55,8 +55,8 @@ make up
 The first start takes a few minutes. When it is done it prints something like:
 
 ```text
-Open https://localhost on this computer.
-Other computers on the network: https://192.168.1.20
+Open https://localhost:8443 on this computer.
+Other computers on the network: https://192.168.1.20:8443
 The certificate is self-signed: accept the browser warning once on each computer.
 ```
 
@@ -72,7 +72,7 @@ make url
 
 ## 5. Open the website on the host
 
-1. Open **https://localhost** in your browser.
+1. Open **https://localhost:8443** in your browser.
 2. The browser shows a security warning (the certificate is made by us, not by a
    real certificate company). Click **Advanced → Proceed / Accept the risk**.
 3. Register an account, log in, and click **Play**.
@@ -83,7 +83,7 @@ make url
 
 1. Make sure both computers are on the **same Wi-Fi / network**.
 2. On the second PC, open the **host address** from step 4, for example
-   **https://192.168.1.20**.
+   **https://192.168.1.20:8443**. Do not forget the **:8443** at the end.
 3. Accept the security warning again (same as step 5).
 4. Register a **different** account and log in.
 
@@ -108,6 +108,7 @@ make url
 |---|---|
 | `make up` fails with `JWT_SECRET must be set` | You skipped step 3. Set `JWT_SECRET` in `.env`. |
 | `make up` fails, "Cannot connect to the Docker daemon" | Start Docker Desktop and try again. |
+| `make up` fails with `cannot expose privileged port 80` / `bind: permission denied` | Your Docker cannot use ports below 1024 (rootless Docker, e.g. on the school computers). The project uses 8443 and 8000 by default – check that `HTTPS_PORT` and `HTTP_PORT` in your `.env` are not set to 443 / 80, then run `make up` again. |
 | The second PC cannot open the host address | Both PCs must be on the same network. Check that the host's firewall allows incoming connections for Docker. Run `make url` again – the IP can change when you switch networks. |
 | The page loads but login / the game does not work on the second PC | Check that `VITE_API_URL=` is empty in `.env`, then run `make restart`. |
 | "No microphone" | Click the lock / site-settings icon next to the address bar, allow the microphone, then leave the lobby and join it again. Always use **https://**, not http://. |

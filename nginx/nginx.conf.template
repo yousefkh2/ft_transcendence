@@ -1,6 +1,9 @@
 # One HTTPS address for everything: the website, the Godot game, the API and the WebSockets.
-# Other computers on the network open https://<this computer's IP>. HTTPS is required because
-# browsers only allow the microphone (voice chat) on https:// or localhost.
+# Other computers on the network open https://<this computer's IP>:${HTTPS_PORT}. HTTPS is required
+# because browsers only allow the microphone (voice chat) on https:// or localhost.
+#
+# This is a template: when the container starts, nginx fills in ${HTTPS_PORT} from docker-compose.yml.
+# nginx's own variables like $host stay as they are.
 
 map $http_upgrade $connection_upgrade {
 	default upgrade;
@@ -10,7 +13,7 @@ map $http_upgrade $connection_upgrade {
 server {
 	listen 80;
 	server_name _;
-	return 301 https://$host$request_uri;
+	return 301 https://$host:${HTTPS_PORT}$request_uri;
 }
 
 server {
