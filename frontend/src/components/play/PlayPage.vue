@@ -31,7 +31,7 @@
 				ref="gameFrame"
 				src="/game.html"
 				:title="t('play.gameTitle')"
-				allow="autoplay; fullscreen; microphone"
+				allow="fullscreen; microphone"
 				@load="loaded = true"
 			></iframe>
 			<div v-if="!loaded" class="loading" role="status">

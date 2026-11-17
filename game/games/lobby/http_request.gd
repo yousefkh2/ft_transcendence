@@ -131,7 +131,7 @@ func _on_me_completed(result, response_code, headers, body):
 	login_success.emit()
 
 func _fail_login(reason: String) -> void:
-	push_error("Login failed: " + reason)
+	GameState.log_error("Login failed: " + reason)
 	message.text = tr("_LOBBY_LOGIN_FAILED_")
 	login_failed.emit(reason)
 
@@ -151,7 +151,7 @@ func _dev_login() -> void:
 func _on_login_completed(result, response_code, headers, body):
 	if response_code != 200:
 		var msg = "Login failed: %s" % body.get_string_from_utf8()
-		push_error(msg)
+		GameState.log_error(msg)
 
 		var json = JSON.new()
 		if json.parse(body.get_string_from_utf8()) == OK:
@@ -204,7 +204,7 @@ func create_lobby() -> void:
 func _on_create_lobby_completed(result, response_code, headers, body):
 	if response_code != 200 and response_code != 201:
 		var msg = "Create lobby failed: %s" % body.get_string_from_utf8()
-		push_error(msg)
+		GameState.log_error(msg)
 		lobby_creation_failed.emit(msg)
 		return
 
@@ -245,7 +245,7 @@ func join_lobby(code: String) -> void:
 func _on_join_lobby_completed(result, response_code, headers, body):
 	if response_code != 200 and response_code != 201:
 		var msg = "Join lobby failed: %s" % body.get_string_from_utf8()
-		push_error(msg)
+		GameState.log_error(msg)
 		
 		var json = JSON.new()
 		if json.parse(body.get_string_from_utf8()) == OK:

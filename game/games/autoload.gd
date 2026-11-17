@@ -34,6 +34,12 @@ func level_text() -> String:
 		return tr("_PROFILE_RANK_LOADING_")
 	return tr("_PROFILE_LEVEL_").format({"level": player_level})
 
+# Errors go to the Godot output while developing, but stay out of the browser console in the
+# exported (release) game: the website must not show errors or warnings in the console.
+func log_error(message: String) -> void:
+	if OS.is_debug_build():
+		push_error(message)
+
 # --- Backend address -----------------------------------------------------------
 
 var _api_url := ""
@@ -75,12 +81,12 @@ func set_avatar_url(url: String) -> void:
 		return
 	# The picture endpoint is public, so no token is needed.
 	if _avatar_request.request(api_url() + url) != OK:
-		push_error("Profile picture request failed to send.")
+		log_error("Profile picture request failed to send.")
 		_avatar_url = ""
 
 func _on_avatar_completed(result: int, response_code: int, _headers, body: PackedByteArray) -> void:
 	if result != HTTPRequest.RESULT_SUCCESS or response_code != 200 or body.size() < 4:
-		push_error("Could not download the profile picture (%d)." % response_code)
+		log_error("Could not download the profile picture (%d)." % response_code)
 		_avatar_url = ""
 		return
 
@@ -92,7 +98,7 @@ func _on_avatar_completed(result: int, response_code: int, _headers, body: Packe
 	elif body[0] == 0xFF and body[1] == 0xD8:
 		error = image.load_jpg_from_buffer(body)
 	if error != OK:
-		push_error("Could not read the profile picture.")
+		log_error("Could not read the profile picture.")
 		_avatar_url = ""
 		return
 

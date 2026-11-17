@@ -14,6 +14,11 @@ config/name="game"
 run/main_scene="uid://y7txpxu8meo6"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
+run/disable_stdout.web=true
+
+[audio]
+
+driver/driver.web="Dummy"
 
 [autoload]
 
