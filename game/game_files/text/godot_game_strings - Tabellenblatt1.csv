@@ -15,6 +15,7 @@ _LOBBY_LANGUAGE_MISMATCH_,The lobby language must match your current language,El
 ,,,,,
 _PROFILE_NAME_LOADING_,Name Loading...,Cargando nombre...,Ładowanie nazwy...,İsim yükleniyor...,Name wird geladen...
 _PROFILE_RANK_LOADING_,Rank Loading...,Cargando rango...,Ładowanie rangi...,Rütbe yükleniyor...,Rang wird geladen...
+_PROFILE_LEVEL_,Level {level},Nivel {level},Poziom {level},Seviye {level},Level {level}
 ,,,,,
 _PRE_LOBBY_SETTINGS_,Lobby settings,Configuración de la sala,Ustawienia lobby,Lobi ayarları,Lobby Einstellungen
 _PRE_GAME_TYPE_,Game type,Tipo de juego,Typ gry,Oyun türü,Spieltyp

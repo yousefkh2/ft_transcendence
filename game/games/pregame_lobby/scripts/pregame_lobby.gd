@@ -27,7 +27,7 @@ func _ready() -> void:
 	
 	lobby_code.text = GameState.lobby_code
 	user_name.text = GameState.player_name
-	user_rank.text = GameState.xp_text()
+	user_rank.text = GameState.level_text()
 	GameState.apply_avatar(user_pfp)
 	_select_lobby_game_type()
 	_select_lobby_language()

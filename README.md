@@ -94,8 +94,6 @@ Database tests run against a real Postgres when `TEST_DATABASE_URL` is set, e.g.
 
 ## Project Management
 
-- **Work organisation:** TODO – how tasks were split (by area: game / backend / frontend / infra),
-  how often you met.
 - **Tools:** GitHub (repository `ft_transcendence`), feature branches + pull requests
   (`feature/*`, `frontend/*`, `godot/*`), GitHub Actions CI. TODO – add the board/issue tracker
   you used.
@@ -335,7 +333,8 @@ clear rules (5 minutes, 5 checks, all 4 items on their spot) and clear win/loss 
 **How:** own small i18n system (`frontend/src/i18n`): English, German, Polish, Turkish with plural
 rules (`Intl.PluralRules`), a language switcher in every header, saved choice, and **type-checked
 keys** – a missing translation in any language fails the build. Backend error messages are mapped
-to translations. The Godot game has its own translation tables and follows the site language.
+to translations. The Godot game has its own translation tables and its own language selector in
+the main menu.
 
 ### 7. Custom design system (Minor, 1)
 **How:** colour, typography, radius and shadow **tokens** in `frontend/src/style.css`, an own line
@@ -344,7 +343,7 @@ to translations. The Godot game has its own translation tables and follows the s
 `BaseEyebrow`, `BrandBolt`.
 
 ### 8. Game statistics & match history (Minor, 1)
-**How:** wins, losses, win rate, XP, **level** and **rank** per player; match history with date,
+**How:** wins, losses, win rate, XP and **level** per player, **rank** on the leaderboard; match history with date,
 language, role, duration, result and XP; **achievements with progress**; **leaderboard**
 (global / friends).
 
@@ -385,7 +384,7 @@ more than a "use a library" task.
   (generation, clues, checks, timer, end screens), game translations, web export, the bridge to the
   website (login token, voice status).
 - **WebRTC voice chat** (browser side and voice hub), **HTTPS/LAN hosting** with nginx.
-- Match history, XP, round saving; **chat**, **levels, achievements and leaderboard**..
+- Match history, XP, round saving; **chat**, **levels, achievements and leaderboard**.
 
 ### dreule (Daniel)
 - **Backend core:** migration to Echo, register/login with validation, JWT, CORS.

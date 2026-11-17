@@ -44,7 +44,7 @@ func _show_pending_lobby_message() -> void:
 func _on_login_success() -> void:
 	print("Logged in successfully.")
 	user_name.text = GameState.player_name
-	user_rank.text = GameState.xp_text()
+	user_rank.text = GameState.level_text()
 
 func _on_avatar_changed() -> void:
 	GameState.apply_avatar(user_pfp)

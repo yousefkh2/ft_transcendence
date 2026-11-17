@@ -378,28 +378,6 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
 text = "MENU_LABEL_BACK"
 
-[node name="dev_game_select" type="Panel" parent="." unique_id=2021544984]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="select_dev_game_button" type="Button" parent="dev_game_select" unique_id=1535508040]
-layout_mode = 0
-offset_left = 559.0
-offset_top = 88.0
-offset_right = 931.0
-offset_bottom = 154.0
-size_flags_vertical = 3
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("3_rdij3")
-theme_override_font_sizes/font_size = 48
-theme_override_styles/normal = SubResource("StyleBoxFlat_a01gq")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_rdij3")
-theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
-text = "Select Game"
-
 [node name="create lobby" type="Panel" parent="." unique_id=1369510205]
 layout_mode = 1
 anchors_preset = -1
@@ -445,6 +423,5 @@ script = ExtResource("4_0vj6i")
 [connection signal="item_selected" from="create_lobby_interface/language_selecter" to="create_lobby_interface/language_selecter" method="_on_item_selected"]
 [connection signal="ready" from="create_lobby_interface/language_selecter" to="create_lobby_interface/language_selecter" method="_on_ready"]
 [connection signal="pressed" from="create_lobby_interface/back_button" to="." method="_on_back_button_pressed"]
-[connection signal="pressed" from="dev_game_select/select_dev_game_button" to="." method="_on_select_dev_game_button_pressed"]
 [connection signal="pressed" from="create lobby/create_lobby" to="." method="_on_create_lobby_pressed"]
 [connection signal="pressed" from="create lobby/create_lobby" to="create lobby/create_lobby" method="_on_pressed"]

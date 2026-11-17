@@ -20,18 +20,19 @@ var game_mode: String = ""
 var status: String = ""
 var player_count: int = 0
 var player_name: String = ""  
-var player_xp: int = -1  # -1 until the profile is loaded
+var player_level: int = -1  # -1 until the profile is loaded
 var game_lang: String = ""
 var selected_locale: String = "ENGLISH"
 var lobby_locale: String = "en"
 var player_role: int = 0
 var lobby_message: String = ""
 
-# The player's XP for the profile box, like "1250 XP". Same wording as the website in every language.
-func xp_text() -> String:
-	if player_xp < 0:
+# The player's level for the profile box, like "Level 5". Same wording as the website in every language.
+# The backend computes the level from the XP (backend/internal/game/level.go).
+func level_text() -> String:
+	if player_level < 0:
 		return tr("_PROFILE_RANK_LOADING_")
-	return "%d XP" % player_xp
+	return tr("_PROFILE_LEVEL_").format({"level": player_level})
 
 # --- Backend address -----------------------------------------------------------
 
