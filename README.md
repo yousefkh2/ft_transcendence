@@ -75,12 +75,15 @@ make down      # stop everything
 make restart   # after changing .env
 make logs      # follow all logs
 make url       # print the addresses to open
-make test      # backend tests (go test ./...)
+make test      # backend tests without the database (go test ./...)
+make test-db   # all backend tests, including the database tests
+make health    # check the backend and the database through HTTPS
 make migrate   # re-apply the SQL migrations (they are idempotent)
 ```
 
-Database tests run against a real Postgres when `TEST_DATABASE_URL` is set, e.g.
-`TEST_DATABASE_URL=postgres://transcendence:transcendence_dev_password@localhost:5433/transcendence go test ./backend/...`
+`make test-db` runs all backend tests **including the database tests** against the running
+Postgres (after `make up`). Postgres is not published to the host, so the tests run in a Go
+container on the project's internal Docker network.
 
 ---
 
@@ -246,7 +249,9 @@ switches from the lobby to the round.
 - Passwords: **bcrypt** (salted); the 72-byte bcrypt limit is checked on both sides.
 - Sessions: JWT in the `Authorization` header; WebSockets authenticate with the token in their
   first message.
-- All browser traffic goes through **HTTPS/WSS** (nginx, TLS).
+- All traffic goes through **HTTPS/WSS** (nginx, TLS): nginx is the **only published port**.
+  The backend, the frontend dev server and Postgres are reachable only on the internal Docker
+  network, and the plain-HTTP port (8000) only redirects to HTTPS.
 - Every form is validated in the **frontend and the backend** with the same rules and messages
   (`frontend/src/validation/rules.ts` ↔ `backend/internal/validate`); the database adds CHECK and
   UNIQUE constraints on top.
@@ -267,7 +272,6 @@ switches from the lobby to the round.
 | Public profiles | other users' stats, level, achievements | Miguel, gzovkic |
 | Lobbies & matchmaking | codes, join/leave, roles, ready, countdown, language per lobby | Daniel, gzovkic |
 | The game (Godot) | menu, lobby, living-room puzzle, timer, checks, end screens, translations | gzovkic |
-| First round contract | objectives, round timer, completion broadcast | Yousef |
 | Voice chat | WebRTC signalling and browser audio | gzovkic, Daniel |
 | Text chat | friends-only live messages, unread counters | gzovkic |
 | Match history & XP | saved rounds, XP formula, history list | gzovkic, Daniel |
@@ -277,8 +281,7 @@ switches from the lobby to the round.
 | Translations | en / de / pl / tr for the site and the game | Miguel, gzovkic |
 | Privacy Policy & Terms of Service | linked in every footer | Miguel |
 | HTTPS & LAN play | nginx TLS, `make url` | gzovkic, Daniel |
-| Docker, migrations, CI | one-command start, GitHub Actions | Daniel, Yousef, gzovkic |
-| Transcription prototype | OpenAI Realtime session endpoint (not finished, not claimed) | Yousef |
+| Docker, migrations, CI | one-command start, GitHub Actions | Daniel, gzovkic |
 
 ---
 
@@ -292,7 +295,7 @@ switches from the lobby to the round.
 | 2 | Web – Real-time features with WebSockets | Major | 2 | Daniel, gzovkic |
 | 3 | Web – Users interact with other users (chat, profiles, friends) | Major | 2 | Miguel, Daniel, gzovkic |
 | 4 | User Management – Standard user management | Major | 2 | Miguel, Daniel |
-| 5 | Gaming – Complete web-based game | Major | 2 | gzovkic, Yousef |
+| 5 | Gaming – Complete web-based game | Major | 2 | gzovkic |
 | 6 | Accessibility – Multiple languages (4) | Minor | 1 | Miguel, gzovkic |
 | 7 | Web – Custom design system | Minor | 1 | Miguel |
 | 8 | User Management – Game statistics & match history | Minor | 1 | gzovkic |
@@ -301,7 +304,7 @@ switches from the lobby to the round.
 | | **Total** | | **16** | |
 
 ### 1. Frontend + backend framework (Major, 2)
-**Why:** a framework on both sides gives structure (routing, components, middleware) for a team of four.
+**Why:** a framework on both sides gives structure (routing, components, middleware) for a team of three.
 **How:** Vue 3 single-page app with Vue Router (lazy-loaded routes, auth guards) in `frontend/`;
 Go **Echo** in `backend/` with route groups, auth middleware and recovery middleware (`backend/cmd/api/main.go`).
 

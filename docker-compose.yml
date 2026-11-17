@@ -16,8 +16,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-transcendence}
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set}
       VOICE_REQUIRED: ${VOICE_REQUIRED:-true}
-    ports:
-      - "${BACKEND_PORT:-8080}:8080"
+    # No published port: the only way in is nginx over HTTPS (the subject requires HTTPS for every
+    # connection to the backend). Containers still reach each other on the internal Docker network.
     depends_on:
       db:
         condition: service_healthy
@@ -31,11 +31,11 @@ services:
     environment:
       # Empty: the website talks to the address it was opened from (nginx or the Vite proxy).
       VITE_API_URL: ${VITE_API_URL:-}
-      # Where the Vite dev server forwards /api and /ws when the site is opened on port 5173.
+      # Where the Vite dev server forwards /api and /ws (only used inside Docker).
       API_PROXY_TARGET: http://backend:8080
       VITE_STUN_URLS: ${VITE_STUN_URLS:-}
-    ports:
-      - "${FRONTEND_PORT:-5173}:5173"
+    # No published port: the only way in is nginx over HTTPS (the subject requires HTTPS for every
+    # connection to the backend). Containers still reach each other on the internal Docker network.
     volumes:
       - ./frontend:/app
       - frontend_node_modules:/app/node_modules
@@ -50,8 +50,8 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-transcendence}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-transcendence_dev_password}
       POSTGRES_DB: ${POSTGRES_DB:-transcendence}
-    ports:
-      - "${POSTGRES_PORT:-5433}:5432"
+    # No published port: the only way in is nginx over HTTPS (the subject requires HTTPS for every
+    # connection to the backend). Containers still reach each other on the internal Docker network.
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./backend/sql/migrations:/docker-entrypoint-initdb.d:ro
