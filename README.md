@@ -88,9 +88,9 @@ Database tests run against a real Postgres when `TEST_DATABASE_URL` is set, e.g.
 
 | Member | Role(s) | Responsibilities |
 |---|---|---|
-| **gzovkic** | TODO (e.g. Tech Lead / Developer) | Godot game, game networking, voice chat, HTTPS/LAN hosting, match history & XP, chat, levels & achievements |
-| **dreule** (Daniel) | TODO | Backend core: Echo API, authentication, lobbies & matchmaking, role resolution, Docker/DB setup, WebRTC signalling |
-| **mimalek** (Miguel) | TODO | Frontend: landing page, dashboard, design system, accessibility, interface translations, profiles, avatars, friends UI, legal pages |
+| **gzovkic** | Product Owner | Godot game, game networking, voice chat, HTTPS/LAN hosting, match history & XP, chat, levels & achievements |
+| **dreule** (Daniel) | Technical Lead | Backend core: Echo API, authentication, lobbies & matchmaking, role resolution, Docker/DB setup, WebRTC signalling |
+| **mimalek** (Miguel) | Project Manager | Frontend: landing page, dashboard, design system, accessibility, interface translations, profiles, avatars, friends UI, legal pages |
 
 ## Project Management
 
