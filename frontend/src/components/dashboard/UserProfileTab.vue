@@ -31,6 +31,8 @@
 			<BaseAlert v-if="loadError" size="md" @retry="load(username)">{{ t('profile.loadError') }}</BaseAlert>
 			<BaseAlert v-if="actionError">{{ actionError }}</BaseAlert>
 
+			<LevelProgress v-if="!loadError" :level="user?.level ?? null" />
+
 			<ProfileStats
 				v-if="user"
 				:xp="user.xp"
@@ -40,6 +42,8 @@
 				:rounds-sub="t('profile.completedRounds')"
 			/>
 			<ProfileStats v-else-if="!loadError" :xp="null" :rounds="0" :wins="0" :losses="0" rounds-sub="" loading />
+
+			<AchievementsCard v-if="!loadError" :achievements="achievements" :status="achievementsStatus" @retry="loadAchievements(username)" />
 		</template>
 	</div>
 </template>
@@ -59,6 +63,10 @@ import BaseButton from '../base/BaseButton.vue';
 import BaseSkeleton from '../base/BaseSkeleton.vue';
 import ProfileHead from './ProfileHead.vue';
 import ProfileStats from './ProfileStats.vue';
+import AchievementsCard from './AchievementsCard.vue';
+import LevelProgress from './LevelProgress.vue';
+import { fetchUserAchievements, type Achievement } from '../../api/progress';
+import type { LoadStatus } from '../../composables/useLoader';
 
 const props = defineProps<{ profile: Profile | null }>();
 
@@ -83,7 +91,22 @@ const relation = computed(() => {
 	return 'none';
 });
 
+// Loaded separately, so a failure only affects the achievements card.
+const achievements = ref<Achievement[]>([]);
+const achievementsStatus = ref<LoadStatus>('loading');
+
+async function loadAchievements(name: string) {
+	achievementsStatus.value = 'loading';
+	try {
+		achievements.value = await fetchUserAchievements(name);
+		achievementsStatus.value = 'ready';
+	} catch {
+		achievementsStatus.value = 'error';
+	}
+}
+
 async function load(name: string) {
+	loadAchievements(name);
 	user.value = null;
 	notFound.value = false;
 	loadError.value = false;

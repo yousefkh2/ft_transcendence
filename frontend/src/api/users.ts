@@ -1,5 +1,12 @@
 import { request } from './client';
 
+// Level and progress towards the next one, computed by the backend from the XP.
+export interface LevelInfo {
+	level: number;
+	xpIntoLevel: number;
+	xpForNext: number;
+}
+
 export interface Profile {
 	id: string;
 	username: string;
@@ -8,6 +15,7 @@ export interface Profile {
 	createdAt: string;
 	learningLanguage: string;
 	avatarUrl?: string;
+	level: LevelInfo;
 }
 
 export interface MatchHistoryEntry {
@@ -44,6 +52,7 @@ export interface PublicProfile {
 	roundsPlayed: number;
 	wins: number;
 	losses: number;
+	level: LevelInfo;
 }
 
 export function fetchPublicProfile(username: string): Promise<PublicProfile> {

@@ -24,6 +24,18 @@ const router = createRouter({
 			children: [
 				{ path: '', name: 'dashboard', component: () => import('../components/dashboard/OverviewTab.vue'), meta: { title: () => t('titles.overview') } },
 				{ path: 'friends', name: 'friends', component: () => import('../components/dashboard/FriendsTab.vue'), meta: { title: () => t('titles.friends') } },
+				{
+					path: 'chat/:username?',
+					name: 'chat',
+					component: () => import('../components/dashboard/ChatTab.vue'),
+					meta: { title: () => t('titles.chat') },
+				},
+				{
+					path: 'leaderboard',
+					name: 'leaderboard',
+					component: () => import('../components/dashboard/LeaderboardTab.vue'),
+					meta: { title: () => t('titles.leaderboard') },
+				},
 				{ path: 'profile', name: 'profile', component: () => import('../components/dashboard/ProfileTab.vue'), meta: { title: () => t('titles.profile') } },
 				{
 					path: 'profile/:username',

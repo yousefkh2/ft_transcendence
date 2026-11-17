@@ -388,7 +388,7 @@ type savedMatches struct {
 	reasons []string
 }
 
-func (s *savedMatches) save(code string, startedAt, endedAt time.Time, endReason string) error {
+func (s *savedMatches) save(code string, startedAt, endedAt time.Time, endReason string, failedChecks int) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.reasons = append(s.reasons, endReason)

@@ -9,6 +9,8 @@
 			<nav class="tabs" :aria-label="t('dashboard.tabs')">
 				<RouterLink :to="{ name: 'dashboard' }" class="tab-btn" exact-active-class="active">{{ t('titles.overview') }}</RouterLink>
 				<RouterLink :to="{ name: 'friends' }" class="tab-btn" exact-active-class="active">{{ t('titles.friends') }}</RouterLink>
+				<RouterLink :to="{ name: 'chat' }" class="tab-btn" active-class="active">{{ t('titles.chat') }}</RouterLink>
+				<RouterLink :to="{ name: 'leaderboard' }" class="tab-btn" exact-active-class="active">{{ t('titles.leaderboard') }}</RouterLink>
 				<RouterLink :to="{ name: 'profile' }" class="tab-btn" exact-active-class="active">{{ t('dashboard.profileTab') }}</RouterLink>
 			</nav>
 
@@ -16,7 +18,7 @@
 				<LanguageSwitcher />
 				<div class="xp-badge">
 					<span class="xp-dot"></span>
-					<span v-if="profile" class="xp-value">{{ t('common.xp', { xp: formatNumber(profile.xp) }) }}</span>
+					<span v-if="profile" class="xp-value">{{ t('level.short', { level: profile.level.level }) }} · {{ t('common.xp', { xp: formatNumber(profile.xp) }) }}</span>
 					<BaseSkeleton v-else width="44px" height="0.8em" />
 				</div>
 				<RouterLink :to="{ name: 'profile' }" class="avatar-link" :aria-label="t('dashboard.yourProfile')">
@@ -34,6 +36,8 @@
 			<BaseAlert v-if="error" size="md" @retry="loadProfile">{{ error }}</BaseAlert>
 			<RouterView v-else :profile="profile" @profile-updated="profile = $event" />
 		</main>
+
+		<AchievementToasts />
 
 		<footer class="dashboard-footer">
 			<RouterLink to="/privacy">{{ t('common.privacyPolicy') }}</RouterLink>
@@ -55,6 +59,7 @@ import LanguageSwitcher from '../LanguageSwitcher.vue';
 import { t } from '../../i18n';
 import { formatNumber } from '../../utils/format';
 import BaseSkeleton from '../base/BaseSkeleton.vue';
+import AchievementToasts from './AchievementToasts.vue';
 
 useHeartbeat();
 
@@ -119,12 +124,17 @@ onMounted(loadProfile);
 	.tabs {
 		display: flex;
 		gap: 6px;
+		max-width: 100%;
+		overflow-x: auto;
+		scrollbar-width: none;
 		background: rgba(118, 117, 134, 0.09);
 		border-radius: 13px;
 		padding: 4px;
 	}
 
 	.tab-btn {
+		flex-shrink: 0;
+		white-space: nowrap;
 		text-align: center;
 		text-decoration: none;
 		padding: 8px 18px;

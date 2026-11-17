@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 	
+	"transcendence/backend/internal/game"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -15,6 +17,7 @@ type Profile struct {
 	CreatedAt	time.Time	`json:"createdAt"`
 	LearningLanguage	string	`json:"learningLanguage"`
 	AvatarURL	*string	`json:"avatarUrl,omitempty"`
+	Level		game.LevelInfo	`json:"level"`
 }
 
 // avatarUpdatedAt is a subquery for the picture version of the user in users.id (NULL without a picture).
@@ -41,6 +44,7 @@ func GetProfile(ctx context.Context, pool *pgxpool.Pool, userID string) (Profile
 		userID,
 	).Scan(&p.Username, &p.Email, &p.XP, &p.CreatedAt, &p.LearningLanguage, &avatarAt)
 	p.AvatarURL = avatarURL(userID, avatarAt)
+	p.Level = game.LevelFor(p.XP)
 	return p, err
 }
 
@@ -56,6 +60,7 @@ type PublicProfile struct {
 	RoundsPlayed	int		`json:"roundsPlayed"`
 	Wins		int			`json:"wins"`
 	Losses		int			`json:"losses"`
+	Level		game.LevelInfo	`json:"level"`
 }
 
 func GetPublicProfile(ctx context.Context, pool *pgxpool.Pool, username string) (PublicProfile, error) {
@@ -78,6 +83,7 @@ func GetPublicProfile(ctx context.Context, pool *pgxpool.Pool, username string) 
 		&p.RoundsPlayed, &p.Wins, &p.Losses)
 	p.Online = IsOnline(p.LastSeenAt, time.Now())
 	p.AvatarURL = avatarURL(userID, avatarAt)
+	p.Level = game.LevelFor(p.XP)
 	return p, err
 }
 
@@ -156,6 +162,7 @@ func UpdateProfile(ctx context.Context, pool *pgxpool.Pool, userID string, usern
 		userID, username, email, learningLang,
 	).Scan(&p.Username, &p.Email, &p.XP, &p.CreatedAt, &p.LearningLanguage, &avatarAt)
 	p.AvatarURL = avatarURL(userID, avatarAt)
+	p.Level = game.LevelFor(p.XP)
 	return p, err
 }
 

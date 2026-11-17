@@ -13,6 +13,8 @@
 			</template>
 		</ProfileHead>
 
+		<LevelProgress :level="profile?.level" />
+
 		<ProfileStats
 			v-if="historyStatus !== 'error'"
 			:xp="profile?.xp ?? null"
@@ -57,6 +59,8 @@
 			</BaseCard>
 		</section>
 
+		<AchievementsCard :achievements="achievements" :status="achievementsStatus" @retry="loadAchievements" />
+
 		<EditProfileCard v-if="profile" :profile="profile" @updated="emit('profile-updated', $event)" />
 
 		<DeleteAccountCard />
@@ -69,6 +73,9 @@ import { apiAssetUrl } from '../../api/client';
 import { fetchFriends, type Friend } from '../../api/friends';
 import { fetchMatchHistory, type MatchHistoryEntry, type Profile } from '../../api/users';
 import { useLoader } from '../../composables/useLoader';
+import { fetchMyAchievements, type Achievement } from '../../api/progress';
+import AchievementsCard from './AchievementsCard.vue';
+import LevelProgress from './LevelProgress.vue';
 import { countSince, roundResult } from '../../utils/matches';
 import { formatDate } from '../../utils/format';
 import { languageName } from '../../constants/languages';
@@ -92,11 +99,13 @@ const emit = defineEmits<{ 'profile-updated': [profile: Profile] }>();
 // Loaded independently, so one failing request does not hide the rest of the profile.
 const { data: matches, status: historyStatus, load: loadHistory } = useLoader(fetchMatchHistory, [] as MatchHistoryEntry[]);
 const { data: friends, status: friendsStatus, load: loadFriends } = useLoader(fetchFriends, [] as Friend[]);
+const { data: achievements, status: achievementsStatus, load: loadAchievements } = useLoader(fetchMyAchievements, [] as Achievement[]);
 
 const wins = computed(() => matches.value.filter((m) => roundResult(m) === 'won').length);
 const losses = computed(() => matches.value.filter((m) => roundResult(m) === 'lost').length);
 
 onMounted(() => {
+	loadAchievements();
 	loadHistory();
 	loadFriends();
 });
