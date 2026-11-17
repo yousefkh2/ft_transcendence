@@ -153,8 +153,9 @@ export function useVoiceChat() {
 				else peer.pendingCandidates.push(candidate);
 				break;
 			}
+			// Server errors (like "not in this lobby") need no extra handling: the status shown on the
+			// page stays "waiting", and nothing is written to the console.
 			case 'error':
-				console.warn('Voice chat:', message.message);
 				break;
 		}
 	}
@@ -176,7 +177,8 @@ export function useVoiceChat() {
 			} catch {
 				return;
 			}
-			handleMessage(message).catch((error) => console.warn('Voice chat signal failed:', error));
+			// A failed signal shows up as a voice status that does not reach "connected".
+			handleMessage(message).catch(() => {});
 		};
 		ws.onclose = () => {
 			if (socket !== ws) return;

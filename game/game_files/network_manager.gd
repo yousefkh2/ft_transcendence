@@ -27,7 +27,6 @@ func connect_to_server():
 
 func join_room(room_code: String):
 	if socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
-		print("Socket not connected yet")
 		return
 
 	var msg = {
@@ -48,7 +47,6 @@ func _process(_delta):
 				is_connected = true
 				is_connecting = false
 
-				print("Connected to server")
 				connected.emit()
 
 			while socket.get_available_packet_count() > 0:
@@ -63,12 +61,10 @@ func _handle_message(text: String):
 	if text.strip_edges().is_empty():
 		return
 
-	print("SERVER:", text)
 
 	var data = JSON.parse_string(text)
 
 	if typeof(data) != TYPE_DICTIONARY:
-		print("Invalid JSON")
 		return
 
 	var msg_type = data.get("type", "")
@@ -78,7 +74,6 @@ func _handle_message(text: String):
 		"room.joined":
 			current_role = data["role"]
 
-			print("ROLE:", current_role)
 
 			room_joined.emit(current_role)
 

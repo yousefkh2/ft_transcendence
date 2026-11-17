@@ -19,15 +19,11 @@ var match_started := false
 @onready var _client : web_socket_client = $web_socket_client
 
 func _ready() -> void:
-	print(GameState.player_name)
-	print(GameState.lobby_data)
-	print(GameState.lobby_data)
-	print(GameState.game_lang)
 	
 	
 	lobby_code.text = GameState.lobby_code
 	user_name.text = GameState.player_name
-	user_rank.text = GameState.xp_text()
+	user_rank.text = GameState.level_text()
 	GameState.apply_avatar(user_pfp)
 	_select_lobby_game_type()
 	_select_lobby_language()
@@ -40,7 +36,6 @@ func _ready() -> void:
 	GameState.voice_join(GameState.lobby_code)
 	_on_voice_status_changed(GameState.voice_status)
 	
-	print("Attemting to connect to server...")
 	_connect_to_matchmaking_server()
 
 func _translate_error(error_message: String) -> String:
@@ -83,7 +78,7 @@ func _connect_to_matchmaking_server():
 	var websocket_url := GameState.ws_url("/ws/lobby")
 	var error = _client.connect_to_url(websocket_url)
 	if (error != OK):
-		print("Error connecting to websocket: %s " % [websocket_url])
+		pass
 
 func _process_received_message(raw_message):
 	if typeof(raw_message) != TYPE_STRING:
@@ -91,7 +86,6 @@ func _process_received_message(raw_message):
 
 	var response_msg = JSON.parse_string(raw_message)
 	if typeof(response_msg) != TYPE_DICTIONARY:
-		print("Invalid WebSocket message: %s" % raw_message)
 		return
 
 	match response_msg.get("type", ""):
@@ -103,19 +97,16 @@ func _process_received_message(raw_message):
 			_load_role_scene()
 		"player.disconnected":
 			var disconnect_message = str(response_msg.get("message", "A player disconnected from the lobby"))
-			print("Lobby message: %s" % disconnect_message)
 			message.text = disconnect_message
 		"error":
 			var server_message = str(response_msg.get("message", "unknown error"))
-			print("Lobby message: %s" % server_message)
 			message.text = _translate_error(server_message)
 		_:
-			print("Unhandled server message: %s" % response_msg.get("type", ""))
+			pass
 
 func _update_lobby_state(response_msg: Dictionary) -> void:
 	var players = response_msg.get("players", [])
 	if players is Array:
-		print("Lobby players updated: ", players)
 		_build_player_lobby_list(players)
 				
 
@@ -165,15 +156,12 @@ func _build_player_lobby_list(match_players):
 		
 	
 func _on_websocket_message_recieved(message):
-	print("Message received: %s " % message)
 	_process_received_message(message)
 	
 func _on_websocket_client_connection_close():
-	var ws = _client.get_socket()
-	print("Client disconnected with code %s, reason: %s" % [ws.get_close_code(), ws.get_close_reason()])
+	pass
 
 func _on_websocket_client_connected_to_server():
-	print("Client connected to server")
 
 	_send_message({
 		"type": "lobby.subscribe",
@@ -245,14 +233,12 @@ func _process(delta: float) -> void:
 
 
 func _on_send_websocket_message_pressed() -> void:
-	print("send out message from client to server")
 	var message = {
 		"type": "lobby.subscribe",
 		"roomCode": GameState.lobby_code,
 		"token": GameState.auth_token,
 	}
-	var error = _client.send_json(message)
-	print(error)
+	_client.send_json(message)
 	
 
 
@@ -274,7 +260,6 @@ func _on_join_mission_control_button_pressed() -> void:
 
 func _select_role(role: String) -> void:
 	if _client.get_socket().get_ready_state() != WebSocketPeer.STATE_OPEN:
-		print("Cannot select role: lobby WebSocket is not connected")
 		return
 
 	_send_message({

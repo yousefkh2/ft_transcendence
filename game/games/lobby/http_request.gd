@@ -46,7 +46,7 @@ var _waiting_for_token := false
 # In the browser the website already logged the player in: we ask the page around the iframe for
 # its session token and then ask the backend who that token belongs to. No password is involved.
 func login() -> void:
-	# Already logged in (e.g. back from a round): only reload the profile, so the XP is up to date.
+	# Already logged in (e.g. back from a round): only reload the profile, so the level is up to date.
 	if GameState.auth_token != "":
 		_fetch_me()
 		return
@@ -124,13 +124,14 @@ func _on_me_completed(result, response_code, headers, body):
 		return
 
 	GameState.player_name = response["username"]
-	GameState.player_xp = int(response.get("xp", 0))
+	var level_info = response.get("level")
+	GameState.player_level = int(level_info.get("level", 1)) if typeof(level_info) == TYPE_DICTIONARY else 1
 	var avatar_url = response.get("avatarUrl")
 	GameState.set_avatar_url(avatar_url if typeof(avatar_url) == TYPE_STRING else "")
 	login_success.emit()
 
 func _fail_login(reason: String) -> void:
-	push_error("Login failed: " + reason)
+	GameState.log_error("Login failed: " + reason)
 	message.text = tr("_LOBBY_LOGIN_FAILED_")
 	login_failed.emit(reason)
 
@@ -150,7 +151,7 @@ func _dev_login() -> void:
 func _on_login_completed(result, response_code, headers, body):
 	if response_code != 200:
 		var msg = "Login failed: %s" % body.get_string_from_utf8()
-		push_error(msg)
+		GameState.log_error(msg)
 
 		var json = JSON.new()
 		if json.parse(body.get_string_from_utf8()) == OK:
@@ -203,7 +204,7 @@ func create_lobby() -> void:
 func _on_create_lobby_completed(result, response_code, headers, body):
 	if response_code != 200 and response_code != 201:
 		var msg = "Create lobby failed: %s" % body.get_string_from_utf8()
-		push_error(msg)
+		GameState.log_error(msg)
 		lobby_creation_failed.emit(msg)
 		return
 
@@ -244,7 +245,7 @@ func join_lobby(code: String) -> void:
 func _on_join_lobby_completed(result, response_code, headers, body):
 	if response_code != 200 and response_code != 201:
 		var msg = "Join lobby failed: %s" % body.get_string_from_utf8()
-		push_error(msg)
+		GameState.log_error(msg)
 		
 		var json = JSON.new()
 		if json.parse(body.get_string_from_utf8()) == OK:

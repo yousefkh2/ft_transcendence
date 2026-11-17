@@ -11,11 +11,7 @@
 		</section>
 
 		<section class="stat-grid" :aria-label="t('overview.stats')">
-			<BaseCard size="sm">
-				<span class="stat-label">{{ t('overview.totalXp') }}</span>
-				<div v-if="profile" class="stat-value">{{ formatNumber(profile.xp) }}</div>
-				<BaseSkeleton v-else class="value-skeleton" shape="block" width="70px" height="30px" />
-			</BaseCard>
+			<LevelProgress :level="profile?.level" />
 			<BaseCard size="sm">
 				<span class="stat-label">{{ t('overview.roundsPlayed') }}</span>
 				<template v-if="matchesStatus === 'ready'">
@@ -85,8 +81,9 @@ import { t } from '../../i18n';
 import BaseSkeleton from '../base/BaseSkeleton.vue';
 import ListSkeleton from './ListSkeleton.vue';
 import RoundList from './RoundList.vue';
+import LevelProgress from './LevelProgress.vue';
 import { countSince } from '../../utils/matches';
-import { formatLastSeen, formatNumber } from '../../utils/format';
+import { formatLastSeen } from '../../utils/format';
 import { sortByPresence } from '../../utils/friends';
 import { PRESENCE_INTERVAL_MS } from '../../composables/useHeartbeat';
 import { usePolling } from '../../composables/usePolling';

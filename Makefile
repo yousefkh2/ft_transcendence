@@ -1,6 +1,6 @@
 COMPOSE=docker compose
 
-.PHONY: up down restart build logs ps test health clean migrate url
+.PHONY: up down restart build logs ps test test-db health clean migrate url
 
 up:	certs
 	$(COMPOSE) up -d --build
@@ -34,9 +34,16 @@ ps:
 test:
 	go test ./...
 
+# Backend tests including the database tests. Postgres is not published to the host, so the tests
+# run in a Go container on the project's internal Docker network (needs `make up` first).
+test-db:
+	docker run --rm --network transcendence_default -v "$$PWD":/src -w /src \
+		-e TEST_DATABASE_URL=postgres://$${POSTGRES_USER:-transcendence}:$${POSTGRES_PASSWORD:-transcendence_dev_password}@db:5432/$${POSTGRES_DB:-transcendence} \
+		-e CGO_ENABLED=0 golang:1.26-alpine go test ./backend/...
+
 health:
-	curl -fsS http://localhost:$${BACKEND_PORT:-8080}/health
-	curl -fsS http://localhost:$${BACKEND_PORT:-8080}/health/db
+	@PORT=$$(grep -E '^HTTPS_PORT=' .env 2>/dev/null | cut -d= -f2 | tr -d ' "'); PORT=$${PORT:-8443}; \
+	curl -fsSk https://localhost:$$PORT/health && curl -fsSk https://localhost:$$PORT/health/db
 
 clean:
 	$(COMPOSE) down --remove-orphans

@@ -52,7 +52,7 @@ func _ready() -> void:
 	game_timer.start()
 	var error := game_socket.connect_to_url(GameState.ws_url("/ws"))
 	if error != OK:
-		push_error("Failed to connect to the game server: %s" % error)
+		GameState.log_error("Failed to connect to the game server: %s" % error)
 
 # --- Puzzle setup -----------------------------------------------------------
 

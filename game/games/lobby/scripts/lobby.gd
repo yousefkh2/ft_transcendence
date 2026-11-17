@@ -42,15 +42,14 @@ func _show_pending_lobby_message() -> void:
 	GameState.lobby_message = ""
 
 func _on_login_success() -> void:
-	print("Logged in successfully.")
 	user_name.text = GameState.player_name
-	user_rank.text = GameState.xp_text()
+	user_rank.text = GameState.level_text()
 
 func _on_avatar_changed() -> void:
 	GameState.apply_avatar(user_pfp)
 
 func _on_login_failed(message: String) -> void:
-	push_error("Login failed: " + message)
+	GameState.log_error("Login failed: " + message)
 
 func _on_back_button_pressed() -> void:
 	create_lobby_interface.visible = false
@@ -83,12 +82,11 @@ func _get_active_language_code() -> String:
 			return "en"
 
 func _on_lobby_created(code: String) -> void:
-	print("Lobby created with code: ", code)
 	get_tree().change_scene_to_file(pre_game_lobby)
 
 func _on_lobby_creation_failed(message: String) -> void:
 	self.message.text = message
-	push_error("Could not create lobby: " + message)
+	GameState.log_error("Could not create lobby: " + message)
 
 func _on_join_pressed() -> void:
 	var code = lobby_code_input.text.strip_edges()
@@ -104,8 +102,7 @@ func _on_lobby_code_text_changed(new_text: String) -> void:
 		lobby_code_input.caret_column = uppercase_text.length()
 
 func _on_lobby_joined(lobby_data: Dictionary) -> void:
-	print("Joined lobby: ", lobby_data)
 	get_tree().change_scene_to_file(pre_game_lobby)
 
 func _on_lobby_join_failed(message: String) -> void:
-	push_error("Could not join lobby: " + message)
+	GameState.log_error("Could not join lobby: " + message)

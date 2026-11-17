@@ -57,16 +57,26 @@
 								{{ t('common.cancel') }}
 							</BaseButton>
 						</template>
-						<BaseButton
-							v-else
-							variant="ghost"
-							size="sm"
-							pill
-							:aria-label="t('friends.removeLabel', { name: friend.friendUsername })"
-							@click="confirmingId = friend.friendId"
-						>
-							{{ t('friends.remove') }}
-						</BaseButton>
+						<template v-else>
+							<BaseButton
+								:to="{ name: 'chat', params: { username: friend.friendUsername } }"
+								variant="outline"
+								size="sm"
+								pill
+								:aria-label="t('friends.messageLabel', { name: friend.friendUsername })"
+							>
+								<BaseIcon name="message" :size="14" />{{ t('friends.message') }}
+							</BaseButton>
+							<BaseButton
+								variant="ghost"
+								size="sm"
+								pill
+								:aria-label="t('friends.removeLabel', { name: friend.friendUsername })"
+								@click="confirmingId = friend.friendId"
+							>
+								{{ t('friends.remove') }}
+							</BaseButton>
+						</template>
 					</div>
 				</div>
 			</div>

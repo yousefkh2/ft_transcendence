@@ -16,6 +16,8 @@ const (
 	passwordMin = 8
 	// bcrypt only accepts up to 72 bytes.
 	passwordMaxBytes = 72
+	// ChatMessageMax matches the check_message_length constraint on direct_messages.
+	ChatMessageMax = 1000
 )
 
 var (
@@ -60,6 +62,17 @@ func NewPassword(password string) string {
 		return "Password is too long."
 	case !letterPattern.MatchString(password) || !digitPattern.MatchString(password):
 		return "Use at least one letter and one number."
+	}
+	return ""
+}
+
+// ChatMessage checks a chat message that was already trimmed.
+func ChatMessage(body string) string {
+	switch {
+	case body == "":
+		return "Please enter a message."
+	case utf8.RuneCountInString(body) > ChatMessageMax:
+		return fmt.Sprintf("A message can be at most %d characters.", ChatMessageMax)
 	}
 	return ""
 }

@@ -80,8 +80,11 @@ type Hub struct {
 	voiceRequired bool
 	// isLobbyMember checks that a user joined the lobby through the API.
 	isLobbyMember func(ctx context.Context, code, userID string) (bool, error)
+	// Friends chat: userID -> that user's open chat connections (one per browser tab).
+	chatMu      sync.Mutex
+	chatClients map[string]map[*Player]struct{}
 	// SaveMatch stores a finished round in the match history. Tests replace it; nil saves nothing.
-	SaveMatch func(code string, startedAt, endedAt time.Time, endReason string) error
+	SaveMatch func(code string, startedAt, endedAt time.Time, endReason string, failedChecks int) error
 }
 
 func NewHub(pool *pgxpool.Pool) *Hub {
@@ -95,6 +98,7 @@ func NewHub(pool *pgxpool.Pool) *Hub {
 		lobbyStarting:  make(map[string]bool),
 		voicePeers:     make(map[string]map[string]*Player),
 		voiceConnected: make(map[string]map[string]bool),
+		chatClients:    make(map[string]map[*Player]struct{}),
 		// Set VOICE_REQUIRED=false to test without microphones (e.g. from the Godot editor).
 		voiceRequired: strings.TrimSpace(os.Getenv("VOICE_REQUIRED")) != "false",
 		isLobbyMember: func(ctx context.Context, code, userID string) (bool, error) {
@@ -109,8 +113,8 @@ func NewHub(pool *pgxpool.Pool) *Hub {
 			}
 			return false, nil
 		},
-		SaveMatch: func(code string, startedAt, endedAt time.Time, endReason string) error {
-			return db.FinishMatch(context.Background(), pool, code, startedAt, endedAt, endReason)
+		SaveMatch: func(code string, startedAt, endedAt time.Time, endReason string, failedChecks int) error {
+			return db.FinishMatch(context.Background(), pool, code, startedAt, endedAt, endReason, failedChecks)
 		},
 	}
 }
@@ -125,6 +129,7 @@ func NewHubWithOrigins(origins []string, roles RoleResolver) *Hub {
 		lobbyStarting:  make(map[string]bool),
 		voicePeers:     make(map[string]map[string]*Player),
 		voiceConnected: make(map[string]map[string]bool),
+		chatClients:    make(map[string]map[*Player]struct{}),
 		voiceRequired:  true,
 		isLobbyMember: func(ctx context.Context, code, userID string) (bool, error) {
 			_, _, err := roles.GetParticipantRole(ctx, code, userID)
@@ -933,12 +938,13 @@ func (h *Hub) finishRoom(room *Room, endReason string) {
 		room.endTimer.Stop()
 	}
 	startedAt := room.startedAt
+	failedChecks := room.failedChecks
 	h.mu.Unlock()
 
 	if h.SaveMatch == nil {
 		return
 	}
-	if err := h.SaveMatch(room.code, startedAt, time.Now(), endReason); err != nil {
+	if err := h.SaveMatch(room.code, startedAt, time.Now(), endReason, failedChecks); err != nil {
 		log.Printf("failed to save match for room %s: %v", room.code, err)
 		return
 	}

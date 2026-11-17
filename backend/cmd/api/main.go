@@ -26,6 +26,8 @@ func main() {
 	friendHandler := &handler.FriendHandler{DB: pool}
 	lobbyHandler := &handler.LobbyHandler{DB: pool}
 	realtimeLobbyHandler := &handler.RealtimeLobbyHandler{DB: pool, Hub: hub}
+	progressHandler := &handler.ProgressHandler{DB: pool}
+	chatHandler := &handler.ChatHandler{DB: pool, Push: hub.PushChat}
 
 	e := echo.New()
 	e.Use(echomw.Recover())
@@ -37,6 +39,7 @@ func main() {
 	e.GET("/ws", hub.HandleWebSocket)
 	e.GET("/ws/lobby", hub.HandleLobbyWebSocket)
 	e.GET("/ws/voice", hub.HandleVoiceWebSocket)
+	e.GET("/ws/chat", hub.HandleChatWebSocket)
 	e.Any("/transcriptions", handler.HandleTranscription)
 	e.Any("/realtime/transcription-session", handler.HandleRealtimeTranscriptionSession)
 
@@ -53,7 +56,10 @@ func main() {
 	users.DELETE("/me", profileHandler.HandleDeleteAccount)
 	users.PUT("/me/avatar", profileHandler.HandleUploadAvatar)
 	users.DELETE("/me/avatar", profileHandler.HandleDeleteAvatar)
+	users.GET("/me/achievements", progressHandler.HandleMyAchievements)
+	users.POST("/me/achievements/seen", progressHandler.HandleAchievementsSeen)
 	users.GET("/:username", profileHandler.HandleUserProfile)
+	users.GET("/:username/achievements", progressHandler.HandleUserAchievements)
 
 	// Public on purpose: <img> tags cannot send the login token.
 	e.GET("/api/avatars/:userId", profileHandler.HandleAvatar)
@@ -65,6 +71,14 @@ func main() {
 	friends.POST("/requests/:id/decline", friendHandler.HandleDeclineRequest)
 	friends.GET("", friendHandler.HandleListFriends)
 	friends.DELETE("/:friendId", friendHandler.HandleRemoveFriend)
+
+	e.GET("/api/leaderboard", progressHandler.HandleLeaderboard, middleware.EchoWithAuth)
+
+	chat := e.Group("/api/chat", middleware.EchoWithAuth)
+	chat.GET("/unread", chatHandler.HandleUnread)
+	chat.GET("/:friendId/messages", chatHandler.HandleListMessages)
+	chat.POST("/:friendId/messages", chatHandler.HandleSendMessage)
+	chat.POST("/:friendId/read", chatHandler.HandleMarkRead)
 
 	lobbies := e.Group("/api/lobbies", middleware.EchoWithAuth)
 	lobbies.POST("", lobbyHandler.HandleCreateLobby)
