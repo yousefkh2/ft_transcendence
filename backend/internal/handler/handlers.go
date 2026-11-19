@@ -39,11 +39,3 @@ func HandleDatabaseHealth(c echo.Context) error {
 
 	return c.String(http.StatusOK, "database healthy\n")
 }
-
-func HandleOpenAIHealth(c echo.Context) error {
-	if strings.TrimSpace(os.Getenv("OPENAI_API_KEY")) == "" {
-		return c.String(http.StatusServiceUnavailable, "openai api key missing\n")
-	}
-
-	return c.String(http.StatusOK, "openai api key configured\n")
-}

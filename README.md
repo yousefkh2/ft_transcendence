@@ -46,7 +46,7 @@ themselves on a leaderboard.
 ```sh
 git clone <this repository>
 cd ft_transcendence
-cp .env.example .env      # then set JWT_SECRET to a long random string
+cp .env.example .env      # then set JWT_SECRET (long random string) and POSTGRES_PASSWORD
 make up                   # builds, starts, applies migrations, prints the URLs
 ```
 
@@ -60,12 +60,12 @@ A step-by-step guide for two-PC testing and troubleshooting is in [SETUP.md](SET
 | Variable | Purpose |
 |---|---|
 | `JWT_SECRET` | **required** – signs the login tokens |
-| `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` | database credentials |
+| `POSTGRES_PASSWORD` | **required** – database password |
+| `POSTGRES_USER` / `POSTGRES_DB` | database user and name (default `transcendence`) |
 | `HTTPS_PORT` / `HTTP_PORT` | nginx ports (8443 / 8000; above 1024 for rootless Docker) |
 | `VITE_API_URL` | leave **empty** – the site talks to the address it was opened from |
 | `VOICE_REQUIRED` | `false` lets you ready up without a microphone (testing from the Godot editor) |
 | `VITE_STUN_URLS` | optional STUN servers for voice chat across different networks |
-| `OPENAI_API_KEY` | optional, only for the transcription prototype |
 
 ### Useful commands
 
@@ -91,9 +91,9 @@ container on the project's internal Docker network.
 
 | Member | Role(s) | Responsibilities |
 |---|---|---|
-| **gzovkic** | Product Owner | Godot game, game networking, voice chat, HTTPS/LAN hosting, match history & XP, chat, levels & achievements |
-| **dreule** (Daniel) | Technical Lead | Backend core: Echo API, authentication, lobbies & matchmaking, role resolution, Docker/DB setup, WebRTC signalling |
-| **mimalek** (Miguel) | Project Manager | Frontend: landing page, dashboard, design system, accessibility, interface translations, profiles, avatars, friends UI, legal pages |
+| **gzovkic** | Product Owner, Developer | Godot game, game networking, voice chat, HTTPS/LAN hosting, match history & XP, chat, levels & achievements |
+| **dreule** (Daniel) | Technical Lead, Developer | Backend core: Echo API, authentication, lobbies & matchmaking, role resolution, Docker/DB setup, WebRTC signalling |
+| **mimalek** (Miguel) | Project Manager, Developer | Frontend: landing page, dashboard, design system, accessibility, interface translations, profiles, avatars, friends UI, legal pages |
 
 ## Project Management
 

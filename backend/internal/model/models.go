@@ -68,7 +68,3 @@ type Position struct {
 	X int `json:"x"`
 	Y int `json:"y"`
 }
-
-type TranscriptionResponse struct {
-	Text string `json:"text"`
-}

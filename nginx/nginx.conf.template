@@ -45,14 +45,6 @@ server {
 		proxy_pass http://backend:8080;
 	}
 
-	location /transcriptions {
-		proxy_pass http://backend:8080;
-	}
-
-	location /realtime/ {
-		proxy_pass http://backend:8080;
-	}
-
 	# Game, lobby and voice chat WebSockets (/ws, /ws/lobby, /ws/voice).
 	location /ws {
 		proxy_pass http://backend:8080;
