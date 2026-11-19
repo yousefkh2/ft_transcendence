@@ -66,5 +66,9 @@ jobs:
       - name: Create local environment file
         run: cp .env.example .env
 
+      # .env.example leaves the secrets empty on purpose; give them dummy values just for this check.
       - name: Validate Compose configuration
-        run: docker compose config
+        env:
+          JWT_SECRET: ci-placeholder
+          POSTGRES_PASSWORD: ci-placeholder
+        run: docker compose config -q
