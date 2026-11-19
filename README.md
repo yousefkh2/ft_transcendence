@@ -97,10 +97,13 @@ container on the project's internal Docker network.
 
 ## Project Management
 
+- **Organisation:** we did not use an issue board. Tasks were discussed, split and agreed on
+  directly in our team chat; each member took ownership of their area (see *Team Information*)
+  and reported progress there.
 - **Tools:** GitHub (repository `ft_transcendence`), feature branches + pull requests
-  (`feature/*`, `frontend/*`, `godot/*`), GitHub Actions CI. TODO – add the board/issue tracker
-  you used.
-- **Communication:** TODO – e.g. Discord / Slack.
+  (`feature/*`, `frontend/*`, `godot/*`), GitHub Actions CI.
+- **Communication:** a WhatsApp group chat for daily coordination, decisions and code-review
+  requests.
 - **Quality:** every pull request runs CI: Go tests, a production build of the frontend
   (`vue-tsc` type check + `vite build`) and `docker compose config` validation
   (`.github/workflows/ci.yml`).
@@ -425,7 +428,8 @@ more than a "use a library" task.
 <!-- TODO: every member should check and complete this part honestly for their own work. -->
 
 - **Claude Code (Anthropic)** was used by gzovkic to:
-  - review the project against the subject and list missing / half-done modules;
+  - review the project against the subject and the evaluation sheet and list missing or
+    half-done modules.
 
 
 ## Known Limitations
