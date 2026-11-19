@@ -46,7 +46,7 @@ themselves on a leaderboard.
 ```sh
 git clone <this repository>
 cd ft_transcendence
-cp .env.example .env      # then set JWT_SECRET to a long random string
+cp .env.example .env      # then set JWT_SECRET (long random string) and POSTGRES_PASSWORD
 make up                   # builds, starts, applies migrations, prints the URLs
 ```
 
@@ -60,12 +60,12 @@ A step-by-step guide for two-PC testing and troubleshooting is in [SETUP.md](SET
 | Variable | Purpose |
 |---|---|
 | `JWT_SECRET` | **required** – signs the login tokens |
-| `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` | database credentials |
+| `POSTGRES_PASSWORD` | **required** – database password |
+| `POSTGRES_USER` / `POSTGRES_DB` | database user and name (default `transcendence`) |
 | `HTTPS_PORT` / `HTTP_PORT` | nginx ports (8443 / 8000; above 1024 for rootless Docker) |
 | `VITE_API_URL` | leave **empty** – the site talks to the address it was opened from |
 | `VOICE_REQUIRED` | `false` lets you ready up without a microphone (testing from the Godot editor) |
 | `VITE_STUN_URLS` | optional STUN servers for voice chat across different networks |
-| `OPENAI_API_KEY` | optional, only for the transcription prototype |
 
 ### Useful commands
 
@@ -91,16 +91,19 @@ container on the project's internal Docker network.
 
 | Member | Role(s) | Responsibilities |
 |---|---|---|
-| **gzovkic** | Product Owner | Godot game, game networking, voice chat, HTTPS/LAN hosting, match history & XP, chat, levels & achievements |
-| **dreule** (Daniel) | Technical Lead | Backend core: Echo API, authentication, lobbies & matchmaking, role resolution, Docker/DB setup, WebRTC signalling |
-| **mimalek** (Miguel) | Project Manager | Frontend: landing page, dashboard, design system, accessibility, interface translations, profiles, avatars, friends UI, legal pages |
+| **gzovkic** | Product Owner, Developer | Godot game, game networking, voice chat, HTTPS/LAN hosting, match history & XP, chat, levels & achievements |
+| **dreule** (Daniel) | Technical Lead, Developer | Backend core: Echo API, authentication, lobbies & matchmaking, role resolution, Docker/DB setup, WebRTC signalling |
+| **mimalek** (Miguel) | Project Manager, Developer | Frontend: landing page, dashboard, design system, accessibility, interface translations, profiles, avatars, friends UI, legal pages |
 
 ## Project Management
 
+- **Organisation:** we did not use an issue board. Tasks were discussed, split and agreed on
+  directly in our team chat; each member took ownership of their area (see *Team Information*)
+  and reported progress there.
 - **Tools:** GitHub (repository `ft_transcendence`), feature branches + pull requests
-  (`feature/*`, `frontend/*`, `godot/*`), GitHub Actions CI. TODO – add the board/issue tracker
-  you used.
-- **Communication:** TODO – e.g. Discord / Slack.
+  (`feature/*`, `frontend/*`, `godot/*`), GitHub Actions CI.
+- **Communication:** a WhatsApp group chat for daily coordination, decisions and code-review
+  requests.
 - **Quality:** every pull request runs CI: Go tests, a production build of the frontend
   (`vue-tsc` type check + `vite build`) and `docker compose config` validation
   (`.github/workflows/ci.yml`).
@@ -425,7 +428,8 @@ more than a "use a library" task.
 <!-- TODO: every member should check and complete this part honestly for their own work. -->
 
 - **Claude Code (Anthropic)** was used by gzovkic to:
-  - review the project against the subject and list missing / half-done modules;
+  - review the project against the subject and the evaluation sheet and list missing or
+    half-done modules.
 
 
 ## Known Limitations

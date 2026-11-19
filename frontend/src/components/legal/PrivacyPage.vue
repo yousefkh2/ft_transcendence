@@ -36,14 +36,15 @@
 		<ul>
 			<li>Your XP.</li>
 			<li>The rounds you play: game mode, language, start and end time, your role and the result.</li>
-			<li>
-				Corrections from your rounds that can be saved as flashcards: what you said, the corrected phrase
-				and a short explanation.
-			</li>
+			<li>The achievements you unlock and when you unlocked them.</li>
 		</ul>
-		<h3>Friends</h3>
+		<h3>Friends and chat</h3>
 		<ul>
 			<li>Friend requests you send or receive, their status and the date they were made.</li>
+			<li>
+				The chat messages you send to and receive from your friends, when they were sent and whether they
+				have been read. Only you and the friend you are chatting with can read them.
+			</li>
 		</ul>
 		<h3>Online status</h3>
 		<ul>
@@ -67,19 +68,19 @@
 			LingoDash does <strong>not</strong> use cookies, analytics, advertising or any other tracking tools.
 		</p>
 
-		<h2>3. Your voice and speech recognition</h2>
+		<h2>3. Your voice</h2>
 		<p>
-			Speaking is the core of the game. When you enable your microphone during a round, your voice is sent
-			directly from your browser to the Realtime API of OpenAI, which turns it into text. The resulting
-			transcript is passed through our server to the other player in your room, so the game can react to
-			what you said.
+			Speaking is the core of the game. When you join a lobby and enable your microphone, a voice call is
+			set up between you and the other player in that lobby. The audio goes <strong>directly from your
+			browser to the other player's browser</strong> (peer-to-peer, using WebRTC). Our server only passes
+			on the technical messages needed to connect the two browsers; it never receives your audio.
 		</p>
 		<ul>
-			<li>We do <strong>not</strong> record or store your audio.</li>
-			<li>We do <strong>not</strong> store the transcripts of your rounds on our servers.</li>
+			<li>We do <strong>not</strong> record, store or analyse your audio.</li>
+			<li>Only the other player in your lobby can hear you.</li>
 			<li>
-				OpenAI processes the audio for us as a service provider. Its handling of data is described in the
-				<a href="https://openai.com/policies/privacy-policy/" target="_blank" rel="noopener noreferrer">OpenAI Privacy Policy</a>.
+				Because the connection is direct, the other player's browser can see your network (IP) address,
+				as with any voice call.
 			</li>
 		</ul>
 		<p>You decide when your microphone is on. Your browser always asks for permission first.</p>
@@ -89,7 +90,7 @@
 			<li>To create your account and log you in.</li>
 			<li>To run game rounds, match you with other players and keep track of your XP and rounds.</li>
 			<li>To let you add friends, see your friends list and see which friends are online.</li>
-			<li>To turn your speech into text during a round.</li>
+			<li>To connect the voice call between the two players of a lobby.</li>
 			<li>To keep the service secure, for example by protecting accounts against misuse.</li>
 		</ul>
 		<p>
@@ -114,7 +115,7 @@
 			<li>Your friends can see that you are friends with them.</li>
 			<li>Your email address and password hash are never shown to other players.</li>
 			<li>The project team can access the database to run and maintain LingoDash.</li>
-			<li>OpenAI receives your voice audio while your microphone is on, as described in section 3.</li>
+			<li>The other player in your lobby hears your voice while your microphone is on, as described in section 3.</li>
 		</ul>
 		<p>We never sell your data or share it for advertising.</p>
 
@@ -128,8 +129,9 @@
 		<h2>7. How long we keep your data</h2>
 		<p>
 			We keep your data for as long as your account exists. You can delete your account yourself at any
-			time on your profile page (Dashboard, then Profile, then Delete account). Your profile, friendships,
-			flashcards and your entries in past rounds are deleted right away. Finished rounds you played stay in
+			time on your profile page (Dashboard, then Profile, then Delete account). Your profile, profile
+			picture, friendships, chat messages, achievements and your entries in past rounds are deleted right
+			away. Finished rounds you played stay in
 			the other player's match history, without any link to your account.
 		</p>
 

@@ -44,13 +44,13 @@
 		<h2>5. Your voice and what you say</h2>
 		<ul>
 			<li>
-				During a round, your speech is turned into text and shared with the other player in your room, as
-				described in the <RouterLink to="/privacy">Privacy Policy</RouterLink>.
+				During a round, your voice is sent directly to the other player in your lobby. We do not record
+				it, as described in the <RouterLink to="/privacy">Privacy Policy</RouterLink>.
 			</li>
-			<li>You are responsible for what you say in a round.</li>
+			<li>You are responsible for what you say in a round and in the chat.</li>
 			<li>
-				What you say stays yours. You only allow us to process it as far as needed to run the game, for
-				example to show it to your partner or to create flashcards for you.
+				What you say and write stays yours. You only allow us to process it as far as needed to run the
+				game, for example to deliver your chat messages to your friends.
 			</li>
 		</ul>
 

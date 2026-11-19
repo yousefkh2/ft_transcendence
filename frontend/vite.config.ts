@@ -14,8 +14,6 @@ export default defineConfig({
     proxy: {
       "/api": apiProxyTarget,
       "/health": apiProxyTarget,
-      "/transcriptions": apiProxyTarget,
-      "/realtime": apiProxyTarget,
       "/ws": { target: apiProxyTarget, ws: true },
     },
   },

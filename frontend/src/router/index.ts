@@ -53,7 +53,6 @@ const router = createRouter({
 		},
 		{ path: '/privacy', name: 'privacy', component: () => import('../components/legal/PrivacyPage.vue'), meta: { title: () => t('titles.privacy') } },
 		{ path: '/terms', name: 'terms', component: () => import('../components/legal/TermsPage.vue'), meta: { title: () => t('titles.terms') } },
-		{ path: '/dev', name: 'dev', component: () => import('../components/DevPrototype') },
 		{ path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('../components/NotFoundPage.vue'), meta: { title: () => t('titles.notFound') } },
 	],
 	scrollBehavior(_to, _from, savedPosition) {

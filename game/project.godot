@@ -13,12 +13,12 @@ config_version=5
 config/name="game"
 run/main_scene="uid://y7txpxu8meo6"
 config/features=PackedStringArray("4.7", "GL Compatibility")
-config/icon="res://icon.svg"
-run/disable_stdout.web=true
 boot_splash/bg_color=Color(0.36078432, 0.22745098, 0.12941177, 1)
-boot_splash/image="res://games/main_menu/assets/main_menu.png"
 boot_splash/stretch_mode=5
 boot_splash/use_filter=false
+boot_splash/image="res://games/main_menu/assets/main_menu.png"
+config/icon="res://icon.svg"
+run/disable_stdout.web=true
 
 [audio]
 

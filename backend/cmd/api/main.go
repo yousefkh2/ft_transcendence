@@ -35,13 +35,10 @@ func main() {
 	e.GET("/", handler.HandleRoot)
 	e.GET("/health", handler.HandleHealth)
 	e.GET("/health/db", handler.HandleDatabaseHealth)
-	e.GET("/health/openai", handler.HandleOpenAIHealth)
 	e.GET("/ws", hub.HandleWebSocket)
 	e.GET("/ws/lobby", hub.HandleLobbyWebSocket)
 	e.GET("/ws/voice", hub.HandleVoiceWebSocket)
 	e.GET("/ws/chat", hub.HandleChatWebSocket)
-	e.Any("/transcriptions", handler.HandleTranscription)
-	e.Any("/realtime/transcription-session", handler.HandleRealtimeTranscriptionSession)
 
 	e.POST("/api/auth/register", authHandler.HandleRegister)
 	e.POST("/api/auth/login", authHandler.HandleLogin)

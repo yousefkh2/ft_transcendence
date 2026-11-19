@@ -37,8 +37,9 @@ test:
 # Backend tests including the database tests. Postgres is not published to the host, so the tests
 # run in a Go container on the project's internal Docker network (needs `make up` first).
 test-db:
+	set -a; . ./.env; set +a; \
 	docker run --rm --network transcendence_default -v "$$PWD":/src -w /src \
-		-e TEST_DATABASE_URL=postgres://$${POSTGRES_USER:-transcendence}:$${POSTGRES_PASSWORD:-transcendence_dev_password}@db:5432/$${POSTGRES_DB:-transcendence} \
+		-e TEST_DATABASE_URL=postgres://$${POSTGRES_USER:-transcendence}:$${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}@db:5432/$${POSTGRES_DB:-transcendence} \
 		-e CGO_ENABLED=0 golang:1.26-alpine go test ./backend/...
 
 health:

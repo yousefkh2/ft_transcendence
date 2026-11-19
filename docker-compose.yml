@@ -10,9 +10,8 @@ services:
       PORT: 8080
       DB_HOST: db
       DB_PORT: 5432
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       POSTGRES_USER: ${POSTGRES_USER:-transcendence}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-transcendence_dev_password}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
       POSTGRES_DB: ${POSTGRES_DB:-transcendence}
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set}
       VOICE_REQUIRED: ${VOICE_REQUIRED:-true}
@@ -48,7 +47,7 @@ services:
     container_name: transcendence-db
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-transcendence}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-transcendence_dev_password}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
       POSTGRES_DB: ${POSTGRES_DB:-transcendence}
     # No published port: the only way in is nginx over HTTPS (the subject requires HTTPS for every
     # connection to the backend). Containers still reach each other on the internal Docker network.

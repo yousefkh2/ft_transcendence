@@ -35,10 +35,11 @@ cd ft_transcendence
 cp .env.example .env
 ```
 
-Open `.env` and change one line:
+Open `.env` and fill in these two lines:
 
 ```sh
 JWT_SECRET=pick-any-long-random-text-here
+POSTGRES_PASSWORD=pick-a-database-password
 ```
 
 Leave the rest as it is. Keep `VITE_API_URL=` **empty**, otherwise the second
