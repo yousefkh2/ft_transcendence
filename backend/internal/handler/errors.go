@@ -14,9 +14,9 @@ func uniqueViolationMessage(err error) string {
 		return ""
 	}
 	switch pgErr.ConstraintName {
-	case "users_username_key":
+	case "users_username_key", "users_username_lower_key":
 		return "username already taken"
-	case "users_email_key":
+	case "users_email_key", "users_email_lower_key":
 		return "email already registered"
 	default:
 		return "user already exists"

@@ -1,4 +1,4 @@
-*This project has been created as part of the 42 curriculum by gzovkic, dreule, mimalek*
+*This project has been created as part of the 42 curriculum by gzovkic, dreule, mimalek, yousefkh2*
 
 # LingoDash
 
@@ -94,6 +94,7 @@ container on the project's internal Docker network.
 | **gzovkic** | Product Owner, Developer | Godot game, game networking, voice chat, HTTPS/LAN hosting, match history & XP, chat, levels & achievements |
 | **dreule** (Daniel) | Technical Lead, Developer | Backend core: Echo API, authentication, lobbies & matchmaking, role resolution, Docker/DB setup, WebRTC signalling |
 | **mimalek** (Miguel) | Project Manager, Developer | Frontend: landing page, dashboard, design system, accessibility, interface translations, profiles, avatars, friends UI, legal pages |
+| **yousefkh2** (Yousef) | Developer | Project foundation (Docker setup, CI), first version of the realtime WebSocket hub, server-side round state (object positions, objectives, round timer) |
 
 ## Project Management
 
@@ -284,7 +285,7 @@ switches from the lobby to the round.
 | Translations | en / de / pl / tr for the site and the game | Miguel, gzovkic |
 | Privacy Policy & Terms of Service | linked in every footer | Miguel |
 | HTTPS & LAN play | nginx TLS, `make url` | gzovkic, Daniel |
-| Docker, migrations, CI | one-command start, GitHub Actions | Daniel, gzovkic |
+| Docker, migrations, CI | one-command start, GitHub Actions | Daniel, gzovkic, Yousef |
 
 ---
 
@@ -295,10 +296,10 @@ switches from the lobby to the round.
 | # | Module | Type | Pts | Who |
 |---|---|---|---|---|
 | 1 | Web – Frontend + backend framework | Major | 2 | Miguel, Daniel |
-| 2 | Web – Real-time features with WebSockets | Major | 2 | Daniel, gzovkic |
+| 2 | Web – Real-time features with WebSockets | Major | 2 | Daniel, gzovkic, Yousef |
 | 3 | Web – Users interact with other users (chat, profiles, friends) | Major | 2 | Miguel, Daniel, gzovkic |
 | 4 | User Management – Standard user management | Major | 2 | Miguel, Daniel |
-| 5 | Gaming – Complete web-based game | Major | 2 | gzovkic |
+| 5 | Gaming – Complete web-based game | Major | 2 | gzovkic, Yousef |
 | 6 | Accessibility – Multiple languages (4) | Minor | 1 | Miguel, gzovkic |
 | 7 | Web – Custom design system | Minor | 1 | Miguel |
 | 8 | User Management – Game statistics & match history | Minor | 1 | gzovkic |
@@ -407,6 +408,17 @@ more than a "use a library" task.
 - **Profile pictures** (upload, re-encoding in the backend), **online status**, friends UI,
   account deletion, **Privacy Policy and Terms of Service**.
 - *Challenges:* longer German/Polish texts broke layouts → layouts reworked for every language.
+
+### yousefkh2 (Yousef)
+- **Project foundation:** dockerized project setup (backend + frontend containers, Makefile) and
+  the first **GitHub Actions CI** checks.
+- **Realtime foundation:** the first version of the WebSocket hub – room join with acknowledgement,
+  in-memory rooms, assigning the two roles and releasing a role when its player disconnects.
+- **Server-side round state:** object positions stored per room, objectives modelled as data and
+  evaluated on the server, round completion broadcast to both players, and the **round timer**
+  (deadline stored when the room fills, expiry on the server).
+- An early **speech-transcription proof of concept** (live transcripts forwarded to the room);
+  the team later chose peer-to-peer voice chat instead, so it is not part of the final version.
 
 ---
 

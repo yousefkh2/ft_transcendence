@@ -813,9 +813,10 @@ func (h *Hub) handleWebRTCSignal(ctx context.Context, player *Player, message mo
 		return
 	}
 
-	targetRole := db.RoleOnSite
+	// Signals go to the other player in the room, never back to the sender.
+	targetRole := db.RoleMissionControl
 	if joinedRole == db.RoleMissionControl {
-		targetRole = db.RoleMissionControl
+		targetRole = db.RoleOnSite
 	}
 	target := room.players[targetRole]
 

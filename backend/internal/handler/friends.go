@@ -82,6 +82,10 @@ func (h *FriendHandler) respondToRequest(c echo.Context, accept bool) error {
 	userID := middleware.UserID(c)
 
 	requestID := c.Param("id")
+	// An id that is not a UUID cannot match a request; Postgres would reject it with an error.
+	if !uuidPattern.MatchString(requestID) {
+		return echo.NewHTTPError(http.StatusNotFound, "friend request not found")
+	}
 
 	addresseeID, status, err := db.GetFriendRequest(c.Request().Context(), h.DB, requestID)
 	if err != nil {

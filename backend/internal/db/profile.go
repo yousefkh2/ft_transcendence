@@ -76,7 +76,7 @@ func GetPublicProfile(ctx context.Context, pool *pgxpool.Pool, username string) 
 		FROM users u
 		LEFT JOIN session_participants sp ON sp.user_id = u.id
 		LEFT JOIN game_sessions gs ON gs.id = sp.session_id
-		WHERE u.username = $1
+		WHERE LOWER(u.username) = LOWER($1)
 		GROUP BY u.id`,
 		username,
 	).Scan(&userID, &p.Username, &p.XP, &p.CreatedAt, &p.LearningLanguage, &p.LastSeenAt, &avatarAt,
