@@ -164,7 +164,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_leave_normal")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_leave_normal")
 theme_override_styles/hover = SubResource("StyleBoxFlat_leave_hover")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_leave_focus")
-text = "Leave"
+text = "_GAME_LEAVE_"
 
 [node name="GameTimer" type="Timer" parent="." unique_id=281759186]
 

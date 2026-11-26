@@ -110,7 +110,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_psslg")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_fq3g8")
 theme_override_styles/hover = SubResource("StyleBoxFlat_m01nn")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_qrf2b")
-text = "Check"
+text = "_GAME_CHECK_"
 
 [node name="TimerLabel" type="Label" parent="." unique_id=1874228517]
 layout_mode = 0
@@ -137,7 +137,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_a01gq")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_a01gq")
 theme_override_styles/hover = SubResource("StyleBoxFlat_d3fr7")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_ns8xt")
-text = "Leave"
+text = "_GAME_LEAVE_"
 
 [node name="GameTimer" type="Timer" parent="." unique_id=1874228519]
 
