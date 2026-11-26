@@ -351,7 +351,9 @@ the main menu.
 
 ### 8. Game statistics & match history (Minor, 1)
 **How:** wins, losses, win rate, XP and **level** per player, **rank** on the leaderboard; match history with date,
-language, role, duration, result and XP; **achievements with progress**; **leaderboard**
+language, role, duration, result, XP and **who you played with** (the teammate, linked to their
+profile – the game is cooperative, so the other player is a teammate, not an opponent);
+**achievements with progress**; **leaderboard**
 (global / friends).
 
 ### 9. Gamification (Minor, 1)
