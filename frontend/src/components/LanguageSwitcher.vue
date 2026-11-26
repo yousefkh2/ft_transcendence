@@ -2,7 +2,7 @@
 	<div class="switcher">
 		<BaseIcon name="globe" :size="16" />
 		<!-- Named directly: a wrapping <label> would add all option names to the select's name. -->
-		<select :value="locale" :aria-label="t('common.language')" @change="onChange">
+		<select name="language" :value="locale" :aria-label="t('common.language')" @change="onChange">
 			<option v-for="option in LOCALES" :key="option.code" :value="option.code" :lang="option.code">
 				{{ option.name }}
 			</option>

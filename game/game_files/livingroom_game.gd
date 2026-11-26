@@ -173,7 +173,7 @@ func _handle_server_message(response: Dictionary) -> void:
 			# leave the end screen on their own instead of pulling both out.
 			if end_screen:
 				return
-			GameState.lobby_message = str(response.get("message", "A player left the game"))
+			GameState.lobby_message = tr("_GAME_PLAYER_LEFT_")
 			_return_to_main_lobby()
 
 func _join_game_room() -> void:

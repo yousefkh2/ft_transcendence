@@ -124,7 +124,7 @@ theme_override_constants/shadow_offset_x = 4
 theme_override_constants/shadow_offset_y = 4
 theme_override_fonts/font = ExtResource("3_c2lno")
 theme_override_font_sizes/font_size = 128
-text = "lobby"
+text = "_LOBBY_TITLE_"
 horizontal_alignment = 1
 vertical_alignment = 1
 uppercase = true
@@ -330,7 +330,7 @@ offset_right = 0.118011475
 offset_bottom = -0.07400513
 theme_override_fonts/normal_font = ExtResource("3_c2lno")
 theme_override_font_sizes/normal_font_size = 48
-text = "NO ROLE"
+text = "_PRE_NO_ROLE_"
 horizontal_alignment = 1
 
 [node name="no_role_player" type="VBoxContainer" parent="Lobby_state" unique_id=2112902069]
@@ -525,7 +525,7 @@ offset_bottom = -1.0026169
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_c2lno")
 theme_override_font_sizes/font_size = 48
-text = "Lobby code"
+text = "_LOBBY_CODE_"
 horizontal_alignment = 1
 vertical_alignment = 1
 

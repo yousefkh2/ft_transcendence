@@ -1,4 +1,4 @@
-*This project has been created as part of the 42 curriculum by gzovkic, dreule, mimalek, yousefkh2*
+*This project has been created as part of the 42 curriculum by gzovkic, dreule, mimalek, ykhattab*
 
 # LingoDash
 
@@ -128,8 +128,9 @@ container on the project's internal Docker network.
 
 ## Database Schema
 
-All tables are created by the SQL files in `backend/sql/migrations/` (applied in order by
-`make migrate`; every file is safe to run again).
+PostgreSQL 17. All tables are created by the SQL files in `backend/sql/migrations/` (applied in
+order by `make migrate`; every file is safe to run again). Every foreign key to `users` uses
+`ON DELETE CASCADE`.
 
 ```mermaid
 erDiagram
@@ -137,24 +138,94 @@ erDiagram
     users ||--o| user_avatars : has
     users ||--o{ session_participants : plays
     game_sessions ||--o{ session_participants : has
+    users ||--o{ game_sessions : hosts
     users ||--o{ direct_messages : "sends / receives"
     users ||--o{ user_achievements : unlocks
-    users ||--o{ game_sessions : hosts
+    users ||--o{ flashcards : owns
+    game_sessions ||--o{ flashcards : "from round"
+
+    users {
+        uuid id PK
+        varchar username UK "3-20 chars, unique ignoring case"
+        varchar email UK "unique ignoring case"
+        varchar password_hash "bcrypt"
+        int xp
+        varchar learning_lang "en / de / pl / tr"
+        timestamptz last_seen_at "heartbeat"
+        timestamptz created_at
+    }
+    friendships {
+        uuid id PK
+        uuid requester_id FK
+        uuid addressee_id FK
+        varchar status "pending / accepted"
+        timestamptz created_at
+    }
+    user_avatars {
+        uuid user_id PK, FK
+        bytea image
+        varchar content_type "image/png / image/jpeg"
+        timestamptz updated_at
+    }
+    game_sessions {
+        uuid id PK
+        varchar code UK "lobby join code"
+        uuid host_user_id FK
+        varchar game_mode
+        varchar status "waiting / active / completed"
+        varchar lang
+        timestamptz started_at
+        timestamptz ended_at
+        varchar end_reason "solved / time_up / out_of_checks"
+        int failed_checks
+    }
+    session_participants {
+        uuid id PK
+        uuid session_id FK
+        uuid user_id FK
+        varchar role "mission_control / on_site / NULL"
+        boolean is_winner
+        int score_delta "XP earned"
+    }
+    direct_messages {
+        uuid id PK
+        uuid sender_id FK
+        uuid recipient_id FK
+        text body "1-1000 chars"
+        timestamptz created_at
+        timestamptz read_at
+    }
+    user_achievements {
+        uuid user_id PK, FK
+        varchar achievement_id PK
+        timestamptz unlocked_at
+        timestamptz seen_at
+    }
+    flashcards {
+        uuid id PK
+        uuid user_id FK
+        uuid session_id FK
+        text original_phrase
+        text corrected_phrase
+        text explanation
+        int mastery_level
+    }
 ```
 
-| Table | Key fields | What it stores |
+| Table | Key fields and rules | What it stores |
 |---|---|---|
-| `users` | `id UUID PK`, `username VARCHAR(50) UNIQUE`, `email VARCHAR(255) UNIQUE`, `password_hash`, `xp INT`, `learning_lang VARCHAR(5)`, `last_seen_at TIMESTAMPTZ` | accounts, total XP, online status (last heartbeat) |
-| `friendships` | `requester_id`, `addressee_id` → users, `status` (`pending` / `accepted`) | friend requests; a unique index on the *unordered* pair allows only one row per two users |
-| `user_avatars` | `user_id PK` → users, `image BYTEA`, `content_type` | profile pictures (re-encoded by the backend, no metadata) |
-| `game_sessions` | `id`, `code VARCHAR(8) UNIQUE`, `host_user_id`, `status` (`waiting` → `active` → `completed`), `lang`, `started_at`, `ended_at`, `end_reason` (`solved` / `time_up` / `out_of_checks`), `failed_checks` | one lobby = one round |
-| `session_participants` | `session_id`, `user_id` (unique pair), `role` (`mission_control` / `on_site`), `is_winner`, `score_delta` (XP earned) | who played which round in which role |
-| `direct_messages` | `sender_id`, `recipient_id` → users, `body TEXT` (1–1000 chars, CHECK), `created_at`, `read_at` | friend chat; indexed per conversation |
-| `user_achievements` | `(user_id, achievement_id) PK`, `unlocked_at`, `seen_at` | unlocked achievements; `seen_at` drives the "unlocked!" pop-up |
-| `flashcards` | `user_id`, `session_id`, phrases | prepared for a future review feature, not used yet |
+| `users` | `id UUID PK`, `username VARCHAR(50)`, `email VARCHAR(255)` – both **unique ignoring case** (unique indexes on `LOWER(...)`, so `Anna` and `anna` are the same user), `password_hash` (bcrypt), `xp INT`, `learning_lang VARCHAR(5)` (default `de`), `last_seen_at`, `created_at` | accounts, total XP, online status (last heartbeat) |
+| `friendships` | `requester_id`, `addressee_id` → users, `status` (`pending` / `accepted`), `created_at`; CHECK: not yourself; a unique index on the *unordered* pair (`LEAST`/`GREATEST`) allows only one row per two users | friend requests and friendships; a declined request is deleted, so it can be sent again |
+| `user_avatars` | `user_id PK` → users, `image BYTEA`, `content_type`, `updated_at` | profile pictures (re-encoded by the backend, no metadata); `updated_at` changes the picture URL so browsers reload it |
+| `game_sessions` | `id UUID PK`, `code VARCHAR(8) UNIQUE`, `host_user_id` → users, `game_mode`, `status` (`waiting` → `active` → `completed`), `lang`, `started_at`, `ended_at`, `end_reason` (`solved` / `time_up` / `out_of_checks`), `failed_checks` | one lobby = one round |
+| `session_participants` | `session_id` → game_sessions, `user_id` → users, UNIQUE (`session_id`, `user_id`); `role` (`mission_control` / `on_site`, NULL until chosen), `is_winner`, `score_delta` (XP earned) | who played which round in which role; each role can be taken only once per round – checked inside a transaction that locks the lobby row (`FOR UPDATE`) |
+| `direct_messages` | `sender_id`, `recipient_id` → users, `body TEXT` (CHECK 1–1000 chars), `created_at`, `read_at`; CHECK: not to yourself | friend chat; indexed per conversation and on unread messages |
+| `user_achievements` | PK (`user_id`, `achievement_id`), `unlocked_at`, `seen_at` | unlocked achievements; `seen_at` drives the "unlocked!" pop-up |
+| `flashcards` | `user_id` → users, `session_id` → game_sessions, `original_phrase`, `corrected_phrase`, `explanation`, `mastery_level` | prepared for a future review feature, not used yet |
 
-Deleting an account cascades to friendships, messages, avatars, achievements and participations;
-completed rounds stay in the other player's history.
+Deleting an account cascades to friendships, messages, avatars, achievements and participations.
+Finished rounds the user hosted are kept: the backend clears `host_user_id` first, so the rounds
+stay in the other player's match history (shown as "with a deleted player").
 
 ---
 
@@ -176,7 +247,8 @@ WebSockets as the site.
 
 1. A player creates a lobby (`POST /api/lobbies`) and gets a code from an unambiguous alphabet
    (no `0/O`, `1/I`). The second player joins with it. A lobby holds exactly 2 players.
-2. Both connect to `/ws/lobby`, pick a role (each role only once – enforced in the DB) and press
+2. Both connect to `/ws/lobby`, pick a role (each role only once – checked in a database
+   transaction that locks the lobby) and press
    **Ready**. With `VOICE_REQUIRED`, ready-up is blocked until the player's microphone is connected.
 3. When both are ready the server counts down 5…0 (cancelled if someone un-readies) and sends
    `lobby.started`. Both games switch to the round scene and join the room on `/ws`. The server
@@ -285,7 +357,7 @@ switches from the lobby to the round.
 | Translations | en / de / pl / tr for the site and the game | Miguel, gzovkic |
 | Privacy Policy & Terms of Service | linked in every footer | Miguel |
 | HTTPS & LAN play | nginx TLS, `make url` | gzovkic, Daniel |
-| Docker, migrations, CI | one-command start, GitHub Actions | Daniel, gzovkic, Yousef |
+| Docker, migrations, CI | one-command start, GitHub Actions | Daniel, gzovkic, ykhattab |
 
 ---
 
@@ -296,10 +368,10 @@ switches from the lobby to the round.
 | # | Module | Type | Pts | Who |
 |---|---|---|---|---|
 | 1 | Web – Frontend + backend framework | Major | 2 | Miguel, Daniel |
-| 2 | Web – Real-time features with WebSockets | Major | 2 | Daniel, gzovkic, Yousef |
+| 2 | Web – Real-time features with WebSockets | Major | 2 | Daniel, gzovkic, ykhattab |
 | 3 | Web – Users interact with other users (chat, profiles, friends) | Major | 2 | Miguel, Daniel, gzovkic |
 | 4 | User Management – Standard user management | Major | 2 | Miguel, Daniel |
-| 5 | Gaming – Complete web-based game | Major | 2 | gzovkic, Yousef |
+| 5 | Gaming – Complete web-based game | Major | 2 | gzovkic, ykhattab |
 | 6 | Accessibility – Multiple languages (4) | Minor | 1 | Miguel, gzovkic |
 | 7 | Web – Custom design system | Minor | 1 | Miguel |
 | 8 | User Management – Game statistics & match history | Minor | 1 | gzovkic |
@@ -351,7 +423,9 @@ the main menu.
 
 ### 8. Game statistics & match history (Minor, 1)
 **How:** wins, losses, win rate, XP and **level** per player, **rank** on the leaderboard; match history with date,
-language, role, duration, result and XP; **achievements with progress**; **leaderboard**
+language, role, duration, result, XP and **who you played with** (the teammate, linked to their
+profile – the game is cooperative, so the other player is a teammate, not an opponent);
+**achievements with progress**; **leaderboard**
 (global / friends).
 
 ### 9. Gamification (Minor, 1)
@@ -409,7 +483,7 @@ more than a "use a library" task.
   account deletion, **Privacy Policy and Terms of Service**.
 - *Challenges:* longer German/Polish texts broke layouts → layouts reworked for every language.
 
-### yousefkh2 (Yousef)
+### ykhattab (Yousef)
 - **Project foundation:** dockerized project setup (backend + frontend containers, Makefile) and
   the first **GitHub Actions CI** checks.
 - **Realtime foundation:** the first version of the WebSocket hub – room join with acknowledgement,

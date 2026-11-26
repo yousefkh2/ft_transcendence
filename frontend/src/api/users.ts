@@ -31,6 +31,8 @@ export interface MatchHistoryEntry {
 	endReason?: 'solved' | 'time_up' | 'out_of_checks';
 	// XP this player got for the round (0 for rounds saved before XP was awarded).
 	xpEarned: number;
+	// The other player of the round; missing when they have deleted their account.
+	partnerUsername?: string;
 }
 
 export function fetchProfile(): Promise<Profile> {

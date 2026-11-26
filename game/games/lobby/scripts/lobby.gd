@@ -85,7 +85,8 @@ func _on_lobby_created(code: String) -> void:
 	get_tree().change_scene_to_file(pre_game_lobby)
 
 func _on_lobby_creation_failed(message: String) -> void:
-	self.message.text = message
+	# message is technical (it can contain the raw server response), so it only goes to the log.
+	self.message.text = tr("_LOBBY_CREATE_FAILED_")
 	GameState.log_error("Could not create lobby: " + message)
 
 func _on_join_pressed() -> void:

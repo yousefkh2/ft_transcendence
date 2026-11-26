@@ -65,3 +65,27 @@ _PRE_VOICE_WAITING_,Microphone ready - waiting for the other player,Micrófono l
 _PRE_VOICE_CONNECTED_,Voice connected - you can talk now,Voz conectada - ya podéis hablar,Głos połączony - możecie rozmawiać,Ses bağlandı - artık konuşabilirsiniz,Sprachchat verbunden - ihr könnt jetzt reden
 _PRE_VOICE_ERROR_,Voice chat reconnecting...,Reconectando el chat de voz...,Ponowne łączenie czatu głosowego...,Sesli sohbet yeniden bağlanıyor...,Sprachchat verbindet neu...
 _PRE_VOICE_REQUIRED_,Connect your microphone before getting ready,Conecta tu micrófono antes de estar listo,Podłącz mikrofon zanim będziesz gotowy,Hazır olmadan önce mikrofonunu bağla,Verbinde dein Mikrofon bevor du bereit bist
+,,,,,
+_ERR_GENERIC_,Something went wrong. Please try again.,Algo salió mal. Inténtalo de nuevo.,Coś poszło nie tak. Spróbuj ponownie.,Bir şeyler ters gitti. Lütfen tekrar dene.,Etwas ist schiefgelaufen. Bitte versuche es erneut.
+_LOBBY_FULL_,This lobby is already full,Esta sala ya está llena,To lobby jest już pełne,Bu lobi zaten dolu,Diese Lobby ist bereits voll
+_LOBBY_NOT_JOINABLE_,This lobby can no longer be joined,Ya no puedes unirte a esta sala,Do tego lobby nie można już dołączyć,Bu lobiye artık katılamazsın,Dieser Lobby kann man nicht mehr beitreten
+_LOBBY_CREATE_FAILED_,The lobby could not be created,No se pudo crear la sala,Nie udało się utworzyć lobby,Lobi oluşturulamadı,Die Lobby konnte nicht erstellt werden
+_LOBBY_CODE_,Lobby code,Código de sala,Kod lobby,Lobi kodu,Lobby-Code
+_LOBBY_TITLE_,lobby,sala,lobby,lobi,lobby
+_MENU_LOBBY_,Lobby,Sala,Lobby,Lobi,Lobby
+_LANG_EN_,English,Inglés,Angielski,İngilizce,Englisch
+_LANG_DE_,German,Alemán,Niemiecki,Almanca,Deutsch
+_LANG_PL_,Polish,Polaco,Polski,Lehçe,Polnisch
+_LANG_TR_,Turkish,Turco,Turecki,Türkçe,Türkisch
+_PRE_UNKNOWN_LANG_,Unknown language,Idioma desconocido,Nieznany język,Bilinmeyen dil,Unbekannte Sprache
+_PRE_UNKNOWN_GAME_,Unknown game,Juego desconocido,Nieznana gra,Bilinmeyen oyun,Unbekanntes Spiel
+_PRE_NO_ROLE_,NO ROLE,SIN ROL,BRAK ROLI,ROL YOK,KEINE ROLLE
+_PRE_COUNTDOWN_,Match starting: {n},La partida empieza en: {n},Mecz zaczyna się za: {n},Maç başlıyor: {n},Spiel startet in: {n}
+_PRE_NOT_CONNECTED_,Not connected to the lobby yet,Aún no estás conectado a la sala,Brak połączenia z lobby,Henüz lobiye bağlı değilsin,Noch nicht mit der Lobby verbunden
+_PRE_SELECT_ROLE_FIRST_,Select a role first,Elige primero un rol,Najpierw wybierz rolę,Önce bir rol seç,Wähle zuerst eine Rolle
+_PRE_WAITING_OTHER_,Ready - waiting for the other player,Listo - esperando al otro jugador,Gotowy - czekam na drugiego gracza,Hazır - diğer oyuncu bekleniyor,Bereit - warte auf den anderen Spieler
+_PRE_NOT_READY_,Not ready,No listo,Niegotowy,Hazır değil,Nicht bereit
+_PRE_PLAYER_LEFT_,A player left the lobby,Un jugador salió de la sala,Gracz opuścił lobby,Bir oyuncu lobiden ayrıldı,Ein Spieler hat die Lobby verlassen
+_GAME_PLAYER_LEFT_,Your partner left the game,Tu compañero salió de la partida,Twój partner opuścił grę,Partnerin oyundan ayrıldı,Dein Partner hat das Spiel verlassen
+_GAME_CHECK_,Check,Comprobar,Sprawdź,Kontrol et,Prüfen
+_GAME_LEAVE_,Leave,Salir,Wyjdź,Ayrıl,Verlassen

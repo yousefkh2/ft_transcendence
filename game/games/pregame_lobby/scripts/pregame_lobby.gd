@@ -44,30 +44,34 @@ func _translate_error(error_message: String) -> String:
 			return tr("_PRE_ERR_ROLE_TAKEN_")
 		"connect your microphone before readying up":
 			return tr("_PRE_VOICE_REQUIRED_")
+		"select a role before readying up":
+			return tr("_PRE_SELECT_ROLE_FIRST_")
 		_:
-			return error_message
+			# Other server messages are technical and in English: log them, show a translated text.
+			GameState.log_error("Lobby error: " + error_message)
+			return tr("_ERR_GENERIC_")
 
 func _select_lobby_game_type():
 	var gt = GameState.game_mode
 	match gt:
 		"apartment_setup":
-			game_type.text = "Living Room"
+			game_type.text = tr("_PRE_LIVING_ROOM_")
 		_:
-			game_type.text = "game type not found"
+			game_type.text = tr("_PRE_UNKNOWN_GAME_")
 
 func _select_lobby_language():
 	var lang = GameState.game_lang
 	match lang:
 		"en":
-			lobby_lang.text = "English"
+			lobby_lang.text = tr("_LANG_EN_")
 		"tr":
-			lobby_lang.text = "Turkish"
+			lobby_lang.text = tr("_LANG_TR_")
 		"de":
-			lobby_lang.text = "German"
+			lobby_lang.text = tr("_LANG_DE_")
 		"pl":
-			lobby_lang.text = "Polish"
+			lobby_lang.text = tr("_LANG_PL_")
 		_:
-			lobby_lang.text = "Language not found"
+			lobby_lang.text = tr("_PRE_UNKNOWN_LANG_")
 	
 
 func _send_message(message_to_send):
@@ -92,12 +96,11 @@ func _process_received_message(raw_message):
 		"lobby.updated":
 			_update_lobby_state(response_msg)
 		"lobby.countdown":
-			message.text = "MATCH STARTING: %d" % int(response_msg.get("countdown", 0))
+			message.text = tr("_PRE_COUNTDOWN_").format({"n": int(response_msg.get("countdown", 0))})
 		"lobby.started":
 			_load_role_scene()
 		"player.disconnected":
-			var disconnect_message = str(response_msg.get("message", "A player disconnected from the lobby"))
-			message.text = disconnect_message
+			message.text = tr("_PRE_PLAYER_LEFT_")
 		"error":
 			var server_message = str(response_msg.get("message", "unknown error"))
 			message.text = _translate_error(server_message)
@@ -176,10 +179,10 @@ func _on_lobby_button_pressed() -> void:
 
 func _on_ready_button_pressed() -> void:
 	if _client.get_socket().get_ready_state() != WebSocketPeer.STATE_OPEN:
-		message.text = "Lobby connection is not ready"
+		message.text = tr("_PRE_NOT_CONNECTED_")
 		return
 	if local_role == "":
-		message.text = "Select a role before readying up"
+		message.text = tr("_PRE_SELECT_ROLE_FIRST_")
 		return
 	# The server checks this too; outside the website (Godot editor) it decides alone.
 	if not local_ready and GameState.voice_status != "unavailable" and not GameState.voice_connected():
@@ -188,7 +191,7 @@ func _on_ready_button_pressed() -> void:
 
 	local_ready = not local_ready
 	$create_lobby_interface/start.text = tr("_PRE_UNREADY_") if local_ready else tr("_PRE_READY_")
-	message.text = "READY - waiting for the other player" if local_ready else "NOT READY"
+	message.text = tr("_PRE_WAITING_OTHER_") if local_ready else tr("_PRE_NOT_READY_")
 	_send_message({
 		"type": "lobby.ready",
 		"roomCode": GameState.lobby_code,
@@ -225,7 +228,7 @@ func _load_role_scene() -> void:
 			get_tree().change_scene_to_file(ON_SITE_SCENE)
 		_:
 			match_started = false
-			message.text = "Select a role before starting"
+			message.text = tr("_PRE_SELECT_ROLE_FIRST_")
  
 
 func _process(delta: float) -> void:

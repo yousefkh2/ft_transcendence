@@ -6,7 +6,7 @@
 				<p class="subtitle">{{ t('friends.subtitle') }}</p>
 			</div>
 			<form class="add-form" @submit.prevent="addFriend">
-				<BaseInput v-model="newUsername" size="sm" class="add-input" :error="addError" type="text" :placeholder="t('friends.addPlaceholder')" :aria-label="t('friends.addLabel')" :disabled="sending" />
+				<BaseInput v-model="newUsername" name="friend-username" size="sm" class="add-input" :error="addError" type="text" :placeholder="t('friends.addPlaceholder')" :aria-label="t('friends.addLabel')" :disabled="sending" />
 				<BaseButton type="submit" :disabled="sending || !newUsername.trim()"><BaseIcon name="user-plus" :size="16" />{{ t('friends.add') }}</BaseButton>
 			</form>
 		</div>

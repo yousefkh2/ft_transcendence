@@ -329,6 +329,8 @@ const en = {
 		lost: 'Lost',
 		pending: 'Not finished',
 		duration: '{time} played',
+		partner: 'with {name}',
+		deletedPartner: 'with a deleted player',
 		endReason: {
 			solved: 'Room solved',
 			timeUp: "Time's up",

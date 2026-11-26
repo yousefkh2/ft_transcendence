@@ -9,6 +9,10 @@
 			<div class="round-info">
 				<div class="round-mode">{{ round.mode }}</div>
 				<div class="round-when">{{ round.details }}</div>
+				<div v-if="round.partner" class="round-partner">
+					{{ partnerText.before }}<RouterLink :to="{ name: 'user-profile', params: { username: round.partner } }">{{ round.partner }}</RouterLink>{{ partnerText.after }}
+				</div>
+				<div v-else class="round-partner">{{ t('rounds.deletedPartner') }}</div>
 			</div>
 			<div v-if="round.xp" class="round-xp">+{{ t('common.xp', { xp: formatNumber(round.xp) }) }}</div>
 		</div>
@@ -25,6 +29,14 @@ import { t } from '../../i18n';
 import BaseIcon from '../base/BaseIcon.vue';
 
 const props = defineProps<{ matches: MatchHistoryEntry[]; showRole?: boolean }>();
+
+// "with {name}": the name becomes a link, so the translated sentence is split around it
+// (the name can sit anywhere in the sentence, e.g. "{name} ile" in Turkish).
+const NAME_MARK = '\u0000';
+const partnerText = computed(() => {
+	const [before = '', after = ''] = t('rounds.partner', { name: NAME_MARK }).split(NAME_MARK);
+	return { before, after };
+});
 
 // The badge shows a language-neutral icon; the word is for screen readers and the tooltip.
 function resultLabel(result: 'won' | 'lost' | 'pending') {
@@ -57,6 +69,7 @@ const rows = computed(() =>
 		mode: formatLabel(m.gameMode),
 		details: details(m),
 		xp: m.xpEarned ?? 0,
+		partner: m.partnerUsername,
 	})),
 );
 </script>
@@ -110,6 +123,12 @@ const rows = computed(() =>
 	.round-mode {
 		font-size: var(--text-md);
 		font-weight: 700;
+	}
+
+	.round-partner {
+		font-size: 12.5px;
+		color: var(--color-outline);
+		overflow-wrap: anywhere;
 	}
 
 	.round-xp {
