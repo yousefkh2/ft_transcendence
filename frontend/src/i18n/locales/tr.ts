@@ -328,6 +328,8 @@ const tr: Messages = {
 		lost: 'Kaybedildi',
 		pending: 'Tamamlanmadı',
 		duration: '{time} oynandı',
+		partner: '{name} ile',
+		deletedPartner: 'silinmiş bir oyuncuyla',
 		endReason: {
 			solved: 'Oda çözüldü',
 			timeUp: 'Süre doldu',

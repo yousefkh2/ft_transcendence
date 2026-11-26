@@ -327,6 +327,8 @@ const de: Messages = {
 		lost: 'Verloren',
 		pending: 'Nicht beendet',
 		duration: '{time} gespielt',
+		partner: 'mit {name}',
+		deletedPartner: 'mit einem gelöschten Spieler',
 		endReason: {
 			solved: 'Raum gelöst',
 			timeUp: 'Zeit abgelaufen',

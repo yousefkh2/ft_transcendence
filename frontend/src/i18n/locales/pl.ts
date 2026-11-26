@@ -333,6 +333,8 @@ const pl: Messages = {
 		lost: 'Przegrana',
 		pending: 'Nieukończona',
 		duration: 'Czas gry {time}',
+		partner: 'z graczem {name}',
+		deletedPartner: 'z usuniętym graczem',
 		endReason: {
 			solved: 'Pokój ukończony',
 			timeUp: 'Koniec czasu',
