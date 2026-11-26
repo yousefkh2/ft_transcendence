@@ -1,7 +1,10 @@
 <template>
 	<BaseModal v-model:open="open" :labelledby="titleId">
-		<div class="glow glow-top"></div>
-		<div class="glow glow-bottom"></div>
+		<!-- The glows reach past the dialog's edges; this layer clips them so they don't make the dialog scroll. -->
+		<div class="glows" aria-hidden="true">
+			<div class="glow glow-top"></div>
+			<div class="glow glow-bottom"></div>
+		</div>
 
 		<div ref="modalEl" class="modal-content">
 			<div class="header">
@@ -256,6 +259,15 @@ async function handleRegister() {
 </script>
 
 <style scoped>
+	.glows {
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+		border-radius: inherit;
+		pointer-events: none;
+		z-index: 0;
+	}
+
 	.glow {
 		position: absolute;
 		width: 55%;
@@ -451,6 +463,25 @@ async function handleRegister() {
 	@media (prefers-reduced-motion: reduce) {
 		.glow {
 			animation-play-state: paused;
+		}
+	}
+
+	/* Short windows (e.g. 1280 x 720 laptops): a tighter layout, so the sign-up form fits without scrolling. */
+	@media (max-height: 800px) {
+		.bolt-mark {
+			display: none;
+		}
+
+		.header {
+			margin-bottom: 18px;
+		}
+
+		.tab-switcher {
+			margin-bottom: 16px;
+		}
+
+		.auth-form {
+			gap: 8px;
 		}
 	}
 </style>

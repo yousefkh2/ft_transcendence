@@ -103,6 +103,14 @@ useDialog(open, dialogEl, close);
 		}
 	}
 
+	/* Short windows: less padding, so tall dialogs fit without scrolling. */
+	@media (max-height: 800px) {
+		.modal {
+			padding-top: 28px;
+			padding-bottom: 28px;
+		}
+	}
+
 	@media (prefers-reduced-motion: reduce) {
 		.modal-enter-active,
 		.modal-enter-active .modal {
