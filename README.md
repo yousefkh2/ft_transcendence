@@ -1,4 +1,4 @@
-*This project has been created as part of the 42 curriculum by gzovkic, dreule, mimalek, yousefkh2*
+*This project has been created as part of the 42 curriculum by gzovkic, dreule, mimalek, ykhattab*
 
 # LingoDash
 
@@ -285,7 +285,7 @@ switches from the lobby to the round.
 | Translations | en / de / pl / tr for the site and the game | Miguel, gzovkic |
 | Privacy Policy & Terms of Service | linked in every footer | Miguel |
 | HTTPS & LAN play | nginx TLS, `make url` | gzovkic, Daniel |
-| Docker, migrations, CI | one-command start, GitHub Actions | Daniel, gzovkic, Yousef |
+| Docker, migrations, CI | one-command start, GitHub Actions | Daniel, gzovkic, ykhattab |
 
 ---
 
@@ -296,10 +296,10 @@ switches from the lobby to the round.
 | # | Module | Type | Pts | Who |
 |---|---|---|---|---|
 | 1 | Web – Frontend + backend framework | Major | 2 | Miguel, Daniel |
-| 2 | Web – Real-time features with WebSockets | Major | 2 | Daniel, gzovkic, Yousef |
+| 2 | Web – Real-time features with WebSockets | Major | 2 | Daniel, gzovkic, ykhattab |
 | 3 | Web – Users interact with other users (chat, profiles, friends) | Major | 2 | Miguel, Daniel, gzovkic |
 | 4 | User Management – Standard user management | Major | 2 | Miguel, Daniel |
-| 5 | Gaming – Complete web-based game | Major | 2 | gzovkic, Yousef |
+| 5 | Gaming – Complete web-based game | Major | 2 | gzovkic, ykhattab |
 | 6 | Accessibility – Multiple languages (4) | Minor | 1 | Miguel, gzovkic |
 | 7 | Web – Custom design system | Minor | 1 | Miguel |
 | 8 | User Management – Game statistics & match history | Minor | 1 | gzovkic |
@@ -409,7 +409,7 @@ more than a "use a library" task.
   account deletion, **Privacy Policy and Terms of Service**.
 - *Challenges:* longer German/Polish texts broke layouts → layouts reworked for every language.
 
-### yousefkh2 (Yousef)
+### ykhattab (Yousef)
 - **Project foundation:** dockerized project setup (backend + frontend containers, Makefile) and
   the first **GitHub Actions CI** checks.
 - **Realtime foundation:** the first version of the WebSocket hub – room join with acknowledgement,
