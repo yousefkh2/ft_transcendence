@@ -1,6 +1,6 @@
 <template>
 	<div class="avatar-editor">
-		<input ref="fileInput" type="file" accept="image/*" class="file-input" tabindex="-1" aria-hidden="true" @change="onFileChosen" />
+		<input ref="fileInput" type="file" name="avatar" accept="image/*" class="file-input" tabindex="-1" aria-hidden="true" @change="onFileChosen" />
 		<div class="buttons">
 			<BaseButton size="sm" pill :disabled="busy" @click="fileInput?.click()">
 				<BaseIcon name="upload" :size="14" />
