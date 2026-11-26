@@ -19,8 +19,14 @@ func _translate_error(error_message: String) -> String:
 			return tr("_LOBBY_LOGIN_FAILED_")
 		"lobby language does not match your current language":
 			return tr("_LOBBY_LANGUAGE_MISMATCH_")
+		"lobby is full":
+			return tr("_LOBBY_FULL_")
+		"lobby is not joinable":
+			return tr("_LOBBY_NOT_JOINABLE_")
 		_:
-			return error_message
+			# Other server messages are technical and in English: log them, show a translated text.
+			GameState.log_error("Lobby request error: " + error_message)
+			return tr("_ERR_GENERIC_")
 
 func _get_active_language_code() -> String:
 	match GameState.selected_locale:
