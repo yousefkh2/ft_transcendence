@@ -89,7 +89,7 @@ func (h *AuthHandler) HandleLogin(c echo.Context) error {
 
 	var userID, passwordHash string
 	err := h.DB.QueryRow(c.Request().Context(),
-		`SELECT id, password_hash FROM users WHERE email = $1`,
+		`SELECT id, password_hash FROM users WHERE LOWER(email) = LOWER($1)`,
 		req.Email,
 	).Scan(&userID, &passwordHash)
 
@@ -125,7 +125,7 @@ func (h *AuthHandler) HandleRealtimeLogin(c echo.Context) error {
 
 	var userID, username, passwordHash string
 	err := h.DB.QueryRow(c.Request().Context(),
-		`SELECT id, username, password_hash FROM users WHERE email = $1`,
+		`SELECT id, username, password_hash FROM users WHERE LOWER(email) = LOWER($1)`,
 		req.Email,
 	).Scan(&userID, &username, &passwordHash)
 	if err != nil {
