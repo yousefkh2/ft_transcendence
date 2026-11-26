@@ -27,7 +27,7 @@ type Friend struct {
 func ResolveUserID(ctx context.Context, pool *pgxpool.Pool, username string) (string, error) {
 	var userID string
 	err := pool.QueryRow(ctx,
-		`SELECT id FROM users WHERE username = $1`,
+		`SELECT id FROM users WHERE LOWER(username) = LOWER($1)`,
 		username,
 	).Scan(&userID)
 	return userID, err
