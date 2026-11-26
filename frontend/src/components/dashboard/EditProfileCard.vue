@@ -28,6 +28,8 @@
 				<h3>{{ t('editProfile.changePassword') }}</h3>
 				<BaseAlert v-if="passwordNotice" variant="success">{{ passwordNotice }}</BaseAlert>
 				<BaseAlert v-if="passwordError">{{ passwordError }}</BaseAlert>
+				<!-- Hidden on purpose: tells password managers (and Chrome) which account the new password belongs to. -->
+				<input type="text" name="username" autocomplete="username" :value="profile?.username ?? ''" readonly hidden />
 				<BaseInput
 					v-model="passwords.current"
 					:label="t('common.currentPassword')"
