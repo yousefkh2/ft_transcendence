@@ -112,7 +112,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_8ef6c")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_e1b82")
 theme_override_styles/hover = SubResource("StyleBoxFlat_txcq3")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_kdacn")
-text = "Lobby"
+text = "_MENU_LOBBY_"
 
 [node name="settings_button" type="Button" parent="Menu" unique_id=903084614]
 layout_mode = 2
