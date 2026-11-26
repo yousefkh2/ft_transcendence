@@ -382,6 +382,46 @@ func TestGameRelay_ForwardsPayloadToOtherRole(t *testing.T) {
 	}
 }
 
+func TestWebRTCSignal_GoesToOtherPlayer(t *testing.T) {
+	roles := newFakeRoleResolver()
+	alice := uniqueUserID(t, "alice")
+	bob := uniqueUserID(t, "bob")
+	roles.assign("RTC", alice, "mission_control")
+	roles.assign("RTC", bob, "on_site")
+
+	server := newTestServer(t, roles)
+	aliceConn := dial(t, server)
+	bobConn := dial(t, server)
+	joinRoom(t, aliceConn, "RTC", alice)
+	joinRoom(t, bobConn, "RTC", bob)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// mission_control -> on_site
+	if err := wsjson.Write(ctx, aliceConn, model.ClientMessage{Type: "webrtc.offer", SDP: "offer-from-alice"}); err != nil {
+		t.Fatalf("write webrtc.offer failed: %v", err)
+	}
+	var got model.ServerMessage
+	if err := wsjson.Read(ctx, bobConn, &got); err != nil {
+		t.Fatalf("read relayed offer failed: %v", err)
+	}
+	if got.Type != "webrtc.offer" || got.FromRole != "mission_control" || got.SDP != "offer-from-alice" {
+		t.Fatalf("unexpected relay: type=%s from=%s sdp=%s", got.Type, got.FromRole, got.SDP)
+	}
+
+	// on_site -> mission_control
+	if err := wsjson.Write(ctx, bobConn, model.ClientMessage{Type: "webrtc.answer", SDP: "answer-from-bob"}); err != nil {
+		t.Fatalf("write webrtc.answer failed: %v", err)
+	}
+	if err := wsjson.Read(ctx, aliceConn, &got); err != nil {
+		t.Fatalf("read relayed answer failed: %v", err)
+	}
+	if got.Type != "webrtc.answer" || got.FromRole != "on_site" || got.SDP != "answer-from-bob" {
+		t.Fatalf("unexpected relay: type=%s from=%s sdp=%s", got.Type, got.FromRole, got.SDP)
+	}
+}
+
 // savedMatches records what the hub would write to the match history.
 type savedMatches struct {
 	mu      sync.Mutex
